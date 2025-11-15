@@ -1,0 +1,736 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.5"
+  }
+  public: {
+    Tables: {
+      accessories: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          price: number | null
+          seller_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          price?: number | null
+          seller_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number | null
+          seller_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      addresses: {
+        Row: {
+          city: string
+          country_id: string
+          created_at: string
+          id: string
+          is_primary: boolean | null
+          latitude: number | null
+          longitude: number | null
+          postal_code: string
+          state_province: string | null
+          street_address: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          city: string
+          country_id: string
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          postal_code: string
+          state_province?: string | null
+          street_address: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          city?: string
+          country_id?: string
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          postal_code?: string
+          state_province?: string | null
+          street_address?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "addresses_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coffee_brands: {
+        Row: {
+          affiliate_link: string | null
+          coffee_type: Database["public"]["Enums"]["coffee_type"] | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_available: boolean | null
+          name: string
+          origin_country: string | null
+          price_per_kg: number | null
+          roast_level: Database["public"]["Enums"]["roast_level"] | null
+          roaster_id: string
+          updated_at: string
+        }
+        Insert: {
+          affiliate_link?: string | null
+          coffee_type?: Database["public"]["Enums"]["coffee_type"] | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_available?: boolean | null
+          name: string
+          origin_country?: string | null
+          price_per_kg?: number | null
+          roast_level?: Database["public"]["Enums"]["roast_level"] | null
+          roaster_id: string
+          updated_at?: string
+        }
+        Update: {
+          affiliate_link?: string | null
+          coffee_type?: Database["public"]["Enums"]["coffee_type"] | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_available?: boolean | null
+          name?: string
+          origin_country?: string | null
+          price_per_kg?: number | null
+          roast_level?: Database["public"]["Enums"]["roast_level"] | null
+          roaster_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coffee_brands_roaster_id_fkey"
+            columns: ["roaster_id"]
+            isOneToOne: false
+            referencedRelation: "roaster_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coffee_shop_profiles: {
+        Row: {
+          address_id: string | null
+          business_name: string
+          created_at: string
+          description: string | null
+          has_bakery: boolean | null
+          has_outdoor_seating: boolean | null
+          has_wifi: boolean | null
+          id: string
+          logo_url: string | null
+          opening_hours: Json | null
+          updated_at: string
+          user_id: string
+          website_url: string | null
+        }
+        Insert: {
+          address_id?: string | null
+          business_name: string
+          created_at?: string
+          description?: string | null
+          has_bakery?: boolean | null
+          has_outdoor_seating?: boolean | null
+          has_wifi?: boolean | null
+          id?: string
+          logo_url?: string | null
+          opening_hours?: Json | null
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+        }
+        Update: {
+          address_id?: string | null
+          business_name?: string
+          created_at?: string
+          description?: string | null
+          has_bakery?: boolean | null
+          has_outdoor_seating?: boolean | null
+          has_wifi?: boolean | null
+          id?: string
+          logo_url?: string | null
+          opening_hours?: Json | null
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coffee_shop_profiles_address_id_fkey"
+            columns: ["address_id"]
+            isOneToOne: false
+            referencedRelation: "addresses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      countries: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      machine_brands: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      machines: {
+        Row: {
+          brand_id: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          machine_type: Database["public"]["Enums"]["machine_type"]
+          name: string
+          price: number | null
+          seller_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          machine_type: Database["public"]["Enums"]["machine_type"]
+          name: string
+          price?: number | null
+          seller_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          machine_type?: Database["public"]["Enums"]["machine_type"]
+          name?: string
+          price?: number | null
+          seller_url?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "machines_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "machine_brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      preparation_guides: {
+        Row: {
+          brew_time_seconds: number | null
+          coffee_to_water_ratio: string | null
+          coffee_type: Database["public"]["Enums"]["coffee_type"] | null
+          created_at: string
+          description: string | null
+          grind_size: string | null
+          id: string
+          image_url: string | null
+          instructions: string
+          machine_type: Database["public"]["Enums"]["machine_type"]
+          title: string
+          updated_at: string
+          water_temp_celsius: number | null
+        }
+        Insert: {
+          brew_time_seconds?: number | null
+          coffee_to_water_ratio?: string | null
+          coffee_type?: Database["public"]["Enums"]["coffee_type"] | null
+          created_at?: string
+          description?: string | null
+          grind_size?: string | null
+          id?: string
+          image_url?: string | null
+          instructions: string
+          machine_type: Database["public"]["Enums"]["machine_type"]
+          title: string
+          updated_at?: string
+          water_temp_celsius?: number | null
+        }
+        Update: {
+          brew_time_seconds?: number | null
+          coffee_to_water_ratio?: string | null
+          coffee_type?: Database["public"]["Enums"]["coffee_type"] | null
+          created_at?: string
+          description?: string | null
+          grind_size?: string | null
+          id?: string
+          image_url?: string | null
+          instructions?: string
+          machine_type?: Database["public"]["Enums"]["machine_type"]
+          title?: string
+          updated_at?: string
+          water_temp_celsius?: number | null
+        }
+        Relationships: []
+      }
+      producer_profiles: {
+        Row: {
+          business_name: string
+          certifications: string[] | null
+          created_at: string
+          description: string | null
+          farm_size_hectares: number | null
+          id: string
+          logo_url: string | null
+          updated_at: string
+          user_id: string
+          website_url: string | null
+        }
+        Insert: {
+          business_name: string
+          certifications?: string[] | null
+          created_at?: string
+          description?: string | null
+          farm_size_hectares?: number | null
+          id?: string
+          logo_url?: string | null
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+        }
+        Update: {
+          business_name?: string
+          certifications?: string[] | null
+          created_at?: string
+          description?: string | null
+          farm_size_hectares?: number | null
+          id?: string
+          logo_url?: string | null
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          id: string
+          name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      recipes: {
+        Row: {
+          coffee_brand_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          ingredients: Json
+          instructions: string
+          prep_time_minutes: number | null
+          servings: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          coffee_brand_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          ingredients: Json
+          instructions: string
+          prep_time_minutes?: number | null
+          servings?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          coffee_brand_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          ingredients?: Json
+          instructions?: string
+          prep_time_minutes?: number | null
+          servings?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipes_coffee_brand_id_fkey"
+            columns: ["coffee_brand_id"]
+            isOneToOne: false
+            referencedRelation: "coffee_brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          reviewable_id: string
+          reviewable_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          reviewable_id: string
+          reviewable_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          reviewable_id?: string
+          reviewable_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      roaster_profiles: {
+        Row: {
+          business_name: string
+          created_at: string
+          description: string | null
+          has_discount_coupons: boolean | null
+          id: string
+          logo_url: string | null
+          offers_free_shipping: boolean | null
+          updated_at: string
+          user_id: string
+          website_url: string | null
+        }
+        Insert: {
+          business_name: string
+          created_at?: string
+          description?: string | null
+          has_discount_coupons?: boolean | null
+          id?: string
+          logo_url?: string | null
+          offers_free_shipping?: boolean | null
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+        }
+        Update: {
+          business_name?: string
+          created_at?: string
+          description?: string | null
+          has_discount_coupons?: boolean | null
+          id?: string
+          logo_url?: string | null
+          offers_free_shipping?: boolean | null
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+    }
+    Enums: {
+      app_role: "admin" | "roaster" | "coffee_shop" | "producer" | "user"
+      coffee_type: "arabica" | "robusta" | "liberica" | "excelsa" | "blend"
+      machine_type:
+        | "espresso"
+        | "drip"
+        | "french_press"
+        | "pour_over"
+        | "cold_brew"
+        | "moka_pot"
+        | "aeropress"
+      roast_level: "light" | "medium" | "medium_dark" | "dark"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      app_role: ["admin", "roaster", "coffee_shop", "producer", "user"],
+      coffee_type: ["arabica", "robusta", "liberica", "excelsa", "blend"],
+      machine_type: [
+        "espresso",
+        "drip",
+        "french_press",
+        "pour_over",
+        "cold_brew",
+        "moka_pot",
+        "aeropress",
+      ],
+      roast_level: ["light", "medium", "medium_dark", "dark"],
+    },
+  },
+} as const
