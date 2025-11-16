@@ -45,7 +45,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-coffee-cream via-background to-coffee-light">
-      <div className="max-w-7xl mx-auto px-4 py-12 md:py-20">
+      <div className="max-w-7xl mx-auto px-4 py-12 md:py-20 pb-24">
         {/* Hero Section */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center justify-center p-4 bg-primary rounded-full mb-6">
