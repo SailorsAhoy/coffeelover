@@ -103,6 +103,101 @@ export type Database = {
           },
         ]
       }
+      brew_sessions: {
+        Row: {
+          acidity_score: number | null
+          aroma_score: number | null
+          bitterness_score: number | null
+          body_score: number | null
+          brew_date: string
+          brew_method: Database["public"]["Enums"]["brew_method"]
+          brew_weight_grams: number | null
+          coffee_dose_grams: number | null
+          coffee_to_brew_ratio: string | null
+          coffee_to_water_ratio: string | null
+          created_at: string
+          equipment_ids: string[] | null
+          extraction_time_seconds: number | null
+          extraction_yield_percentage: number | null
+          flavor_profile_accuracy: string | null
+          grind_setting: string | null
+          id: string
+          notes: string | null
+          overall_rating: number | null
+          sweetness_score: number | null
+          tds_percentage: number | null
+          updated_at: string
+          user_coffee_product_id: string | null
+          user_id: string
+          water_amount_grams: number | null
+          water_temp_celsius: number | null
+        }
+        Insert: {
+          acidity_score?: number | null
+          aroma_score?: number | null
+          bitterness_score?: number | null
+          body_score?: number | null
+          brew_date?: string
+          brew_method: Database["public"]["Enums"]["brew_method"]
+          brew_weight_grams?: number | null
+          coffee_dose_grams?: number | null
+          coffee_to_brew_ratio?: string | null
+          coffee_to_water_ratio?: string | null
+          created_at?: string
+          equipment_ids?: string[] | null
+          extraction_time_seconds?: number | null
+          extraction_yield_percentage?: number | null
+          flavor_profile_accuracy?: string | null
+          grind_setting?: string | null
+          id?: string
+          notes?: string | null
+          overall_rating?: number | null
+          sweetness_score?: number | null
+          tds_percentage?: number | null
+          updated_at?: string
+          user_coffee_product_id?: string | null
+          user_id: string
+          water_amount_grams?: number | null
+          water_temp_celsius?: number | null
+        }
+        Update: {
+          acidity_score?: number | null
+          aroma_score?: number | null
+          bitterness_score?: number | null
+          body_score?: number | null
+          brew_date?: string
+          brew_method?: Database["public"]["Enums"]["brew_method"]
+          brew_weight_grams?: number | null
+          coffee_dose_grams?: number | null
+          coffee_to_brew_ratio?: string | null
+          coffee_to_water_ratio?: string | null
+          created_at?: string
+          equipment_ids?: string[] | null
+          extraction_time_seconds?: number | null
+          extraction_yield_percentage?: number | null
+          flavor_profile_accuracy?: string | null
+          grind_setting?: string | null
+          id?: string
+          notes?: string | null
+          overall_rating?: number | null
+          sweetness_score?: number | null
+          tds_percentage?: number | null
+          updated_at?: string
+          user_coffee_product_id?: string | null
+          user_id?: string
+          water_amount_grams?: number | null
+          water_temp_celsius?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brew_sessions_user_coffee_product_id_fkey"
+            columns: ["user_coffee_product_id"]
+            isOneToOne: false
+            referencedRelation: "user_coffee_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coffee_brands: {
         Row: {
           affiliate_link: string | null
@@ -546,6 +641,148 @@ export type Database = {
         }
         Relationships: []
       }
+      user_coffee_products: {
+        Row: {
+          altitude_meters: number | null
+          coffee_brand_id: string | null
+          country_of_origin: string | null
+          created_at: string
+          cupping_score: number | null
+          farm_name: string | null
+          flavor_profile: string | null
+          harvest_date: string | null
+          id: string
+          is_approved: boolean | null
+          is_decaf: boolean | null
+          lot_number: string | null
+          notes: string | null
+          price_amount: number | null
+          processing_method: string | null
+          producer_name: string | null
+          product_name: string
+          product_url: string | null
+          region: string | null
+          roast_date: string | null
+          roaster_name: string | null
+          updated_at: string
+          user_id: string
+          varietals: string[] | null
+          wash_station: string | null
+          weight_grams: number | null
+        }
+        Insert: {
+          altitude_meters?: number | null
+          coffee_brand_id?: string | null
+          country_of_origin?: string | null
+          created_at?: string
+          cupping_score?: number | null
+          farm_name?: string | null
+          flavor_profile?: string | null
+          harvest_date?: string | null
+          id?: string
+          is_approved?: boolean | null
+          is_decaf?: boolean | null
+          lot_number?: string | null
+          notes?: string | null
+          price_amount?: number | null
+          processing_method?: string | null
+          producer_name?: string | null
+          product_name: string
+          product_url?: string | null
+          region?: string | null
+          roast_date?: string | null
+          roaster_name?: string | null
+          updated_at?: string
+          user_id: string
+          varietals?: string[] | null
+          wash_station?: string | null
+          weight_grams?: number | null
+        }
+        Update: {
+          altitude_meters?: number | null
+          coffee_brand_id?: string | null
+          country_of_origin?: string | null
+          created_at?: string
+          cupping_score?: number | null
+          farm_name?: string | null
+          flavor_profile?: string | null
+          harvest_date?: string | null
+          id?: string
+          is_approved?: boolean | null
+          is_decaf?: boolean | null
+          lot_number?: string | null
+          notes?: string | null
+          price_amount?: number | null
+          processing_method?: string | null
+          producer_name?: string | null
+          product_name?: string
+          product_url?: string | null
+          region?: string | null
+          roast_date?: string | null
+          roaster_name?: string | null
+          updated_at?: string
+          user_id?: string
+          varietals?: string[] | null
+          wash_station?: string | null
+          weight_grams?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_coffee_products_coffee_brand_id_fkey"
+            columns: ["coffee_brand_id"]
+            isOneToOne: false
+            referencedRelation: "coffee_brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_equipment: {
+        Row: {
+          brand: string | null
+          created_at: string
+          equipment_name: string
+          equipment_type: string
+          id: string
+          machine_id: string | null
+          model: string | null
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string
+          equipment_name: string
+          equipment_type: string
+          id?: string
+          machine_id?: string | null
+          model?: string | null
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string
+          equipment_name?: string
+          equipment_type?: string
+          id?: string
+          machine_id?: string | null
+          model?: string | null
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_equipment_machine_id_fkey"
+            columns: ["machine_id"]
+            isOneToOne: false
+            referencedRelation: "machines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -582,6 +819,14 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "roaster" | "coffee_shop" | "producer" | "user"
+      brew_method:
+        | "espresso"
+        | "pour_over"
+        | "french_press"
+        | "aeropress"
+        | "cold_brew"
+        | "moka_pot"
+        | "drip"
       coffee_type: "arabica" | "robusta" | "liberica" | "excelsa" | "blend"
       machine_type:
         | "espresso"
@@ -720,6 +965,15 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "roaster", "coffee_shop", "producer", "user"],
+      brew_method: [
+        "espresso",
+        "pour_over",
+        "french_press",
+        "aeropress",
+        "cold_brew",
+        "moka_pot",
+        "drip",
+      ],
       coffee_type: ["arabica", "robusta", "liberica", "excelsa", "blend"],
       machine_type: [
         "espresso",

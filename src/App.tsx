@@ -12,6 +12,9 @@ import Coffee from "./pages/Coffee";
 import Guides from "./pages/Guides";
 import Recipes from "./pages/Recipes";
 import Equipment from "./pages/Equipment";
+import Journal from "./pages/Journal";
+import JournalProductNew from "./pages/JournalProductNew";
+import JournalBrewNew from "./pages/JournalBrewNew";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
@@ -33,6 +36,9 @@ const App = () => (
           <Route path="/guides" element={<Guides />} />
           <Route path="/recipes" element={<Recipes />} />
           <Route path="/equipment" element={<Equipment />} />
+          <Route path="/journal" element={<Journal />} />
+          <Route path="/journal/products/new" element={<JournalProductNew />} />
+          <Route path="/journal/brews/new" element={<JournalBrewNew />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
