@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Coffee, Home, ShoppingBag, Store, BookOpen, Package, User } from "lucide-react";
+import { Coffee, Home, ShoppingBag, Store, BookOpen, Package, User, PenLine } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Navigation = () => {
@@ -13,6 +13,7 @@ const Navigation = () => {
     { path: "/guides", icon: BookOpen, label: "Guides" },
     { path: "/recipes", icon: BookOpen, label: "Recipes" },
     { path: "/equipment", icon: ShoppingBag, label: "Equipment" },
+    { path: "/journal", icon: PenLine, label: "Journal" },
     { path: "/profile", icon: User, label: "Profile" },
   ];
 
@@ -49,15 +50,15 @@ const Navigation = () => {
         </div>
       </nav>
 
-      {/* Mobile Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border">
-        <div className="grid grid-cols-4 gap-1 p-2">
-          {navItems.slice(0, 4).map((item) => (
+      {/* Mobile Navigation - Scrollable */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border overflow-x-auto">
+        <div className="flex gap-1 p-2 min-w-max">
+          {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
               className={cn(
-                "flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors",
+                "flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-colors whitespace-nowrap",
                 location.pathname === item.path
                   ? "bg-primary text-primary-foreground"
                   : "hover:bg-accent hover:text-accent-foreground"
