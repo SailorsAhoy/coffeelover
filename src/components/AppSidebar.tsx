@@ -1,0 +1,57 @@
+import { NavLink } from "@/components/NavLink";
+import { Coffee, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap, User } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  useSidebar,
+} from "@/components/ui/sidebar";
+
+const items = [
+  { path: "/shops", icon: Store, label: "Shops" },
+  { path: "/roasters", icon: Package, label: "Roasters" },
+  { path: "/coffee", icon: Coffee, label: "Coffee" },
+  { path: "/guides", icon: BookOpen, label: "Guides" },
+  { path: "/recipes", icon: BookOpen, label: "Recipes" },
+  { path: "/equipment", icon: ShoppingBag, label: "Equipment" },
+  { path: "/journal", icon: PenLine, label: "Journal" },
+  { path: "/academy", icon: GraduationCap, label: "Academy" },
+  { path: "/profile", icon: User, label: "Profile" },
+];
+
+export function AppSidebar() {
+  const { open } = useSidebar();
+  const location = useLocation();
+
+  return (
+    <Sidebar collapsible="icon" className="border-r border-border">
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items.map((item) => (
+                <SidebarMenuItem key={item.path}>
+                  <SidebarMenuButton asChild tooltip={item.label}>
+                    <NavLink
+                      to={item.path}
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-accent"
+                      activeClassName="bg-primary text-primary-foreground hover:bg-primary"
+                    >
+                      <item.icon className="w-5 h-5 shrink-0" />
+                      {open && <span className="font-medium">{item.label}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+  );
+}
