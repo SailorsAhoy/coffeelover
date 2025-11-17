@@ -15,6 +15,8 @@ import Equipment from "./pages/Equipment";
 import Journal from "./pages/Journal";
 import JournalProductNew from "./pages/JournalProductNew";
 import JournalBrewNew from "./pages/JournalBrewNew";
+import Academy from "./pages/Academy";
+import AcademyDetail from "./pages/AcademyDetail";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
@@ -39,6 +41,8 @@ const App = () => (
           <Route path="/journal" element={<Journal />} />
           <Route path="/journal/products/new" element={<JournalProductNew />} />
           <Route path="/journal/brews/new" element={<JournalBrewNew />} />
+          <Route path="/academy" element={<Academy />} />
+          <Route path="/academy/:id" element={<AcademyDetail />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

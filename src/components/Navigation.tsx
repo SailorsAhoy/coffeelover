@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Coffee, Home, ShoppingBag, Store, BookOpen, Package, User, PenLine } from "lucide-react";
+import { Coffee, Home, ShoppingBag, Store, BookOpen, Package, User, PenLine, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Navigation = () => {
@@ -14,6 +14,7 @@ const Navigation = () => {
     { path: "/recipes", icon: BookOpen, label: "Recipes" },
     { path: "/equipment", icon: ShoppingBag, label: "Equipment" },
     { path: "/journal", icon: PenLine, label: "Journal" },
+    { path: "/academy", icon: GraduationCap, label: "Academy" },
     { path: "/profile", icon: User, label: "Profile" },
   ];
 

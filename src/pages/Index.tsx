@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Coffee, Store, Package, BookOpen, ShoppingBag, Star, PenLine } from "lucide-react";
+import { Coffee, Store, Package, BookOpen, ShoppingBag, Star, PenLine, GraduationCap } from "lucide-react";
 
 const Index = () => {
   const features = [
@@ -46,6 +46,12 @@ const Index = () => {
       title: "Brewing Journal",
       description: "Track your coffee products and brewing sessions",
       link: "/journal",
+    },
+    {
+      icon: GraduationCap,
+      title: "Barista Academy",
+      description: "Learn from expert courses and master coffee techniques",
+      link: "/academy",
     },
   ];
 
