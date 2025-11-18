@@ -1,10 +1,15 @@
-import { MapPin, Star, Wifi, Croissant, TreePine } from "lucide-react";
+import { useState } from "react";
+import { MapPin, Star, Wifi, Croissant, TreePine, Map } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ShopMapModal from "@/components/ShopMapModal";
 
 const Shops = () => {
+  const [mapOpen, setMapOpen] = useState(false);
+  
   const mockShops = [
     {
       id: 1,
@@ -41,9 +46,15 @@ const Shops = () => {
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Coffee Shops</h1>
-          <p className="text-muted-foreground">Discover specialty coffee shops near you</p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Coffee Shops</h1>
+            <p className="text-muted-foreground">Discover specialty coffee shops near you</p>
+          </div>
+          <Button onClick={() => setMapOpen(true)} className="gap-2">
+            <Map className="w-4 h-4" />
+            View Map
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -103,6 +114,8 @@ const Shops = () => {
           ))}
         </div>
       </div>
+
+      <ShopMapModal open={mapOpen} onOpenChange={setMapOpen} />
     </div>
   );
 };

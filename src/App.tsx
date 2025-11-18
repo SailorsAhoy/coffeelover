@@ -20,6 +20,8 @@ import JournalBrewNew from "./pages/JournalBrewNew";
 import Academy from "./pages/Academy";
 import AcademyDetail from "./pages/AcademyDetail";
 import Profile from "./pages/Profile";
+import Jobs from "./pages/Jobs";
+import Wiki from "./pages/Wiki";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -53,6 +55,8 @@ const App = () => (
                   <Route path="/academy" element={<Academy />} />
                   <Route path="/academy/:id" element={<AcademyDetail />} />
                   <Route path="/profile" element={<Profile />} />
+                  <Route path="/jobs" element={<Jobs />} />
+                  <Route path="/wiki" element={<Wiki />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>

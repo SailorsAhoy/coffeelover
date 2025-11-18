@@ -1,5 +1,5 @@
 import { NavLink } from "@/components/NavLink";
-import { Coffee, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap, User } from "lucide-react";
+import { Coffee, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap, User, Briefcase, BookMarked } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -22,6 +22,8 @@ const items = [
   { path: "/equipment", icon: ShoppingBag, label: "Equipment" },
   { path: "/journal", icon: PenLine, label: "Journal" },
   { path: "/academy", icon: GraduationCap, label: "Academy" },
+  { path: "/jobs", icon: Briefcase, label: "Jobs" },
+  { path: "/wiki", icon: BookMarked, label: "Wiki" },
   { path: "/profile", icon: User, label: "Profile" },
 ];
 
