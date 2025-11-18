@@ -33,7 +33,6 @@ const Navigation = () => {
       <nav className="hidden md:flex fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-16">
         <div className="w-full px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <SidebarTrigger className="-ml-1" />
             <Link to="/" className="flex items-center gap-2">
               <div className="p-2 bg-primary rounded-lg">
                 <Coffee className="w-5 h-5 text-primary-foreground" />

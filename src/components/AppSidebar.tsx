@@ -9,6 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
 
@@ -29,10 +30,13 @@ export function AppSidebar() {
   const location = useLocation();
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border">
+    <Sidebar collapsible="icon" className="border-r border-border pt-4">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
+            <div className="px-2 mb-2">
+              <SidebarTrigger className="-ml-1" />
+            </div>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.path}>
