@@ -30,12 +30,12 @@ export function AppSidebar() {
   const location = useLocation();
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border pt-4">
+    <Sidebar collapsible="icon" className="border-r border-border">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <div className="px-2 mb-2">
-              <SidebarTrigger className="-ml-1" />
+            <div className="px-3 pt-5 pb-2">
+              <SidebarTrigger />
             </div>
             <SidebarMenu>
               {items.map((item) => (

@@ -32,14 +32,12 @@ const Navigation = () => {
       {/* Desktop/Tablet Top Bar */}
       <nav className="hidden md:flex fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-16">
         <div className="w-full px-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="p-2 bg-primary rounded-lg">
-                <Coffee className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-bold">CoffeeLovers</span>
-            </Link>
-          </div>
+          <Link to="/" className="flex items-center gap-2">
+            <div className="p-2 bg-primary rounded-lg">
+              <Coffee className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-bold">CoffeeLovers</span>
+          </Link>
           
           <DropdownMenu>
             <DropdownMenuTrigger className="outline-none">
@@ -73,9 +71,16 @@ const Navigation = () => {
         </div>
       </nav>
 
-      {/* Mobile Top Bar - User Avatar Only */}
+      {/* Mobile Top Bar - Logo + Title on Left, Avatar on Right */}
       <nav className="md:hidden fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-14">
         <div className="w-full px-4 h-full flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="p-1.5 bg-primary rounded-lg">
+              <Coffee className="w-4 h-4 text-primary-foreground" />
+            </div>
+            <span className="text-lg font-bold">CoffeeLovers</span>
+          </Link>
+          
           <DropdownMenu>
             <DropdownMenuTrigger className="outline-none">
               <Avatar className="cursor-pointer hover:ring-2 ring-primary transition-all h-9 w-9">
