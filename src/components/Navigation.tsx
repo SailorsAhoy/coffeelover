@@ -114,13 +114,6 @@ const Navigation = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          
-          <Link to="/" className="flex items-center gap-2">
-            <div className="p-1.5 bg-primary rounded-lg">
-              <Coffee className="w-4 h-4 text-primary-foreground" />
-            </div>
-            <span className="text-lg font-bold">CoffeeLovers</span>
-          </Link>
         </div>
       </nav>
 

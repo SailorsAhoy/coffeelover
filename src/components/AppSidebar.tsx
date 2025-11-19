@@ -1,5 +1,5 @@
 import { NavLink } from "@/components/NavLink";
-import { Coffee, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap, User, Briefcase, BookMarked, MessageSquare, Library } from "lucide-react";
+import { Coffee, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap, User, Briefcase, BookMarked, MessageSquare, Library, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -41,7 +41,16 @@ export function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <div className="px-3 pt-5 pb-2">
-                  <SidebarTrigger />
+                  <SidebarTrigger className="flex items-center gap-2 hover:bg-accent px-3 py-2 rounded-lg transition-colors">
+                    {open ? (
+                      <>
+                        <ChevronLeft className="w-4 h-4" />
+                        <span className="text-sm font-medium">Toggle</span>
+                      </>
+                    ) : (
+                      <ChevronRight className="w-4 h-4" />
+                    )}
+                  </SidebarTrigger>
                 </div>
               </SidebarMenuItem>
               {items.map((item) => (
