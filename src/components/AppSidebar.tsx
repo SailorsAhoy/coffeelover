@@ -1,5 +1,5 @@
 import { NavLink } from "@/components/NavLink";
-import { Coffee, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap, User, Briefcase, BookMarked } from "lucide-react";
+import { Coffee, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap, User, Briefcase, BookMarked, MessageSquare, Library } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -24,6 +24,8 @@ const items = [
   { path: "/academy", icon: GraduationCap, label: "Academy" },
   { path: "/jobs", icon: Briefcase, label: "Jobs" },
   { path: "/wiki", icon: BookMarked, label: "Wiki" },
+  { path: "/forum", icon: MessageSquare, label: "Forum" },
+  { path: "/library", icon: Library, label: "Library" },
   { path: "/profile", icon: User, label: "Profile" },
 ];
 
@@ -36,10 +38,12 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <div className="px-3 pt-5 pb-2">
-              <SidebarTrigger />
-            </div>
             <SidebarMenu>
+              <SidebarMenuItem>
+                <div className="px-3 pt-5 pb-2">
+                  <SidebarTrigger />
+                </div>
+              </SidebarMenuItem>
               {items.map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <SidebarMenuButton asChild tooltip={item.label}>

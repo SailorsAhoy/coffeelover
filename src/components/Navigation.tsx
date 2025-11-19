@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Coffee, Home, ShoppingBag, Store, BookOpen, Package, User, PenLine, GraduationCap, LogOut, Settings, Briefcase, BookMarked } from "lucide-react";
+import { Coffee, Home, ShoppingBag, Store, BookOpen, Package, User, PenLine, GraduationCap, LogOut, Settings, Briefcase, BookMarked, MessageSquare, Library } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -26,6 +26,8 @@ const Navigation = () => {
     { path: "/academy", icon: GraduationCap, label: "Academy" },
     { path: "/jobs", icon: Briefcase, label: "Jobs" },
     { path: "/wiki", icon: BookMarked, label: "Wiki" },
+    { path: "/forum", icon: MessageSquare, label: "Forum" },
+    { path: "/library", icon: Library, label: "Library" },
     { path: "/profile", icon: User, label: "Profile" },
   ];
 
