@@ -24,6 +24,9 @@ import Jobs from "./pages/Jobs";
 import Wiki from "./pages/Wiki";
 import Forum from "./pages/Forum";
 import Library from "./pages/Library";
+import ShopProfile from "./pages/ShopProfile";
+import RoasterProfile from "./pages/RoasterProfile";
+import CoffeeProduct from "./pages/CoffeeProduct";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -60,8 +63,11 @@ const App = () => (
                   <Route path="/jobs" element={<Jobs />} />
                   <Route path="/wiki" element={<Wiki />} />
                   <Route path="/forum" element={<Forum />} />
-                  <Route path="/library" element={<Library />} />
-                  <Route path="*" element={<NotFound />} />
+          <Route path="/library" element={<Library />} />
+          <Route path="/shop/:id" element={<ShopProfile />} />
+          <Route path="/roaster/:id" element={<RoasterProfile />} />
+          <Route path="/coffee/:id" element={<CoffeeProduct />} />
+          <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
             </div>
