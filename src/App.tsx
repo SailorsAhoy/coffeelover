@@ -22,6 +22,8 @@ import AcademyDetail from "./pages/AcademyDetail";
 import Profile from "./pages/Profile";
 import Jobs from "./pages/Jobs";
 import Wiki from "./pages/Wiki";
+import Forum from "./pages/Forum";
+import Library from "./pages/Library";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,6 +59,8 @@ const App = () => (
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/jobs" element={<Jobs />} />
                   <Route path="/wiki" element={<Wiki />} />
+                  <Route path="/forum" element={<Forum />} />
+                  <Route path="/library" element={<Library />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>

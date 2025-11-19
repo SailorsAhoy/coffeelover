@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Coffee, Store, Package, BookOpen, ShoppingBag, Star, PenLine, GraduationCap } from "lucide-react";
+import { Coffee, Store, Package, BookOpen, ShoppingBag, Star, PenLine, GraduationCap, Briefcase, BookMarked, MessageSquare, Library } from "lucide-react";
 
 const Index = () => {
   const features = [
@@ -52,6 +52,30 @@ const Index = () => {
       title: "Barista Academy",
       description: "Learn from expert courses and master coffee techniques",
       link: "/academy",
+    },
+    {
+      icon: Briefcase,
+      title: "Coffee Jobs",
+      description: "Find career opportunities in the coffee industry",
+      link: "/jobs",
+    },
+    {
+      icon: BookMarked,
+      title: "Coffee Wiki",
+      description: "Explore coffee types, brewing methods, and processing techniques",
+      link: "/wiki",
+    },
+    {
+      icon: MessageSquare,
+      title: "Coffee Forum",
+      description: "Connect with enthusiasts and share coffee knowledge",
+      link: "/forum",
+    },
+    {
+      icon: Library,
+      title: "Coffee Library",
+      description: "Discover the best books about coffee and brewing",
+      link: "/library",
     },
   ];
 
