@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -20,6 +21,7 @@ interface ShopMapModalProps {
 const ShopMapModal = ({ open, onOpenChange }: ShopMapModalProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
+  const navigate = useNavigate();
 
   // Mock shop locations
   const shops: Shop[] = [
@@ -75,13 +77,33 @@ const ShopMapModal = ({ open, onOpenChange }: ShopMapModalProps) => {
     shops.forEach((shop) => {
       const marker = L.marker([shop.lat, shop.lng], { icon: coffeeIcon }).addTo(map.current!);
 
-      // Add popup
-      marker.bindPopup(`
-        <div style="padding: 8px;">
+      // Add popup with clickable content
+      const popupContent = `
+        <div style="padding: 8px; cursor: pointer;" class="shop-popup" data-shop-id="${shop.id}">
           <h3 style="font-weight: bold; margin-bottom: 4px;">${shop.name}</h3>
           <p style="font-size: 14px; color: #666;">⭐ ${shop.rating}</p>
+          <p style="font-size: 12px; color: #3b82f6; margin-top: 4px;">Click to view profile →</p>
         </div>
-      `);
+      `;
+      
+      marker.bindPopup(popupContent);
+      
+      // Handle marker click
+      marker.on('click', () => {
+        onOpenChange(false);
+        navigate(`/shop/${shop.id}`);
+      });
+      
+      // Handle popup click
+      marker.on('popupopen', () => {
+        const popupElement = document.querySelector(`[data-shop-id="${shop.id}"]`);
+        if (popupElement) {
+          popupElement.addEventListener('click', () => {
+            onOpenChange(false);
+            navigate(`/shop/${shop.id}`);
+          });
+        }
+      });
     });
 
     // Cleanup
