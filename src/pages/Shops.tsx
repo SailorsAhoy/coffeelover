@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { MapPin, Star, Wifi, Croissant, TreePine, Map } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -73,44 +74,46 @@ const Shops = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {mockShops.map((shop) => (
-            <Card key={shop.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-start justify-between">
-                  <span>{shop.name}</span>
-                  <Badge variant="secondary" className="ml-2">
-                    <Star className="w-3 h-3 mr-1 fill-current" />
-                    {shop.rating}
-                  </Badge>
-                </CardTitle>
-                <CardDescription>{shop.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  {shop.distance} away
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {shop.hasWifi && (
-                    <Badge variant="outline">
-                      <Wifi className="w-3 h-3 mr-1" />
-                      WiFi
+            <Link key={shop.id} to={`/shop/${shop.id}`}>
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <CardTitle className="flex items-start justify-between">
+                    <span>{shop.name}</span>
+                    <Badge variant="secondary" className="ml-2">
+                      <Star className="w-3 h-3 mr-1 fill-current" />
+                      {shop.rating}
                     </Badge>
-                  )}
-                  {shop.hasBakery && (
-                    <Badge variant="outline">
-                      <Croissant className="w-3 h-3 mr-1" />
-                      Bakery
-                    </Badge>
-                  )}
-                  {shop.hasOutdoor && (
-                    <Badge variant="outline">
-                      <TreePine className="w-3 h-3 mr-1" />
-                      Outdoor
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                  </CardTitle>
+                  <CardDescription>{shop.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <MapPin className="w-4 h-4 mr-2" />
+                    {shop.distance} away
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {shop.hasWifi && (
+                      <Badge variant="outline">
+                        <Wifi className="w-3 h-3 mr-1" />
+                        WiFi
+                      </Badge>
+                    )}
+                    {shop.hasBakery && (
+                      <Badge variant="outline">
+                        <Croissant className="w-3 h-3 mr-1" />
+                        Bakery
+                      </Badge>
+                    )}
+                    {shop.hasOutdoor && (
+                      <Badge variant="outline">
+                        <TreePine className="w-3 h-3 mr-1" />
+                        Outdoor
+                      </Badge>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
