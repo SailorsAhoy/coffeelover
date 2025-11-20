@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Package, Star, Truck, Tag } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -52,39 +53,41 @@ const Roasters = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {mockRoasters.map((roaster) => (
-            <Card key={roaster.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-start justify-between">
-                  <span>{roaster.name}</span>
-                  <Badge variant="secondary">
-                    <Star className="w-3 h-3 mr-1 fill-current" />
-                    {roaster.rating}
-                  </Badge>
-                </CardTitle>
-                <CardDescription>{roaster.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <Package className="w-4 h-4 mr-2" />
-                  {roaster.specialty}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {roaster.freeShipping && (
-                    <Badge variant="outline">
-                      <Truck className="w-3 h-3 mr-1" />
-                      Free Shipping
+            <Link key={roaster.id} to={`/roaster/${roaster.id}`}>
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <CardTitle className="flex items-start justify-between">
+                    <span>{roaster.name}</span>
+                    <Badge variant="secondary">
+                      <Star className="w-3 h-3 mr-1 fill-current" />
+                      {roaster.rating}
                     </Badge>
-                  )}
-                  {roaster.hasDiscounts && (
-                    <Badge variant="outline">
-                      <Tag className="w-3 h-3 mr-1" />
-                      Discounts
-                    </Badge>
-                  )}
-                </div>
-                <Button className="w-full">View Products</Button>
-              </CardContent>
-            </Card>
+                  </CardTitle>
+                  <CardDescription>{roaster.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Package className="w-4 h-4 mr-2" />
+                    {roaster.specialty}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {roaster.freeShipping && (
+                      <Badge variant="outline">
+                        <Truck className="w-3 h-3 mr-1" />
+                        Free Shipping
+                      </Badge>
+                    )}
+                    {roaster.hasDiscounts && (
+                      <Badge variant="outline">
+                        <Tag className="w-3 h-3 mr-1" />
+                        Discounts
+                      </Badge>
+                    )}
+                  </div>
+                  <Button className="w-full" onClick={(e) => e.preventDefault()}>View Products</Button>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
