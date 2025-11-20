@@ -34,25 +34,12 @@ export function AppSidebar() {
   const location = useLocation();
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border">
-      <SidebarContent>
+    <Sidebar collapsible="icon" className="border-r border-border flex flex-col">
+      <SidebarContent className="flex-1 overflow-y-auto">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <div className="px-3 pt-5 pb-2">
-                  <SidebarTrigger className="flex items-center gap-2 hover:bg-accent px-3 py-2 rounded-lg transition-colors">
-                    {open ? (
-                      <>
-                        <ChevronLeft className="w-4 h-4" />
-                        <span className="text-sm font-medium">Toggle</span>
-                      </>
-                    ) : (
-                      <ChevronRight className="w-4 h-4" />
-                    )}
-                  </SidebarTrigger>
-                </div>
-              </SidebarMenuItem>
+              <div className="h-5" />
               {items.map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <SidebarMenuButton asChild tooltip={item.label}>
@@ -71,6 +58,19 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      
+      <div className="border-t border-border p-3 mt-auto">
+        <SidebarTrigger className="flex items-center gap-2 hover:bg-accent px-3 py-2 rounded-lg transition-colors w-full">
+          {open ? (
+            <>
+              <ChevronLeft className="w-4 h-4" />
+              <span className="text-sm font-medium">Toggle</span>
+            </>
+          ) : (
+            <ChevronRight className="w-4 h-4 mx-auto" />
+          )}
+        </SidebarTrigger>
+      </div>
     </Sidebar>
   );
 }
