@@ -9,11 +9,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { productSchema } from "@/lib/validations";
+import { z } from "zod";
 
 const JournalProductNew = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { loading } = useAuthGuard();
   const [activeTab, setActiveTab] = useState("roastery");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
     // Roastery & Product
@@ -45,13 +50,42 @@ const JournalProductNew = () => {
   });
 
   const handleSubmit = async () => {
-    // TODO: Implement Supabase integration
-    toast({
-      title: "Product Added",
-      description: "Your coffee product has been saved to your journal.",
-    });
-    navigate("/journal");
+    try {
+      // Validate form data
+      const validatedData = productSchema.parse({
+        ...formData,
+        priceAmount: formData.price,
+        roasterCountry: "",
+      });
+      setErrors({});
+      
+      // TODO: Implement Supabase integration
+      toast({
+        title: "Product Added",
+        description: "Your coffee product has been saved to your journal.",
+      });
+      navigate("/journal");
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldErrors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            fieldErrors[err.path[0] as string] = err.message;
+          }
+        });
+        setErrors(fieldErrors);
+        toast({
+          title: "Validation Error",
+          description: "Please check the form for errors.",
+          variant: "destructive",
+        });
+      }
+    }
   };
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -96,7 +130,9 @@ const JournalProductNew = () => {
                     value={formData.roasterName}
                     onChange={(e) => setFormData({ ...formData, roasterName: e.target.value })}
                     placeholder="Roastery name"
+                    className={errors.roasterName ? "border-destructive" : ""}
                   />
+                  {errors.roasterName && <p className="text-sm text-destructive mt-1">{errors.roasterName}</p>}
                 </div>
               </CardContent>
             </Card>
@@ -172,7 +208,9 @@ const JournalProductNew = () => {
                     value={formData.productName}
                     onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
                     placeholder="Product name"
+                    className={errors.productName ? "border-destructive" : ""}
                   />
+                  {errors.productName && <p className="text-sm text-destructive mt-1">{errors.productName}</p>}
                 </div>
                 <div>
                   <Label>Product URL</Label>
