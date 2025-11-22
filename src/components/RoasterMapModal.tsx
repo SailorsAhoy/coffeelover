@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Coffee, Star, Truck, Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { isShopOpen, getTodaySchedule, OpeningHours } from "@/lib/shopUtils";
 
 interface Roaster {
   id: number;
@@ -18,6 +19,7 @@ interface Roaster {
   specialty: "single_origin" | "blends" | "specialty_grade" | "direct_trade";
   freeShipping?: boolean;
   hasDiscounts?: boolean;
+  opening_hours?: OpeningHours | null;
 }
 
 interface RoasterMapModalProps {
@@ -40,24 +42,27 @@ const RoasterMapModal = ({ open, onOpenChange }: RoasterMapModalProps) => {
 
   // Real NYC locations with different roaster types
   const roasters: Roaster[] = [
-    { id: 1, name: "Heritage Roasters", lat: 40.7589, lng: -73.9851, rating: 4.9, specialty: "single_origin", freeShipping: true, hasDiscounts: true },
-    { id: 2, name: "Urban Bean Co.", lat: 40.7614, lng: -73.9776, rating: 4.8, specialty: "single_origin", freeShipping: false, hasDiscounts: true },
-    { id: 3, name: "Modern Bean Co.", lat: 40.7489, lng: -73.9680, rating: 4.7, specialty: "blends", freeShipping: false, hasDiscounts: true },
-    { id: 4, name: "Blend Masters", lat: 40.7400, lng: -73.9900, rating: 4.6, specialty: "blends", freeShipping: true, hasDiscounts: false },
-    { id: 5, name: "Altitude Coffee", lat: 40.7505, lng: -73.9934, rating: 4.8, specialty: "specialty_grade", freeShipping: true, hasDiscounts: false },
-    { id: 6, name: "Peak Roasters", lat: 40.7520, lng: -73.9750, rating: 4.9, specialty: "specialty_grade", freeShipping: true, hasDiscounts: true },
-    { id: 7, name: "Direct Origin Co.", lat: 40.7650, lng: -73.9700, rating: 4.7, specialty: "direct_trade", freeShipping: false, hasDiscounts: true },
-    { id: 8, name: "Farm to Cup Roasters", lat: 40.7549, lng: -73.9840, rating: 4.8, specialty: "direct_trade", freeShipping: true, hasDiscounts: false },
+    { id: 1, name: "Heritage Roasters", lat: 40.7589, lng: -73.9851, rating: 4.9, specialty: "single_origin", freeShipping: true, hasDiscounts: true, opening_hours: { monday: { open: "08:00", close: "18:00" }, tuesday: { open: "08:00", close: "18:00" }, wednesday: { open: "08:00", close: "18:00" }, thursday: { open: "08:00", close: "18:00" }, friday: { open: "08:00", close: "18:00" }, saturday: { open: "09:00", close: "17:00" }, sunday: { open: "00:00", close: "00:00", closed: true } } },
+    { id: 2, name: "Urban Bean Co.", lat: 40.7614, lng: -73.9776, rating: 4.8, specialty: "single_origin", freeShipping: false, hasDiscounts: true, opening_hours: { monday: { open: "07:00", close: "19:00" }, tuesday: { open: "07:00", close: "19:00" }, wednesday: { open: "07:00", close: "19:00" }, thursday: { open: "07:00", close: "19:00" }, friday: { open: "07:00", close: "20:00" }, saturday: { open: "08:00", close: "20:00" }, sunday: { open: "09:00", close: "18:00" } } },
+    { id: 3, name: "Modern Bean Co.", lat: 40.7489, lng: -73.9680, rating: 4.7, specialty: "blends", freeShipping: false, hasDiscounts: true, opening_hours: { monday: { open: "08:00", close: "17:00" }, tuesday: { open: "08:00", close: "17:00" }, wednesday: { open: "08:00", close: "17:00" }, thursday: { open: "08:00", close: "17:00" }, friday: { open: "08:00", close: "17:00" }, saturday: { open: "00:00", close: "00:00", closed: true }, sunday: { open: "00:00", close: "00:00", closed: true } } },
+    { id: 4, name: "Blend Masters", lat: 40.7400, lng: -73.9900, rating: 4.6, specialty: "blends", freeShipping: true, hasDiscounts: false, opening_hours: { monday: { open: "07:00", close: "21:00" }, tuesday: { open: "07:00", close: "21:00" }, wednesday: { open: "07:00", close: "21:00" }, thursday: { open: "07:00", close: "21:00" }, friday: { open: "07:00", close: "22:00" }, saturday: { open: "08:00", close: "22:00" }, sunday: { open: "09:00", close: "20:00" } } },
+    { id: 5, name: "Altitude Coffee", lat: 40.7505, lng: -73.9934, rating: 4.8, specialty: "specialty_grade", freeShipping: true, hasDiscounts: false, opening_hours: { monday: { open: "06:00", close: "18:00" }, tuesday: { open: "06:00", close: "18:00" }, wednesday: { open: "06:00", close: "18:00" }, thursday: { open: "06:00", close: "18:00" }, friday: { open: "06:00", close: "19:00" }, saturday: { open: "07:00", close: "19:00" }, sunday: { open: "08:00", close: "17:00" } } },
+    { id: 6, name: "Peak Roasters", lat: 40.7520, lng: -73.9750, rating: 4.9, specialty: "specialty_grade", freeShipping: true, hasDiscounts: true, opening_hours: { monday: { open: "08:00", close: "18:00" }, tuesday: { open: "08:00", close: "18:00" }, wednesday: { open: "08:00", close: "18:00" }, thursday: { open: "08:00", close: "18:00" }, friday: { open: "08:00", close: "18:00" }, saturday: { open: "09:00", close: "16:00" }, sunday: { open: "00:00", close: "00:00", closed: true } } },
+    { id: 7, name: "Direct Origin Co.", lat: 40.7650, lng: -73.9700, rating: 4.7, specialty: "direct_trade", freeShipping: false, hasDiscounts: true, opening_hours: { monday: { open: "07:00", close: "19:00" }, tuesday: { open: "07:00", close: "19:00" }, wednesday: { open: "07:00", close: "19:00" }, thursday: { open: "07:00", close: "19:00" }, friday: { open: "07:00", close: "20:00" }, saturday: { open: "08:00", close: "20:00" }, sunday: { open: "00:00", close: "00:00", closed: true } } },
+    { id: 8, name: "Farm to Cup Roasters", lat: 40.7549, lng: -73.9840, rating: 4.8, specialty: "direct_trade", freeShipping: true, hasDiscounts: false, opening_hours: { monday: { open: "08:00", close: "17:00" }, tuesday: { open: "08:00", close: "17:00" }, wednesday: { open: "08:00", close: "17:00" }, thursday: { open: "08:00", close: "17:00" }, friday: { open: "08:00", close: "18:00" }, saturday: { open: "09:00", close: "17:00" }, sunday: { open: "00:00", close: "00:00", closed: true } } },
   ];
 
   // Create custom coffee icons with different colors
-  const getRoasterIcon = (specialty: Roaster["specialty"]) => {
+  const getRoasterIcon = (specialty: Roaster["specialty"], isOpen: boolean) => {
     const colors = {
       single_origin: "#8B4513",
       blends: "#D2691E",
       specialty_grade: "#CD853F",
       direct_trade: "#A0522D",
     };
+
+    const opacity = isOpen ? "1" : "0.75";
+    const grayscale = isOpen ? "grayscale(0%)" : "grayscale(100%)";
 
     return L.divIcon({
       className: "custom-coffee-marker",
@@ -72,6 +77,8 @@ const RoasterMapModal = ({ open, onOpenChange }: RoasterMapModalProps) => {
           justify-content: center;
           border: 2px solid white;
           box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+          opacity: ${opacity};
+          filter: ${grayscale};
         ">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2">
             <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
@@ -129,7 +136,11 @@ const RoasterMapModal = ({ open, onOpenChange }: RoasterMapModalProps) => {
 
     // Add markers for filtered roasters
     filteredRoasters.forEach((roaster) => {
-      const marker = L.marker([roaster.lat, roaster.lng], { icon: getRoasterIcon(roaster.specialty) }).addTo(map.current!);
+      const isOpen = isShopOpen(roaster.opening_hours || null);
+      const schedule = getTodaySchedule(roaster.opening_hours || null);
+      const openStatus = isOpen ? '<span style="color: #10b981; font-weight: 600;">Open</span>' : '<span style="color: #ef4444; font-weight: 600;">Closed</span>';
+      
+      const marker = L.marker([roaster.lat, roaster.lng], { icon: getRoasterIcon(roaster.specialty, isOpen) }).addTo(map.current!);
       markersRef.current.push(marker);
 
       // Add popup with clickable content
@@ -137,6 +148,7 @@ const RoasterMapModal = ({ open, onOpenChange }: RoasterMapModalProps) => {
         <div style="padding: 8px; cursor: pointer;" class="roaster-popup" data-roaster-id="${roaster.id}">
           <h3 style="font-weight: bold; margin-bottom: 4px;">${roaster.name}</h3>
           <p style="font-size: 14px; color: #666;">⭐ ${roaster.rating}</p>
+          <p style="font-size: 13px; margin-top: 4px;">${openStatus} · ${schedule}</p>
           <p style="font-size: 12px; color: #3b82f6; margin-top: 4px;">Click to view profile →</p>
         </div>
       `;
