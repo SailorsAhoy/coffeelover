@@ -28,6 +28,8 @@ import ShopProfile from "./pages/ShopProfile";
 import RoasterProfile from "./pages/RoasterProfile";
 import CoffeeProduct from "./pages/CoffeeProduct";
 import NotFound from "./pages/NotFound";
+import SocialConnect from "./pages/SocialConnect";
+import MessagingBoard from "./pages/MessagingBoard";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +66,8 @@ const App = () => (
                   <Route path="/wiki" element={<Wiki />} />
                   <Route path="/forum" element={<Forum />} />
           <Route path="/library" element={<Library />} />
+          <Route path="/social" element={<SocialConnect />} />
+          <Route path="/messaging" element={<MessagingBoard />} />
           <Route path="/shop/:id" element={<ShopProfile />} />
           <Route path="/roaster/:id" element={<RoasterProfile />} />
           <Route path="/coffee/:id" element={<CoffeeProduct />} />
