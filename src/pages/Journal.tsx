@@ -4,9 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 
 const Journal = () => {
+  const { loading } = useAuthGuard();
   const [activeTab, setActiveTab] = useState("products");
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
 
   // Mock data - will be replaced with real data from Supabase
   const products = [];

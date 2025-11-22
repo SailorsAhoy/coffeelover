@@ -8,10 +8,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { brewSchema } from "@/lib/validations";
+import { z } from "zod";
 
 const JournalBrewNew = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { loading } = useAuthGuard();
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
     brewMethod: "espresso",
@@ -37,13 +42,38 @@ const JournalBrewNew = () => {
   });
 
   const handleSubmit = async () => {
-    // TODO: Implement Supabase integration
-    toast({
-      title: "Brew Session Saved",
-      description: "Your brewing session has been recorded.",
-    });
-    navigate("/journal");
+    try {
+      // Validate form data
+      const validatedData = brewSchema.parse(formData);
+      setErrors({});
+      
+      // TODO: Implement Supabase integration
+      toast({
+        title: "Brew Session Saved",
+        description: "Your brewing session has been recorded.",
+      });
+      navigate("/journal");
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldErrors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            fieldErrors[err.path[0] as string] = err.message;
+          }
+        });
+        setErrors(fieldErrors);
+        toast({
+          title: "Validation Error",
+          description: "Please check the form for errors.",
+          variant: "destructive",
+        });
+      }
+    }
   };
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-background pb-24">
