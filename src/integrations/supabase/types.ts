@@ -260,45 +260,66 @@ export type Database = {
           business_name: string
           created_at: string
           description: string | null
+          email: string | null
+          facebook_url: string | null
           has_bakery: boolean | null
           has_outdoor_seating: boolean | null
           has_wifi: boolean | null
           id: string
+          instagram_url: string | null
           logo_url: string | null
           opening_hours: Json | null
+          phone: string | null
+          shop_type_id: string | null
+          twitter_url: string | null
           updated_at: string
           user_id: string
           website_url: string | null
+          whatsapp: string | null
         }
         Insert: {
           address_id?: string | null
           business_name: string
           created_at?: string
           description?: string | null
+          email?: string | null
+          facebook_url?: string | null
           has_bakery?: boolean | null
           has_outdoor_seating?: boolean | null
           has_wifi?: boolean | null
           id?: string
+          instagram_url?: string | null
           logo_url?: string | null
           opening_hours?: Json | null
+          phone?: string | null
+          shop_type_id?: string | null
+          twitter_url?: string | null
           updated_at?: string
           user_id: string
           website_url?: string | null
+          whatsapp?: string | null
         }
         Update: {
           address_id?: string | null
           business_name?: string
           created_at?: string
           description?: string | null
+          email?: string | null
+          facebook_url?: string | null
           has_bakery?: boolean | null
           has_outdoor_seating?: boolean | null
           has_wifi?: boolean | null
           id?: string
+          instagram_url?: string | null
           logo_url?: string | null
           opening_hours?: Json | null
+          phone?: string | null
+          shop_type_id?: string | null
+          twitter_url?: string | null
           updated_at?: string
           user_id?: string
           website_url?: string | null
+          whatsapp?: string | null
         }
         Relationships: [
           {
@@ -306,6 +327,13 @@ export type Database = {
             columns: ["address_id"]
             isOneToOne: false
             referencedRelation: "addresses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coffee_shop_profiles_shop_type_id_fkey"
+            columns: ["shop_type_id"]
+            isOneToOne: false
+            referencedRelation: "shop_types"
             referencedColumns: ["id"]
           },
         ]
@@ -661,37 +689,93 @@ export type Database = {
           business_name: string
           created_at: string
           description: string | null
+          email: string | null
+          facebook_url: string | null
           has_discount_coupons: boolean | null
           id: string
+          instagram_url: string | null
           logo_url: string | null
           offers_free_shipping: boolean | null
+          phone: string | null
+          shop_type_id: string | null
+          twitter_url: string | null
           updated_at: string
           user_id: string
           website_url: string | null
+          whatsapp: string | null
         }
         Insert: {
           business_name: string
           created_at?: string
           description?: string | null
+          email?: string | null
+          facebook_url?: string | null
           has_discount_coupons?: boolean | null
           id?: string
+          instagram_url?: string | null
           logo_url?: string | null
           offers_free_shipping?: boolean | null
+          phone?: string | null
+          shop_type_id?: string | null
+          twitter_url?: string | null
           updated_at?: string
           user_id: string
           website_url?: string | null
+          whatsapp?: string | null
         }
         Update: {
           business_name?: string
           created_at?: string
           description?: string | null
+          email?: string | null
+          facebook_url?: string | null
           has_discount_coupons?: boolean | null
           id?: string
+          instagram_url?: string | null
           logo_url?: string | null
           offers_free_shipping?: boolean | null
+          phone?: string | null
+          shop_type_id?: string | null
+          twitter_url?: string | null
           updated_at?: string
           user_id?: string
           website_url?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roaster_profiles_shop_type_id_fkey"
+            columns: ["shop_type_id"]
+            isOneToOne: false
+            referencedRelation: "shop_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shop_types: {
+        Row: {
+          created_at: string
+          icon_color: string
+          icon_url: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          icon_color?: string
+          icon_url?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          icon_color?: string
+          icon_url?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
         }
         Relationships: []
       }

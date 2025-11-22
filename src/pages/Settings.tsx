@@ -1,16 +1,17 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Store, Users, FileText, Cog } from "lucide-react";
+import { Store, Users, FileText, Cog, Tag } from "lucide-react";
 
 const Settings = () => {
   const location = useLocation();
   
   const settingsNavItems = [
-    { title: "Shop Management", icon: Store, url: "/settings/shops" },
-    { title: "User Management", icon: Users, url: "/settings/users" },
-    { title: "Content Management", icon: FileText, url: "/settings/content" },
-    { title: "System Settings", icon: Cog, url: "/settings/system" },
+    { title: "Shop Types", icon: Tag, url: "/settings/shop-types" },
+    { title: "Shop Management", icon: Store, url: "/settings/shop-management" },
+    { title: "User Management", icon: Users, url: "/settings/user-management" },
+    { title: "Content Management", icon: FileText, url: "/settings/content-management" },
+    { title: "System Settings", icon: Cog, url: "/settings/system-settings" },
   ];
 
   return (

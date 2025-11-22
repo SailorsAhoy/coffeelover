@@ -31,6 +31,7 @@ import NotFound from "./pages/NotFound";
 import SocialConnect from "./pages/SocialConnect";
 import MessagingBoard from "./pages/MessagingBoard";
 import Settings from "./pages/Settings";
+import ShopTypesManagement from "./pages/settings/ShopTypesManagement";
 import ShopManagement from "./pages/settings/ShopManagement";
 import UserManagement from "./pages/settings/UserManagement";
 import ContentManagement from "./pages/settings/ContentManagement";
@@ -74,10 +75,11 @@ const App = () => (
           <Route path="/social" element={<SocialConnect />} />
           <Route path="/messaging" element={<MessagingBoard />} />
           <Route path="/settings" element={<Settings />}>
-            <Route path="shops" element={<ShopManagement />} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="content" element={<ContentManagement />} />
-            <Route path="system" element={<SystemSettings />} />
+            <Route path="shop-types" element={<ShopTypesManagement />} />
+            <Route path="shop-management" element={<ShopManagement />} />
+            <Route path="user-management" element={<UserManagement />} />
+            <Route path="content-management" element={<ContentManagement />} />
+            <Route path="system-settings" element={<SystemSettings />} />
           </Route>
           <Route path="/shop/:id" element={<ShopProfile />} />
           <Route path="/roaster/:id" element={<RoasterProfile />} />
