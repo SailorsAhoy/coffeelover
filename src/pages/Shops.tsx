@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { MapPin, Star, Wifi, Croissant, TreePine, Map } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ShopMapModal from "@/components/ShopMapModal";
+import ShopCard from "@/components/ShopCard";
 
 const Shops = () => {
   const [mapOpen, setMapOpen] = useState(false);
@@ -21,6 +19,23 @@ const Shops = () => {
       hasWifi: true,
       hasBakery: true,
       hasOutdoor: false,
+      phone: "+1234567890",
+      whatsapp: "+1234567890",
+      website: "https://example.com",
+      email: "info@artisan.com",
+      facebook: "https://facebook.com",
+      instagram: "https://instagram.com",
+      latitude: 40.7589,
+      longitude: -73.9851,
+      openingHours: {
+        monday: { open: "07:00", close: "20:00" },
+        tuesday: { open: "07:00", close: "20:00" },
+        wednesday: { open: "07:00", close: "20:00" },
+        thursday: { open: "07:00", close: "20:00" },
+        friday: { open: "07:00", close: "22:00" },
+        saturday: { open: "08:00", close: "22:00" },
+        sunday: { open: "08:00", close: "18:00" },
+      },
     },
     {
       id: 2,
@@ -31,6 +46,22 @@ const Shops = () => {
       hasWifi: true,
       hasBakery: false,
       hasOutdoor: true,
+      phone: "+1234567891",
+      website: "https://example.com",
+      email: "info@beanscene.com",
+      instagram: "https://instagram.com",
+      twitter: "https://twitter.com",
+      latitude: 40.7614,
+      longitude: -73.9776,
+      openingHours: {
+        monday: { open: "06:00", close: "19:00" },
+        tuesday: { open: "06:00", close: "19:00" },
+        wednesday: { open: "06:00", close: "19:00" },
+        thursday: { open: "06:00", close: "19:00" },
+        friday: { open: "06:00", close: "21:00" },
+        saturday: { open: "07:00", close: "21:00" },
+        sunday: { closed: true },
+      },
     },
     {
       id: 3,
@@ -41,6 +72,22 @@ const Shops = () => {
       hasWifi: true,
       hasBakery: true,
       hasOutdoor: true,
+      phone: "+1234567892",
+      whatsapp: "+1234567892",
+      website: "https://example.com",
+      email: "info@roasttoast.com",
+      facebook: "https://facebook.com",
+      latitude: 40.7489,
+      longitude: -73.9680,
+      openingHours: {
+        monday: { open: "07:00", close: "21:00" },
+        tuesday: { open: "07:00", close: "21:00" },
+        wednesday: { open: "07:00", close: "21:00" },
+        thursday: { open: "07:00", close: "21:00" },
+        friday: { open: "07:00", close: "23:00" },
+        saturday: { open: "08:00", close: "23:00" },
+        sunday: { open: "08:00", close: "20:00" },
+      },
     },
   ];
 
@@ -74,46 +121,7 @@ const Shops = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {mockShops.map((shop) => (
-            <Link key={shop.id} to={`/shop/${shop.id}`}>
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <CardTitle className="flex items-start justify-between">
-                    <span>{shop.name}</span>
-                    <Badge variant="secondary" className="ml-2">
-                      <Star className="w-3 h-3 mr-1 fill-current" />
-                      {shop.rating}
-                    </Badge>
-                  </CardTitle>
-                  <CardDescription>{shop.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <MapPin className="w-4 h-4 mr-2" />
-                    {shop.distance} away
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {shop.hasWifi && (
-                      <Badge variant="outline">
-                        <Wifi className="w-3 h-3 mr-1" />
-                        WiFi
-                      </Badge>
-                    )}
-                    {shop.hasBakery && (
-                      <Badge variant="outline">
-                        <Croissant className="w-3 h-3 mr-1" />
-                        Bakery
-                      </Badge>
-                    )}
-                    {shop.hasOutdoor && (
-                      <Badge variant="outline">
-                        <TreePine className="w-3 h-3 mr-1" />
-                        Outdoor
-                      </Badge>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+            <ShopCard key={shop.id} shop={shop} />
           ))}
         </div>
       </div>
