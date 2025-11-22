@@ -30,6 +30,11 @@ import CoffeeProduct from "./pages/CoffeeProduct";
 import NotFound from "./pages/NotFound";
 import SocialConnect from "./pages/SocialConnect";
 import MessagingBoard from "./pages/MessagingBoard";
+import Settings from "./pages/Settings";
+import ShopManagement from "./pages/settings/ShopManagement";
+import UserManagement from "./pages/settings/UserManagement";
+import ContentManagement from "./pages/settings/ContentManagement";
+import SystemSettings from "./pages/settings/SystemSettings";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +73,12 @@ const App = () => (
           <Route path="/library" element={<Library />} />
           <Route path="/social" element={<SocialConnect />} />
           <Route path="/messaging" element={<MessagingBoard />} />
+          <Route path="/settings" element={<Settings />}>
+            <Route path="shops" element={<ShopManagement />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="content" element={<ContentManagement />} />
+            <Route path="system" element={<SystemSettings />} />
+          </Route>
           <Route path="/shop/:id" element={<ShopProfile />} />
           <Route path="/roaster/:id" element={<RoasterProfile />} />
           <Route path="/coffee/:id" element={<CoffeeProduct />} />

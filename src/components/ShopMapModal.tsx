@@ -39,16 +39,16 @@ const ShopMapModal = ({ open, onOpenChange }: ShopMapModalProps) => {
     roaster_shop: true,
   });
 
-  // Real NYC locations with different shop types
+  // Real NYC locations with different shop types - 2 of each type
   const shops: Shop[] = [
     { id: 1, name: "Artisan Coffee House", lat: 40.7589, lng: -73.9851, rating: 4.8, type: "coffee_shop", hasWifi: true },
     { id: 2, name: "The Bean Scene", lat: 40.7614, lng: -73.9776, rating: 4.6, type: "coffee_shop", hasOutdoor: true },
-    { id: 3, name: "Roast & Toast", lat: 40.7489, lng: -73.9680, rating: 4.9, type: "roaster_shop", hasBakery: true },
-    { id: 4, name: "Urban Brew", lat: 40.7549, lng: -73.9840, rating: 4.7, type: "coffee_shop", hasWifi: true },
+    { id: 3, name: "Brooklyn Roast & Shop", lat: 40.7489, lng: -73.9680, rating: 4.9, type: "roaster_shop", hasWifi: true },
+    { id: 4, name: "Manhattan Roastery", lat: 40.7400, lng: -73.9900, rating: 4.9, type: "roaster_shop", hasBakery: true },
     { id: 5, name: "Green Leaf Café", lat: 40.7505, lng: -73.9934, rating: 4.5, type: "veggie", hasWifi: true, hasOutdoor: true },
-    { id: 6, name: "Brooklyn Roastery", lat: 40.7400, lng: -73.9900, rating: 4.9, type: "roaster_shop" },
+    { id: 6, name: "Vegan Vibes Coffee", lat: 40.7520, lng: -73.9750, rating: 4.6, type: "veggie", hasWifi: true },
     { id: 7, name: "Pastry & Pour", lat: 40.7650, lng: -73.9700, rating: 4.7, type: "bakery", hasBakery: true },
-    { id: 8, name: "Vegan Vibes Coffee", lat: 40.7520, lng: -73.9750, rating: 4.6, type: "veggie", hasWifi: true },
+    { id: 8, name: "Sweet Bean Bakery", lat: 40.7549, lng: -73.9840, rating: 4.8, type: "bakery", hasBakery: true, hasOutdoor: true },
   ];
 
   // Create custom coffee icons with different colors
