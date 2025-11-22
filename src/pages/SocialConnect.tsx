@@ -74,7 +74,7 @@ const SocialConnect = () => {
       className: "custom-user-marker",
       html: `
         <div style="
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background-color: #8B4513;
           border-radius: 50%;
           width: 40px;
           height: 40px;
@@ -83,10 +83,12 @@ const SocialConnect = () => {
           justify-content: center;
           border: 3px solid white;
           box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-          font-size: 18px;
-          color: white;
-          font-weight: bold;
-        ">👤</div>
+        ">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
       `,
       iconSize: [40, 40],
       iconAnchor: [20, 40],
