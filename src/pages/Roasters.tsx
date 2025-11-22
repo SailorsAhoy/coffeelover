@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Package, Star, Truck, Tag } from "lucide-react";
+import { Package, Star, Truck, Tag, Map } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import RoasterMapModal from "@/components/RoasterMapModal";
 
 const Roasters = () => {
+  const [mapOpen, setMapOpen] = useState(false);
   const mockRoasters = [
     {
       id: 1,
@@ -39,11 +42,17 @@ const Roasters = () => {
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Coffee Roasters</h1>
-          <p className="text-muted-foreground">
-            Explore premium coffee roasters and their offerings
-          </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Coffee Roasters</h1>
+            <p className="text-muted-foreground">
+              Explore premium coffee roasters and their offerings
+            </p>
+          </div>
+          <Button onClick={() => setMapOpen(true)} className="gap-2">
+            <Map className="w-4 h-4" />
+            View Map
+          </Button>
         </div>
 
         <div className="flex flex-col md:flex-row gap-4">
@@ -91,6 +100,8 @@ const Roasters = () => {
           ))}
         </div>
       </div>
+
+      <RoasterMapModal open={mapOpen} onOpenChange={setMapOpen} />
     </div>
   );
 };
