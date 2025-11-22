@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Coffee, MapPin, Wifi, Croissant, UtensilsCrossed } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { isShopOpen, getTodaySchedule, OpeningHours } from "@/lib/shopUtils";
 
 interface Shop {
   id: number;
@@ -19,6 +20,7 @@ interface Shop {
   hasWifi?: boolean;
   hasBakery?: boolean;
   hasOutdoor?: boolean;
+  opening_hours?: OpeningHours | null;
 }
 
 interface ShopMapModalProps {
@@ -41,24 +43,27 @@ const ShopMapModal = ({ open, onOpenChange }: ShopMapModalProps) => {
 
   // Real NYC locations with different shop types - 2 of each type
   const shops: Shop[] = [
-    { id: 1, name: "Artisan Coffee House", lat: 40.7589, lng: -73.9851, rating: 4.8, type: "coffee_shop", hasWifi: true },
-    { id: 2, name: "The Bean Scene", lat: 40.7614, lng: -73.9776, rating: 4.6, type: "coffee_shop", hasOutdoor: true },
-    { id: 3, name: "Brooklyn Roast & Shop", lat: 40.7489, lng: -73.9680, rating: 4.9, type: "roaster_shop", hasWifi: true },
-    { id: 4, name: "Manhattan Roastery", lat: 40.7400, lng: -73.9900, rating: 4.9, type: "roaster_shop", hasBakery: true },
-    { id: 5, name: "Green Leaf Café", lat: 40.7505, lng: -73.9934, rating: 4.5, type: "veggie", hasWifi: true, hasOutdoor: true },
-    { id: 6, name: "Vegan Vibes Coffee", lat: 40.7520, lng: -73.9750, rating: 4.6, type: "veggie", hasWifi: true },
-    { id: 7, name: "Pastry & Pour", lat: 40.7650, lng: -73.9700, rating: 4.7, type: "bakery", hasBakery: true },
-    { id: 8, name: "Sweet Bean Bakery", lat: 40.7549, lng: -73.9840, rating: 4.8, type: "bakery", hasBakery: true, hasOutdoor: true },
+    { id: 1, name: "Artisan Coffee House", lat: 40.7589, lng: -73.9851, rating: 4.8, type: "coffee_shop", hasWifi: true, opening_hours: { monday: { open: "07:00", close: "20:00" }, tuesday: { open: "07:00", close: "20:00" }, wednesday: { open: "07:00", close: "20:00" }, thursday: { open: "07:00", close: "20:00" }, friday: { open: "07:00", close: "22:00" }, saturday: { open: "08:00", close: "22:00" }, sunday: { open: "08:00", close: "18:00" } } },
+    { id: 2, name: "The Bean Scene", lat: 40.7614, lng: -73.9776, rating: 4.6, type: "coffee_shop", hasOutdoor: true, opening_hours: { monday: { open: "06:00", close: "19:00" }, tuesday: { open: "06:00", close: "19:00" }, wednesday: { open: "06:00", close: "19:00" }, thursday: { open: "06:00", close: "19:00" }, friday: { open: "06:00", close: "20:00" }, saturday: { open: "07:00", close: "20:00" }, sunday: { open: "00:00", close: "00:00", closed: true } } },
+    { id: 3, name: "Brooklyn Roast & Shop", lat: 40.7489, lng: -73.9680, rating: 4.9, type: "roaster_shop", hasWifi: true, opening_hours: { monday: { open: "08:00", close: "18:00" }, tuesday: { open: "08:00", close: "18:00" }, wednesday: { open: "08:00", close: "18:00" }, thursday: { open: "08:00", close: "18:00" }, friday: { open: "08:00", close: "18:00" }, saturday: { open: "09:00", close: "17:00" }, sunday: { open: "00:00", close: "00:00", closed: true } } },
+    { id: 4, name: "Manhattan Roastery", lat: 40.7400, lng: -73.9900, rating: 4.9, type: "roaster_shop", hasBakery: true, opening_hours: { monday: { open: "07:00", close: "21:00" }, tuesday: { open: "07:00", close: "21:00" }, wednesday: { open: "07:00", close: "21:00" }, thursday: { open: "07:00", close: "21:00" }, friday: { open: "07:00", close: "23:00" }, saturday: { open: "08:00", close: "23:00" }, sunday: { open: "09:00", close: "20:00" } } },
+    { id: 5, name: "Green Leaf Café", lat: 40.7505, lng: -73.9934, rating: 4.5, type: "veggie", hasWifi: true, hasOutdoor: true, opening_hours: { monday: { open: "08:00", close: "16:00" }, tuesday: { open: "08:00", close: "16:00" }, wednesday: { open: "08:00", close: "16:00" }, thursday: { open: "08:00", close: "16:00" }, friday: { open: "08:00", close: "16:00" }, saturday: { open: "09:00", close: "15:00" }, sunday: { open: "00:00", close: "00:00", closed: true } } },
+    { id: 6, name: "Vegan Vibes Coffee", lat: 40.7520, lng: -73.9750, rating: 4.6, type: "veggie", hasWifi: true, opening_hours: { monday: { open: "07:00", close: "19:00" }, tuesday: { open: "07:00", close: "19:00" }, wednesday: { open: "07:00", close: "19:00" }, thursday: { open: "07:00", close: "19:00" }, friday: { open: "07:00", close: "20:00" }, saturday: { open: "08:00", close: "20:00" }, sunday: { open: "09:00", close: "18:00" } } },
+    { id: 7, name: "Pastry & Pour", lat: 40.7650, lng: -73.9700, rating: 4.7, type: "bakery", hasBakery: true, opening_hours: { monday: { open: "06:00", close: "18:00" }, tuesday: { open: "06:00", close: "18:00" }, wednesday: { open: "06:00", close: "18:00" }, thursday: { open: "06:00", close: "18:00" }, friday: { open: "06:00", close: "20:00" }, saturday: { open: "07:00", close: "20:00" }, sunday: { open: "07:00", close: "18:00" } } },
+    { id: 8, name: "Sweet Bean Bakery", lat: 40.7549, lng: -73.9840, rating: 4.8, type: "bakery", hasBakery: true, hasOutdoor: true, opening_hours: { monday: { open: "07:00", close: "19:00" }, tuesday: { open: "07:00", close: "19:00" }, wednesday: { open: "07:00", close: "19:00" }, thursday: { open: "07:00", close: "19:00" }, friday: { open: "07:00", close: "21:00" }, saturday: { open: "08:00", close: "21:00" }, sunday: { open: "00:00", close: "00:00", closed: true } } },
   ];
 
   // Create custom coffee icons with different colors
-  const getShopIcon = (type: Shop["type"]) => {
+  const getShopIcon = (type: Shop["type"], isOpen: boolean) => {
     const colors = {
       veggie: "#10b981",
       bakery: "#f59e0b",
       coffee_shop: "#8B4513",
       roaster_shop: "#ef4444",
     };
+
+    const opacity = isOpen ? "1" : "0.75";
+    const grayscale = isOpen ? "grayscale(0%)" : "grayscale(100%)";
 
     return L.divIcon({
       className: "custom-coffee-marker",
@@ -73,6 +78,8 @@ const ShopMapModal = ({ open, onOpenChange }: ShopMapModalProps) => {
           justify-content: center;
           border: 2px solid white;
           box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+          opacity: ${opacity};
+          filter: ${grayscale};
         ">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2">
             <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
@@ -130,7 +137,11 @@ const ShopMapModal = ({ open, onOpenChange }: ShopMapModalProps) => {
 
     // Add markers for filtered shops
     filteredShops.forEach((shop) => {
-      const marker = L.marker([shop.lat, shop.lng], { icon: getShopIcon(shop.type) }).addTo(map.current!);
+      const isOpen = isShopOpen(shop.opening_hours || null);
+      const schedule = getTodaySchedule(shop.opening_hours || null);
+      const openStatus = isOpen ? '<span style="color: #10b981; font-weight: 600;">Open</span>' : '<span style="color: #ef4444; font-weight: 600;">Closed</span>';
+      
+      const marker = L.marker([shop.lat, shop.lng], { icon: getShopIcon(shop.type, isOpen) }).addTo(map.current!);
       markersRef.current.push(marker);
 
       // Add popup with clickable content
@@ -138,6 +149,7 @@ const ShopMapModal = ({ open, onOpenChange }: ShopMapModalProps) => {
         <div style="padding: 8px; cursor: pointer;" class="shop-popup" data-shop-id="${shop.id}">
           <h3 style="font-weight: bold; margin-bottom: 4px;">${shop.name}</h3>
           <p style="font-size: 14px; color: #666;">⭐ ${shop.rating}</p>
+          <p style="font-size: 13px; margin-top: 4px;">${openStatus} · ${schedule}</p>
           <p style="font-size: 12px; color: #3b82f6; margin-top: 4px;">Click to view profile →</p>
         </div>
       `;
