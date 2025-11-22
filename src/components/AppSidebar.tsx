@@ -1,5 +1,5 @@
 import { NavLink } from "@/components/NavLink";
-import { Coffee, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap, User, Briefcase, BookMarked, MessageSquare, Library, ChevronLeft, ChevronRight } from "lucide-react";
+import { Coffee, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap, User, Briefcase, BookMarked, MessageSquare, Library, ChevronLeft, ChevronRight, Users, MessageCircle } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -26,6 +26,8 @@ const items = [
   { path: "/wiki", icon: BookMarked, label: "Wiki" },
   { path: "/forum", icon: MessageSquare, label: "Forum" },
   { path: "/library", icon: Library, label: "Library" },
+  { path: "/social", icon: Users, label: "Social Connect" },
+  { path: "/messaging", icon: MessageCircle, label: "Messaging" },
   { path: "/profile", icon: User, label: "Profile" },
 ];
 
@@ -39,7 +41,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <div className="h-5" />
+              <div className="h-16" />
               {items.map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <SidebarMenuButton asChild tooltip={item.label}>
@@ -59,7 +61,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       
-      <div className="border-t border-border p-3 mt-auto">
+      <div className="border-t border-border p-2">
         <SidebarTrigger className="flex items-center gap-2 hover:bg-accent px-3 py-2 rounded-lg transition-colors w-full">
           {open ? (
             <>

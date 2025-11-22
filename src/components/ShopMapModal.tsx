@@ -11,6 +11,10 @@ interface Shop {
   lat: number;
   lng: number;
   rating: number;
+  type: "veggie" | "bakery" | "coffee_shop" | "roaster_shop";
+  hasWifi?: boolean;
+  hasBakery?: boolean;
+  hasOutdoor?: boolean;
 }
 
 interface ShopMapModalProps {
@@ -23,13 +27,16 @@ const ShopMapModal = ({ open, onOpenChange }: ShopMapModalProps) => {
   const map = useRef<L.Map | null>(null);
   const navigate = useNavigate();
 
-  // Mock shop locations
+  // Real NYC locations with different shop types
   const shops: Shop[] = [
-    { id: 1, name: "Artisan Coffee House", lat: 40.7589, lng: -73.9851, rating: 4.8 },
-    { id: 2, name: "The Bean Scene", lat: 40.7614, lng: -73.9776, rating: 4.6 },
-    { id: 3, name: "Roast & Toast", lat: 40.7489, lng: -73.9680, rating: 4.9 },
-    { id: 4, name: "Urban Brew", lat: 40.7549, lng: -73.9840, rating: 4.7 },
-    { id: 5, name: "Espresso Bar", lat: 40.7505, lng: -73.9934, rating: 4.5 },
+    { id: 1, name: "Artisan Coffee House", lat: 40.7589, lng: -73.9851, rating: 4.8, type: "coffee_shop", hasWifi: true },
+    { id: 2, name: "The Bean Scene", lat: 40.7614, lng: -73.9776, rating: 4.6, type: "coffee_shop", hasOutdoor: true },
+    { id: 3, name: "Roast & Toast", lat: 40.7489, lng: -73.9680, rating: 4.9, type: "roaster_shop", hasBakery: true },
+    { id: 4, name: "Urban Brew", lat: 40.7549, lng: -73.9840, rating: 4.7, type: "coffee_shop", hasWifi: true },
+    { id: 5, name: "Green Leaf Café", lat: 40.7505, lng: -73.9934, rating: 4.5, type: "veggie", hasWifi: true, hasOutdoor: true },
+    { id: 6, name: "Brooklyn Roastery", lat: 40.7400, lng: -73.9900, rating: 4.9, type: "roaster_shop" },
+    { id: 7, name: "Pastry & Pour", lat: 40.7650, lng: -73.9700, rating: 4.7, type: "bakery", hasBakery: true },
+    { id: 8, name: "Vegan Vibes Coffee", lat: 40.7520, lng: -73.9750, rating: 4.6, type: "veggie", hasWifi: true },
   ];
 
   useEffect(() => {
@@ -44,38 +51,47 @@ const ShopMapModal = ({ open, onOpenChange }: ShopMapModalProps) => {
       maxZoom: 19,
     }).addTo(map.current);
 
-    // Create custom coffee icon
-    const coffeeIcon = L.divIcon({
-      className: "custom-coffee-marker",
-      html: `
-        <div style="
-          background-color: #8B4513;
-          border-radius: 50%;
-          width: 32px;
-          height: 32px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 2px solid white;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        ">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2">
-            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
-            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
-            <line x1="6" x2="6" y1="1" y2="4"></line>
-            <line x1="10" x2="10" y1="1" y2="4"></line>
-            <line x1="14" x2="14" y1="1" y2="4"></line>
-          </svg>
-        </div>
-      `,
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32],
-    });
+    // Create custom coffee icons with different colors
+    const getShopIcon = (type: Shop["type"]) => {
+      const colors = {
+        veggie: "#10b981",
+        bakery: "#f59e0b",
+        coffee_shop: "#8B4513",
+        roaster_shop: "#ef4444",
+      };
 
-    // Add markers for each shop
+      return L.divIcon({
+        className: "custom-coffee-marker",
+        html: `
+          <div style="
+            background-color: ${colors[type]};
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+          ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2">
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+              <line x1="6" x2="6" y1="1" y2="4"></line>
+              <line x1="10" x2="10" y1="1" y2="4"></line>
+              <line x1="14" x2="14" y1="1" y2="4"></line>
+            </svg>
+          </div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32],
+      });
+    };
+
+    // Add markers for each shop with colored icons
     shops.forEach((shop) => {
-      const marker = L.marker([shop.lat, shop.lng], { icon: coffeeIcon }).addTo(map.current!);
+      const marker = L.marker([shop.lat, shop.lng], { icon: getShopIcon(shop.type) }).addTo(map.current!);
 
       // Add popup with clickable content
       const popupContent = `
