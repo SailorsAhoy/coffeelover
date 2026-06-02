@@ -43,23 +43,19 @@ export const ShopBanner = ({ shop }: Props) => {
 
   return (
     <div className="relative">
-      <div className="relative h-32 w-full overflow-hidden sm:h-44">
+      <div className="relative h-[148px] w-full overflow-hidden sm:h-[196px]">
         <img
           src={banner}
           alt={`${shop.name} banner`}
           className="h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-black/20" />
-
-        <Link
-          to="/shops"
-          className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-background/80 px-2.5 py-1 text-xs font-medium backdrop-blur"
-        >
-          <ChevronLeft className="h-3.5 w-3.5" /> Shops
-        </Link>
+        {/* 25% grey overlay */}
+        <div className="pointer-events-none absolute inset-0 bg-black/25" />
+        {/* bottom fade to background */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
 
         <Badge
-          className="absolute right-2 top-2 gap-1 backdrop-blur"
+          className="absolute right-2 top-2 z-20 gap-1 backdrop-blur"
           variant={open ? "default" : "secondary"}
         >
           <span
@@ -71,13 +67,13 @@ export const ShopBanner = ({ shop }: Props) => {
         </Badge>
 
         {can("list_shop") && (
-          <div className="absolute bottom-2 right-2">
+          <div className="absolute bottom-2 right-2 z-20">
             <ShopEditSheet shop={shop} />
           </div>
         )}
       </div>
 
-      <div className="mt-1.5 flex items-center gap-3 px-4 sm:px-6">
+      <div className="relative z-10 mt-1.5 flex items-center gap-3 px-4 sm:px-6">
         <Avatar
           className="h-15 w-15 border-4 border-background shadow-md"
           style={{ backgroundColor: color, height: 60, width: 60 }}
