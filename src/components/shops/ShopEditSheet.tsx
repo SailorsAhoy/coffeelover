@@ -119,6 +119,7 @@ export const ShopEditSheet = ({ shop }: Props) => {
     setType(shop.type);
     setPriceLevel(shop.priceLevel);
     setAddress(shop.address);
+    setCountry(shop.country);
     setCoords({ lat: shop.lat, lng: shop.lng });
     setAmenities({ ...shop.amenities });
     setHours(shop.opening_hours);
