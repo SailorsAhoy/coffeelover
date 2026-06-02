@@ -475,31 +475,78 @@ export const ShopReviews = ({
           </p>
         ) : (
           <ul className="space-y-3">
-            {reviews.map((r) => (
-              <li key={r.id} className="flex gap-3 border-b pb-3 last:border-0">
-                <Avatar className="h-8 w-8 shrink-0">
-                  <AvatarFallback>
-                    {(r.profile?.name ?? "U").slice(0, 1).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="truncate text-sm font-medium">
-                      {r.profile?.name ?? "Anonymous"}
-                    </span>
-                    <StarRow value={r.rating} />
+            {reviews.map((r) => {
+              const isMine = user?.id === r.user_id;
+              return (
+                <li key={r.id} className="flex gap-3 border-b pb-3 last:border-0">
+                  <Avatar className="h-8 w-8 shrink-0">
+                    <AvatarFallback>
+                      {(r.profile?.name ?? "U").slice(0, 1).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="truncate text-sm font-medium">
+                        {r.profile?.name ?? "Anonymous"}
+                      </span>
+                      <StarRow value={r.rating} />
+                    </div>
+                    {r.comment && (
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {r.comment}
+                      </p>
+                    )}
+                    <div className="mt-1 flex items-center justify-between gap-2">
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(r.created_at).toLocaleDateString()}
+                      </p>
+                      {isMine && (
+                        <div className="flex items-center gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 gap-1 px-2 text-[11px]"
+                            onClick={() => openEdit(r)}
+                          >
+                            <Pencil className="h-3 w-3" /> Edit
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 gap-1 px-2 text-[11px] text-destructive hover:text-destructive"
+                                disabled={deletingId === r.id}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                                {deletingId === r.id ? "Deleting…" : "Delete"}
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete this review?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This cannot be undone. Photos in the community
+                                  gallery are kept and can be removed separately.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => removeReview(r.id)}
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  {r.comment && (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {r.comment}
-                    </p>
-                  )}
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {new Date(r.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         )}
       </CardContent>
