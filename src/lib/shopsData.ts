@@ -237,7 +237,9 @@ export const updateShopOverride = (id: number, patch: Partial<Shop>) => {
   listeners.forEach((l) => l());
 };
 
-export const subscribeShopOverrides = (cb: () => void) => {
+export const subscribeShopOverrides = (cb: () => void): (() => void) => {
   listeners.add(cb);
-  return () => listeners.delete(cb);
+  return () => {
+    listeners.delete(cb);
+  };
 };
