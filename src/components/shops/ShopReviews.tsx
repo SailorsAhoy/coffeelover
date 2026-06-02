@@ -278,7 +278,17 @@ export const ShopReviews = ({
         <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base">
           <span className="flex items-center gap-2">
             Reviews
-            {canReview ? (
+            {canReview && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 gap-1 px-2 text-xs"
+                onClick={openNew}
+              >
+                <Plus className="h-3.5 w-3.5" /> Add review
+              </Button>
+            )}
+            {canReview && (
               <Dialog
                 open={open}
                 onOpenChange={(o) => {
@@ -286,14 +296,11 @@ export const ShopReviews = ({
                   if (!o) resetForm();
                 }}
               >
-                <DialogTrigger asChild>
-                  <Button size="sm" variant="outline" className="h-7 gap-1 px-2 text-xs">
-                    <Plus className="h-3.5 w-3.5" /> Add review
-                  </Button>
-                </DialogTrigger>
                 <DialogContent className="max-w-md">
                   <DialogHeader>
-                    <DialogTitle>Write a review</DialogTitle>
+                    <DialogTitle>
+                      {editingId ? "Edit your review" : "Write a review"}
+                    </DialogTitle>
                   </DialogHeader>
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
@@ -326,7 +333,7 @@ export const ShopReviews = ({
                       }}
                     />
 
-                    {shopId !== undefined && (
+                    {!editingId && shopId !== undefined && (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-medium">
@@ -376,8 +383,49 @@ export const ShopReviews = ({
                         </p>
                       </div>
                     )}
+                    {editingId && (
+                      <p className="text-[10px] text-muted-foreground">
+                        Photos uploaded with the original review remain in the
+                        community gallery and can be removed there.
+                      </p>
+                    )}
                   </div>
-                  <DialogFooter>
+                  <DialogFooter className="gap-2 sm:gap-2">
+                    {editingId && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="destructive"
+                            className="mr-auto gap-1"
+                            disabled={submitting}
+                          >
+                            <Trash2 className="h-4 w-4" /> Delete
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete this review?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This cannot be undone. Photos in the community
+                              gallery are kept and can be removed separately.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={async () => {
+                                const id = editingId;
+                                setOpen(false);
+                                resetForm();
+                                if (id) await removeReview(id);
+                              }}
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
                     <Button
                       variant="ghost"
                       onClick={() => setOpen(false)}
@@ -389,8 +437,10 @@ export const ShopReviews = ({
                       {submitting ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Posting…
+                          {editingId ? "Saving…" : "Posting…"}
                         </>
+                      ) : editingId ? (
+                        "Save changes"
                       ) : (
                         "Post review"
                       )}
@@ -398,7 +448,7 @@ export const ShopReviews = ({
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
-            ) : null}
+            )}
           </span>
           <div className="flex items-center gap-2 text-sm font-normal">
             <StarRow value={Math.round(avg)} />
