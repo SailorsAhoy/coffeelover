@@ -31,6 +31,7 @@ export interface Shop {
   lat: number;
   lng: number;
   address: string;
+  country?: string;
   /** 1-4, mirrors $ – $$$$ */
   priceLevel: 1 | 2 | 3 | 4;
   baseRating: number;
