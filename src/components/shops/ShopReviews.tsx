@@ -132,6 +132,32 @@ export const ShopReviews = ({
     setRating(5);
     setComment("");
     setFiles([]);
+    setEditingId(null);
+  };
+
+  const openNew = () => {
+    resetForm();
+    setOpen(true);
+  };
+
+  const openEdit = (r: Review) => {
+    setEditingId(r.id);
+    setRating(r.rating);
+    setComment(r.comment ?? "");
+    setFiles([]);
+    setOpen(true);
+  };
+
+  const removeReview = async (id: string) => {
+    setDeletingId(id);
+    const { error } = await supabase.from("reviews").delete().eq("id", id);
+    setDeletingId(null);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Review deleted");
+    setReviews((prev) => prev.filter((r) => r.id !== id));
   };
 
   const addFiles = (incoming: FileList | null) => {
