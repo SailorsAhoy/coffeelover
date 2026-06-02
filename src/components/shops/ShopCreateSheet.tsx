@@ -109,7 +109,9 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
   const [type, setType] = useState<ShopType>("coffee_shop");
   const [priceLevel, setPriceLevel] = useState<1 | 2 | 3 | 4>(2);
   const [address, setAddress] = useState("");
+  const [country, setCountry] = useState<string | undefined>();
   const [coords, setCoords] = useState({ lat: 40.7589, lng: -73.9851 });
+  const [addressPicked, setAddressPicked] = useState(false);
   const [amenities, setAmenities] = useState<Amenities>({});
   const [banner, setBanner] = useState<string | undefined>();
   const [avatar, setAvatar] = useState<string | undefined>();
