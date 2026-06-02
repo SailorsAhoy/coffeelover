@@ -852,6 +852,7 @@ export type Database = {
           photo_path: string | null
           role: string
           shop_id: string
+          staff_user_id: string | null
           updated_at: string
         }
         Insert: {
@@ -863,6 +864,7 @@ export type Database = {
           photo_path?: string | null
           role: string
           shop_id: string
+          staff_user_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -874,6 +876,7 @@ export type Database = {
           photo_path?: string | null
           role?: string
           shop_id?: string
+          staff_user_id?: string | null
           updated_at?: string
         }
         Relationships: []
