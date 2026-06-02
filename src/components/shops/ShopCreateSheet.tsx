@@ -23,10 +23,13 @@ import { Plus, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import AddressAutocomplete from "@/components/shops/AddressAutocomplete";
+import OpeningHoursEditor from "@/components/shops/OpeningHoursEditor";
+import AffiliateLinksEditor from "@/components/shops/AffiliateLinksEditor";
 import { AMENITIES, type AmenityKey } from "@/lib/shopAmenities";
 import {
   addShop,
   SHOP_TYPE_LABEL,
+  type AffiliateLink,
   type Amenities,
   type ShopType,
 } from "@/lib/shopsData";
@@ -116,6 +119,8 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
   const [instagram, setInstagram] = useState("");
   const [facebook, setFacebook] = useState("");
   const [twitter, setTwitter] = useState("");
+  const [hours, setHours] = useState<OpeningHours>(defaultHours);
+  const [affiliateLinks, setAffiliateLinks] = useState<AffiliateLink[]>([]);
 
   const reset = () => {
     setName("");
@@ -134,6 +139,8 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
     setInstagram("");
     setFacebook("");
     setTwitter("");
+    setHours(defaultHours);
+    setAffiliateLinks([]);
   };
 
   const toggle = (k: AmenityKey, v: boolean) =>
@@ -200,7 +207,8 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
       baseRating: 0,
       baseReviewCount: 0,
       amenities,
-      opening_hours: defaultHours,
+      opening_hours: hours,
+      affiliateLinks: affiliateLinks.filter((l) => l.label && l.url),
       status: "pending",
       pendingReview: true,
       createdBy: user?.id,
@@ -499,6 +507,21 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
                   })}
                 </div>
               </section>
+
+              <section className="space-y-2">
+                <Label className="text-sm font-semibold">Opening hours</Label>
+                <OpeningHoursEditor value={hours} onChange={setHours} />
+              </section>
+
+              <section className="space-y-2">
+                <Label className="text-sm font-semibold">Affiliate links</Label>
+                <AffiliateLinksEditor
+                  value={affiliateLinks}
+                  onChange={setAffiliateLinks}
+                />
+              </section>
+
+
 
               <p className="rounded-md border bg-muted/40 p-2 text-[11px] text-muted-foreground">
                 Submitting as{" "}
