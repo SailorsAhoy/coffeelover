@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const items = [
+  { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { path: "/shops", icon: Store, label: "Shops" },
   { path: "/roasters", icon: Package, label: "Roasters" },
   { path: "/coffee", icon: Coffee, label: "Coffee" },
