@@ -407,8 +407,8 @@ const Shops = () => {
           <TabsContent value="map" className="mt-4">
             <ShopsMapView
               shops={filtered}
-              center={coords ?? { lat: 40.7589, lng: -73.9851 }}
-              userLocation={coords}
+              center={activeCoords ?? { lat: 40.7589, lng: -73.9851 }}
+              userLocation={activeCoords}
             />
           </TabsContent>
         </Tabs>
