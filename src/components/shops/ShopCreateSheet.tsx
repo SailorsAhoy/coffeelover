@@ -23,10 +23,13 @@ import { Plus, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import AddressAutocomplete from "@/components/shops/AddressAutocomplete";
+import OpeningHoursEditor from "@/components/shops/OpeningHoursEditor";
+import AffiliateLinksEditor from "@/components/shops/AffiliateLinksEditor";
 import { AMENITIES, type AmenityKey } from "@/lib/shopAmenities";
 import {
   addShop,
   SHOP_TYPE_LABEL,
+  type AffiliateLink,
   type Amenities,
   type ShopType,
 } from "@/lib/shopsData";
