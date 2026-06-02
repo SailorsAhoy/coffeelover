@@ -21,7 +21,8 @@ import { toast } from "sonner";
 
 const ShopProfile = () => {
   const { id } = useParams();
-  const { can } = useCurrentUser();
+  const { hasRole } = useCurrentUser();
+  const isAdmin = hasRole("admin");
   const [shop, setShop] = useState<Shop | undefined>(() =>
     getShopWithOverrides(id ?? "1"),
   );
