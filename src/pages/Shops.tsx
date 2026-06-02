@@ -18,7 +18,6 @@ import {
   Star,
   MapPin,
   Navigation,
-  Plus,
   Search,
   LocateFixed,
 } from "lucide-react";
