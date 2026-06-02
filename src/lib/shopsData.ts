@@ -9,6 +9,14 @@ export interface AffiliateLink {
   url: string;
 }
 
+export interface StaffMember {
+  id: string;
+  name: string;
+  role: string;
+  avatar?: string;
+  email?: string;
+}
+
 export type Amenities = Partial<Record<AmenityKey, boolean>>;
 
 export interface Shop {
@@ -17,6 +25,8 @@ export interface Shop {
   reviewableId: string;
   name: string;
   description: string;
+  /** Longer-form story shown in the Bio tab. */
+  bio?: string;
   type: ShopType;
   lat: number;
   lng: number;
@@ -36,6 +46,9 @@ export interface Shop {
   opening_hours: OpeningHours;
   affiliateLinks?: AffiliateLink[];
   image?: string;
+  banner?: string;
+  avatar?: string;
+  staff?: StaffMember[];
 }
 
 const uuid = (n: number) =>
