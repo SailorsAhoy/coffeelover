@@ -327,6 +327,38 @@ const Shops = () => {
                                 Directions
                               </Button>
                             </div>
+                            {isAdmin && (s.status === "pending" || s.pendingReview) && (
+                              <div className="mt-2 flex gap-2 border-t pt-2">
+                                <Button
+                                  size="sm"
+                                  variant="default"
+                                  className="h-7 flex-1 gap-1 text-xs"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setShopStatus(s.id, "approved");
+                                  }}
+                                >
+                                  <Check className="h-3 w-3" /> Approve
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 flex-1 gap-1 text-xs"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setShopStatus(s.id, "rejected");
+                                  }}
+                                >
+                                  <X className="h-3 w-3" /> Reject
+                                </Button>
+                              </div>
+                            )}
+                            {s.createdByName && (
+                              <p className="mt-1.5 text-[10px] text-muted-foreground">
+                                Submitted by{" "}
+                                <span className="font-medium">{s.createdByName}</span>
+                              </p>
+                            )}
                           </CardContent>
                         </Card>
                       </Link>
