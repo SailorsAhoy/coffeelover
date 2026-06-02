@@ -50,6 +50,42 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_log: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_user_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          metadata: Json | null
+          shop_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_user_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          metadata?: Json | null
+          shop_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_user_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          metadata?: Json | null
+          shop_id?: string | null
+        }
+        Relationships: []
+      }
       addresses: {
         Row: {
           city: string
@@ -235,18 +271,21 @@ export type Database = {
           chat_id: string
           created_at: string
           id: string
+          last_read_at: string
           user_id: string
         }
         Insert: {
           chat_id: string
           created_at?: string
           id?: string
+          last_read_at?: string
           user_id: string
         }
         Update: {
           chat_id?: string
           created_at?: string
           id?: string
+          last_read_at?: string
           user_id?: string
         }
         Relationships: [
