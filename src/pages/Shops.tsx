@@ -107,9 +107,8 @@ const Shops = () => {
   const enriched = useMemo(() => {
     return shops.map((s) => {
       const a = aggs[s.reviewableId] ?? fallback[s.reviewableId];
-      const distanceKm = activeCoords
-        ? haversineKm(activeCoords, { lat: s.lat, lng: s.lng })
-        : null;
+      const ref = activeCoords ?? DEFAULT_CENTER;
+      const distanceKm = haversineKm(ref, { lat: s.lat, lng: s.lng });
       return { ...s, ...a, distanceKm };
     });
   }, [shops, aggs, activeCoords, fallback]);
