@@ -338,6 +338,36 @@ export type Database = {
           },
         ]
       }
+      company_members: {
+        Row: {
+          company_user_id: string
+          created_at: string
+          id: string
+          member_user_id: string
+          status: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          company_user_id: string
+          created_at?: string
+          id?: string
+          member_user_id: string
+          status?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company_user_id?: string
+          created_at?: string
+          id?: string
+          member_user_id?: string
+          status?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       countries: {
         Row: {
           code: string
@@ -779,6 +809,45 @@ export type Database = {
         }
         Relationships: []
       }
+      subscription_plans: {
+        Row: {
+          billing_period: string
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          modules: string[]
+          name: string
+          price_cents: number
+          updated_at: string
+        }
+        Insert: {
+          billing_period?: string
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          modules?: string[]
+          name: string
+          price_cents?: number
+          updated_at?: string
+        }
+        Update: {
+          billing_period?: string
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          modules?: string[]
+          name?: string
+          price_cents?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_coffee_products: {
         Row: {
           altitude_meters: number | null
@@ -942,11 +1011,56 @@ export type Database = {
         }
         Relationships: []
       }
+      user_subscriptions: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          plan_id: string
+          started_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          plan_id: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          plan_id?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      has_active_subscription: {
+        Args: { _module: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -956,7 +1070,16 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "roaster" | "coffee_shop" | "producer" | "user"
+      app_role:
+        | "admin"
+        | "roaster"
+        | "coffee_shop"
+        | "producer"
+        | "user"
+        | "company"
+        | "staff"
+        | "pro_user"
+        | "teacher"
       brew_method:
         | "espresso"
         | "pour_over"
@@ -1102,7 +1225,17 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "roaster", "coffee_shop", "producer", "user"],
+      app_role: [
+        "admin",
+        "roaster",
+        "coffee_shop",
+        "producer",
+        "user",
+        "company",
+        "staff",
+        "pro_user",
+        "teacher",
+      ],
       brew_method: [
         "espresso",
         "pour_over",

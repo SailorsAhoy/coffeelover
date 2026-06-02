@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Phone, MapPin } from "lucide-react";
+import { RolesCard } from "@/components/profile/RolesCard";
+import { SubscriptionsCard } from "@/components/profile/SubscriptionsCard";
 
 const Profile = () => {
   const [user, setUser] = useState<any>(null);
@@ -140,6 +142,9 @@ const Profile = () => {
             </form>
           </CardContent>
         </Card>
+
+        <RolesCard />
+        <SubscriptionsCard />
 
         <Card>
           <CardHeader>
