@@ -185,28 +185,34 @@ export const ShopEditSheet = ({ shop }: Props) => {
       }
       cleaned.push({ ...l, label: r.data.label, url: r.data.url });
     }
-    updateShopOverride(shop.id, {
-      name: parsed.data.name,
-      description: parsed.data.description,
-      bio: parsed.data.bio || undefined,
-      type,
-      priceLevel,
-      address: parsed.data.address,
-      lat: coords.lat,
-      lng: coords.lng,
-      amenities,
-      opening_hours: hours,
-      affiliateLinks: cleaned,
-      phone: phone.trim() || undefined,
-      whatsapp: whatsapp.trim() || undefined,
-      email: email.trim() || undefined,
-      website: website.trim() || undefined,
-      instagram: instagram.trim() || undefined,
-      facebook: facebook.trim() || undefined,
-      twitter: twitter.trim() || undefined,
-      banner,
-      avatar,
-    });
+    try {
+      updateShopOverride(shop.id, {
+        name: parsed.data.name,
+        description: parsed.data.description,
+        bio: parsed.data.bio || undefined,
+        type,
+        priceLevel,
+        address: parsed.data.address,
+        country,
+        lat: coords.lat,
+        lng: coords.lng,
+        amenities,
+        opening_hours: hours,
+        affiliateLinks: cleaned,
+        phone: phone.trim() || undefined,
+        whatsapp: whatsapp.trim() || undefined,
+        email: email.trim() || undefined,
+        website: website.trim() || undefined,
+        instagram: instagram.trim() || undefined,
+        facebook: facebook.trim() || undefined,
+        twitter: twitter.trim() || undefined,
+        banner,
+        avatar,
+      });
+    } catch (err) {
+      toast.error((err as Error).message || "Could not save shop");
+      return;
+    }
     toast.success("Shop details updated");
     setOpen(false);
   };
