@@ -136,6 +136,8 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
     setType("coffee_shop");
     setPriceLevel(2);
     setAddress("");
+    setCountry(undefined);
+    setAddressPicked(false);
     setAmenities({});
     setBanner(undefined);
     setAvatar(undefined);
