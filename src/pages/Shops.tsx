@@ -99,6 +99,12 @@ const Shops = () => {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return enriched
+      .filter((s) => {
+        const isPending = s.status === "pending" || s.pendingReview;
+        if (statusTab === "approved") return !isPending && s.status !== "rejected";
+        if (statusTab === "pending") return isPending;
+        return s.status !== "rejected";
+      })
       .filter((s) => filters.types[s.type])
       .filter((s) => s.priceLevel <= filters.maxPriceLevel)
       .filter((s) => s.rating >= filters.minRating)
