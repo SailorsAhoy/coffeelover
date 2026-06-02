@@ -275,13 +275,19 @@ export const ShopStaff = ({ shopId }: Props) => {
                   </label>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Name</Label>
+                  <Label>Registered user (email or user ID)</Label>
                   <Input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    maxLength={80}
-                    placeholder="Maya Chen"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    maxLength={120}
+                    placeholder="maya@example.com or UUID"
+                    autoComplete="off"
+                    disabled={!!editing}
                   />
+                  <p className="text-[11px] text-muted-foreground">
+                    Staff must already have an account on the platform. Their
+                    profile name will be used.
+                  </p>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Role</Label>
