@@ -96,6 +96,7 @@ export const ShopStaff = ({ shopId }: Props) => {
     setName("");
     setRole("");
     setBio("");
+    setIdentifier("");
     setPhotoFile(null);
   };
 
@@ -108,18 +109,38 @@ export const ShopStaff = ({ shopId }: Props) => {
     setName(s.name);
     setRole(s.role);
     setBio(s.bio ?? "");
+    setIdentifier(s.staff_user_id ?? "");
     setPhotoFile(null);
     setOpen(true);
   };
 
   const save = async () => {
     if (!user) return;
-    const parsed = staffSchema.safeParse({ name, role, bio });
+    const parsed = staffSchema.safeParse({ identifier, role, bio });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
     }
     setSaving(true);
+
+    // Resolve identifier (email or uuid) to a registered profile
+    const id = parsed.data.identifier;
+    const base = supabase.from("profiles").select("id, name, email");
+    const { data: matches, error: lookupErr } = UUID_RE.test(id)
+      ? await base.eq("id", id).limit(1)
+      : await base.ilike("email", id).limit(1);
+    if (lookupErr) {
+      toast.error("Could not verify user");
+      setSaving(false);
+      return;
+    }
+    const profile = matches?.[0];
+    if (!profile) {
+      toast.error("No registered user matches that email or ID");
+      setSaving(false);
+      return;
+    }
+
     let photo_path = editing?.photo_path ?? null;
 
     if (photoFile) {
@@ -148,11 +169,12 @@ export const ShopStaff = ({ shopId }: Props) => {
 
     const payload = {
       shop_id: String(shopId),
-      name: parsed.data.name,
+      name: profile.name || profile.email || "Staff member",
       role: parsed.data.role,
       bio: parsed.data.bio || null,
       photo_path,
       managed_by: user.id,
+      staff_user_id: profile.id,
     };
 
     const { error } = editing
