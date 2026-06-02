@@ -186,9 +186,8 @@ const Navigation = () => {
         </div>
       </nav>
 
-      {/* Spacers for fixed navigation */}
+      {/* Spacer for fixed top navigation */}
       <div className="h-14 md:h-16" />
-      <div className="h-16 md:h-0" />
     </>
   );
 };
