@@ -34,6 +34,12 @@ import {
   type ShopType,
 } from "@/lib/shopsData";
 import type { OpeningHours } from "@/lib/shopUtils";
+import {
+  affiliateLinkSchema as linkSchema,
+  validateImageFile,
+  MAX_IMAGE_BYTES,
+} from "@/lib/shopValidation";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 interface Props {
   shop: Shop;
@@ -43,7 +49,7 @@ const optionalUrl = z
   .string()
   .trim()
   .max(500)
-  .refine((v) => v === "" || /^https?:\/\/\S+/i.test(v), "Must start with http(s)://")
+  .refine((v) => v === "" || /^https?:\/\/\S+\.\S+/i.test(v), "Must be a valid http(s):// URL")
   .optional()
   .or(z.literal(""));
 
@@ -73,14 +79,11 @@ const schema = z.object({
   twitter: optionalUrl,
 });
 
-const linkSchema = z.object({
-  label: z.string().trim().min(1, "Label required").max(60),
-  url: z.string().trim().url("Must be a valid URL").max(500),
-});
-
-const MAX_IMG = 5 * 1024 * 1024;
+const MAX_IMG = MAX_IMAGE_BYTES;
 
 export const ShopEditSheet = ({ shop }: Props) => {
+  const { can } = useCurrentUser();
+  const isOwner = can("list_shop");
   const [open, setOpen] = useState(false);
 
   const [name, setName] = useState(shop.name);
@@ -89,6 +92,7 @@ export const ShopEditSheet = ({ shop }: Props) => {
   const [type, setType] = useState<ShopType>(shop.type);
   const [priceLevel, setPriceLevel] = useState<1 | 2 | 3 | 4>(shop.priceLevel);
   const [address, setAddress] = useState(shop.address);
+  const [country, setCountry] = useState<string | undefined>(shop.country);
   const [coords, setCoords] = useState({ lat: shop.lat, lng: shop.lng });
   const [amenities, setAmenities] = useState({ ...shop.amenities });
   const [hours, setHours] = useState<OpeningHours>(shop.opening_hours);
@@ -115,6 +119,7 @@ export const ShopEditSheet = ({ shop }: Props) => {
     setType(shop.type);
     setPriceLevel(shop.priceLevel);
     setAddress(shop.address);
+    setCountry(shop.country);
     setCoords({ lat: shop.lat, lng: shop.lng });
     setAmenities({ ...shop.amenities });
     setHours(shop.opening_hours);
@@ -141,14 +146,18 @@ export const ShopEditSheet = ({ shop }: Props) => {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
-    if (!f.type.startsWith("image/")) return toast.error(`${label}: must be an image`);
-    if (f.size > MAX_IMG) return toast.error(`${label}: max 5MB`);
+    const err = validateImageFile(f, label);
+    if (err) return toast.error(err);
     const reader = new FileReader();
     reader.onload = () => set(String(reader.result));
     reader.readAsDataURL(f);
   };
 
   const save = () => {
+    if (!isOwner) {
+      toast.error("You don't have permission to edit this shop");
+      return;
+    }
     const parsed = schema.safeParse({
       name,
       description,
@@ -176,31 +185,39 @@ export const ShopEditSheet = ({ shop }: Props) => {
       }
       cleaned.push({ ...l, label: r.data.label, url: r.data.url });
     }
-    updateShopOverride(shop.id, {
-      name: parsed.data.name,
-      description: parsed.data.description,
-      bio: parsed.data.bio || undefined,
-      type,
-      priceLevel,
-      address: parsed.data.address,
-      lat: coords.lat,
-      lng: coords.lng,
-      amenities,
-      opening_hours: hours,
-      affiliateLinks: cleaned,
-      phone: phone.trim() || undefined,
-      whatsapp: whatsapp.trim() || undefined,
-      email: email.trim() || undefined,
-      website: website.trim() || undefined,
-      instagram: instagram.trim() || undefined,
-      facebook: facebook.trim() || undefined,
-      twitter: twitter.trim() || undefined,
-      banner,
-      avatar,
-    });
+    try {
+      updateShopOverride(shop.id, {
+        name: parsed.data.name,
+        description: parsed.data.description,
+        bio: parsed.data.bio || undefined,
+        type,
+        priceLevel,
+        address: parsed.data.address,
+        country,
+        lat: coords.lat,
+        lng: coords.lng,
+        amenities,
+        opening_hours: hours,
+        affiliateLinks: cleaned,
+        phone: phone.trim() || undefined,
+        whatsapp: whatsapp.trim() || undefined,
+        email: email.trim() || undefined,
+        website: website.trim() || undefined,
+        instagram: instagram.trim() || undefined,
+        facebook: facebook.trim() || undefined,
+        twitter: twitter.trim() || undefined,
+        banner,
+        avatar,
+      });
+    } catch (err) {
+      toast.error((err as Error).message || "Could not save shop");
+      return;
+    }
     toast.success("Shop details updated");
     setOpen(false);
   };
+
+  if (!isOwner) return null;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -281,12 +298,15 @@ export const ShopEditSheet = ({ shop }: Props) => {
               onSelect={(s) => {
                 setAddress(s.display);
                 setCoords({ lat: s.lat, lng: s.lng });
+                setCountry(s.country);
               }}
             />
             <p className="text-xs text-muted-foreground">
+              {country ? `${country} · ` : ""}
               Lat {coords.lat.toFixed(4)}, Lng {coords.lng.toFixed(4)}
             </p>
           </section>
+
 
           <section className="grid grid-cols-2 gap-3">
             <div className="space-y-2">

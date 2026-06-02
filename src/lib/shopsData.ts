@@ -1,5 +1,6 @@
 import type { OpeningHours } from "@/lib/shopUtils";
 import type { AmenityKey } from "@/lib/shopAmenities";
+import { assertValidShop } from "@/lib/shopValidation";
 
 export type ShopType = "veggie" | "bakery" | "coffee_shop" | "roaster_shop";
 
@@ -31,6 +32,7 @@ export interface Shop {
   lat: number;
   lng: number;
   address: string;
+  country?: string;
   /** 1-4, mirrors $ – $$$$ */
   priceLevel: 1 | 2 | 3 | 4;
   baseRating: number;
@@ -259,6 +261,7 @@ export const getShopWithOverrides = (id: number | string): Shop | undefined => {
 };
 
 export const updateShopOverride = (id: number, patch: Partial<Shop>) => {
+  assertValidShop(patch);
   const current = overrides.get(id) ?? {};
   overrides.set(id, { ...current, ...patch });
   listeners.forEach((l) => l());
@@ -272,6 +275,7 @@ export const subscribeShopOverrides = (cb: () => void): (() => void) => {
 };
 
 export const addShop = (shop: Omit<Shop, "id" | "reviewableId">): Shop => {
+  assertValidShop(shop);
   const nextId = SHOPS.reduce((m, s) => Math.max(m, s.id), 0) + 1;
   const created: Shop = {
     ...shop,

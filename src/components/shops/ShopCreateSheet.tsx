@@ -35,6 +35,11 @@ import {
 } from "@/lib/shopsData";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import type { OpeningHours } from "@/lib/shopUtils";
+import {
+  affiliateLinkSchema,
+  validateImageFile,
+  MAX_IMAGE_BYTES,
+} from "@/lib/shopValidation";
 
 interface Props {
   trigger?: React.ReactNode;
@@ -81,7 +86,7 @@ const ownerSchema = baseSchema.extend({
   whatsapp: z.string().trim().max(30).optional().or(z.literal("")),
 });
 
-const MAX_IMG = 5 * 1024 * 1024;
+const MAX_IMG = MAX_IMAGE_BYTES;
 
 const defaultHours: OpeningHours = {
   monday: { open: "08:00", close: "18:00" },
@@ -104,7 +109,9 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
   const [type, setType] = useState<ShopType>("coffee_shop");
   const [priceLevel, setPriceLevel] = useState<1 | 2 | 3 | 4>(2);
   const [address, setAddress] = useState("");
+  const [country, setCountry] = useState<string | undefined>();
   const [coords, setCoords] = useState({ lat: 40.7589, lng: -73.9851 });
+  const [addressPicked, setAddressPicked] = useState(false);
   const [amenities, setAmenities] = useState<Amenities>({});
   const [banner, setBanner] = useState<string | undefined>();
   const [avatar, setAvatar] = useState<string | undefined>();
@@ -129,6 +136,8 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
     setType("coffee_shop");
     setPriceLevel(2);
     setAddress("");
+    setCountry(undefined);
+    setAddressPicked(false);
     setAmenities({});
     setBanner(undefined);
     setAvatar(undefined);
@@ -154,12 +163,9 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
-    if (!f.type.startsWith("image/")) {
-      toast.error(`${label}: must be an image`);
-      return;
-    }
-    if (f.size > MAX_IMG) {
-      toast.error(`${label}: max file size is 5MB`);
+    const err = validateImageFile(f, label);
+    if (err) {
+      toast.error(err);
       return;
     }
     const reader = new FileReader();
@@ -191,42 +197,61 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
       toast.error(parsed.error.issues[0].message);
       return;
     }
-    if (!coords || coords.lat === 0) {
-      toast.error("Pick a valid address from the list");
+    if (!addressPicked) {
+      toast.error("Pick an address from the suggestions list");
       return;
     }
-    addShop({
-      name: parsed.data.name,
-      description: parsed.data.description,
-      bio: parsed.data.bio || undefined,
-      type,
-      lat: coords.lat,
-      lng: coords.lng,
-      address: parsed.data.address,
-      priceLevel,
-      baseRating: 0,
-      baseReviewCount: 0,
-      amenities,
-      opening_hours: hours,
-      affiliateLinks: affiliateLinks.filter((l) => l.label && l.url),
-      status: "pending",
-      pendingReview: true,
-      createdBy: user?.id,
-      createdByName: profile?.name ?? user?.email ?? undefined,
-      banner,
-      avatar,
-      ...(isOwner
-        ? {
-            phone: phone.trim() || undefined,
-            whatsapp: whatsapp.trim() || undefined,
-            email: email.trim() || undefined,
-            website: website.trim() || undefined,
-            instagram: instagram.trim() || undefined,
-            facebook: facebook.trim() || undefined,
-            twitter: twitter.trim() || undefined,
-          }
-        : {}),
-    });
+    // Validate affiliate links (owner-only)
+    const cleanLinks: AffiliateLink[] = [];
+    if (isOwner) {
+      for (const l of affiliateLinks) {
+        if (!l.label && !l.url) continue;
+        const r = affiliateLinkSchema.safeParse(l);
+        if (!r.success) {
+          toast.error(r.error.issues[0].message);
+          return;
+        }
+        cleanLinks.push({ ...l, label: r.data.label, url: r.data.url });
+      }
+    }
+    try {
+      addShop({
+        name: parsed.data.name,
+        description: parsed.data.description,
+        bio: parsed.data.bio || undefined,
+        type,
+        lat: coords.lat,
+        lng: coords.lng,
+        address: parsed.data.address,
+        country,
+        priceLevel,
+        baseRating: 0,
+        baseReviewCount: 0,
+        amenities,
+        opening_hours: hours,
+        affiliateLinks: cleanLinks,
+        status: "pending",
+        pendingReview: true,
+        createdBy: user?.id,
+        createdByName: profile?.name ?? user?.email ?? undefined,
+        banner: isOwner ? banner : undefined,
+        avatar: isOwner ? avatar : undefined,
+        ...(isOwner
+          ? {
+              phone: phone.trim() || undefined,
+              whatsapp: whatsapp.trim() || undefined,
+              email: email.trim() || undefined,
+              website: website.trim() || undefined,
+              instagram: instagram.trim() || undefined,
+              facebook: facebook.trim() || undefined,
+              twitter: twitter.trim() || undefined,
+            }
+          : {}),
+      });
+    } catch (err) {
+      toast.error((err as Error).message || "Could not save shop");
+      return;
+    }
     toast.success("Shop submitted! It will appear once an admin verifies it.");
     reset();
     setOpen(false);
@@ -352,82 +377,100 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
             <Label>Address *</Label>
             <AddressAutocomplete
               value={address}
-              onChange={setAddress}
+              onChange={(v) => {
+                setAddress(v);
+                setAddressPicked(false);
+              }}
               onSelect={(s) => {
                 setAddress(s.display);
                 setCoords({ lat: s.lat, lng: s.lng });
+                setCountry(s.country);
+                setAddressPicked(true);
               }}
             />
+            {addressPicked && (
+              <p className="text-[11px] text-muted-foreground">
+                {country ? `${country} · ` : ""}
+                {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}
+              </p>
+            )}
+            {!addressPicked && address.length >= 3 && (
+              <p className="text-[11px] text-amber-600">
+                Pick a suggestion to lock the country & coordinates.
+              </p>
+            )}
           </section>
 
-          <section className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold">Banner</Label>
-              <input
-                ref={bannerInput}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => onPickImage(e, setBanner, "Banner")}
-              />
-              {banner ? (
-                <div className="relative h-20 w-full overflow-hidden rounded-md border">
-                  <img src={banner} alt="banner" className="h-full w-full object-cover" />
-                  <button
+          {isOwner && (
+            <section className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Banner</Label>
+                <input
+                  ref={bannerInput}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => onPickImage(e, setBanner, "Banner")}
+                />
+                {banner ? (
+                  <div className="relative h-20 w-full overflow-hidden rounded-md border">
+                    <img src={banner} alt="banner" className="h-full w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setBanner(undefined)}
+                      className="absolute right-1 top-1 rounded-full bg-background/90 p-0.5"
+                      aria-label="Remove banner"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <Button
                     type="button"
-                    onClick={() => setBanner(undefined)}
-                    className="absolute right-1 top-1 rounded-full bg-background/90 p-0.5"
-                    aria-label="Remove banner"
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-1"
+                    onClick={() => bannerInput.current?.click()}
                   >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ) : (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="w-full gap-1"
-                  onClick={() => bannerInput.current?.click()}
-                >
-                  <Upload className="h-3.5 w-3.5" /> Upload
-                </Button>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold">Avatar</Label>
-              <input
-                ref={avatarInput}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => onPickImage(e, setAvatar, "Avatar")}
-              />
-              {avatar ? (
-                <div className="relative h-20 w-20 overflow-hidden rounded-full border">
-                  <img src={avatar} alt="avatar" className="h-full w-full object-cover" />
-                  <button
+                    <Upload className="h-3.5 w-3.5" /> Upload
+                  </Button>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Avatar</Label>
+                <input
+                  ref={avatarInput}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => onPickImage(e, setAvatar, "Avatar")}
+                />
+                {avatar ? (
+                  <div className="relative h-20 w-20 overflow-hidden rounded-full border">
+                    <img src={avatar} alt="avatar" className="h-full w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setAvatar(undefined)}
+                      className="absolute right-0 top-0 rounded-full bg-background/90 p-0.5"
+                      aria-label="Remove avatar"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <Button
                     type="button"
-                    onClick={() => setAvatar(undefined)}
-                    className="absolute right-0 top-0 rounded-full bg-background/90 p-0.5"
-                    aria-label="Remove avatar"
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-1"
+                    onClick={() => avatarInput.current?.click()}
                   >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ) : (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="w-full gap-1"
-                  onClick={() => avatarInput.current?.click()}
-                >
-                  <Upload className="h-3.5 w-3.5" /> Upload
-                </Button>
-              )}
-            </div>
-          </section>
+                    <Upload className="h-3.5 w-3.5" /> Upload
+                  </Button>
+                )}
+              </div>
+            </section>
+          )}
 
           {isOwner && (
             <>

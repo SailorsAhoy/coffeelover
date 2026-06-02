@@ -6,6 +6,8 @@ export interface AddressSuggestion {
   display: string;
   lat: number;
   lng: number;
+  country?: string;
+  countryCode?: string;
 }
 
 interface Props {
@@ -56,6 +58,8 @@ export const AddressAutocomplete = ({
             display: d.display_name as string,
             lat: parseFloat(d.lat),
             lng: parseFloat(d.lon),
+            country: d.address?.country,
+            countryCode: d.address?.country_code?.toUpperCase(),
           })),
         );
         setOpen(true);
