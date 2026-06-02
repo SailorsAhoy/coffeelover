@@ -188,6 +188,28 @@ export const ShopReviews = ({
     if (!user) return;
     setSubmitting(true);
 
+    if (editingId) {
+      const { error } = await supabase
+        .from("reviews")
+        .update({
+          rating,
+          comment: comment.trim() || null,
+        })
+        .eq("id", editingId)
+        .eq("user_id", user.id);
+
+      setSubmitting(false);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      toast.success("Review updated");
+      resetForm();
+      setOpen(false);
+      load();
+      return;
+    }
+
     const { error } = await supabase.from("reviews").insert({
       user_id: user.id,
       reviewable_type: reviewableType,
