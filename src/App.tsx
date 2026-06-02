@@ -8,6 +8,9 @@ import { AppSidebar } from "@/components/AppSidebar";
 import Navigation from "./components/Navigation";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import { RequireAuth } from "./components/RequireAuth";
 import Shops from "./pages/Shops";
 import Roasters from "./pages/Roasters";
 import Coffee from "./pages/Coffee";
@@ -56,25 +59,27 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/shops" element={<Shops />} />
                   <Route path="/roasters" element={<Roasters />} />
                   <Route path="/coffee" element={<Coffee />} />
                   <Route path="/guides" element={<Guides />} />
                   <Route path="/recipes" element={<Recipes />} />
                   <Route path="/equipment" element={<Equipment />} />
-                  <Route path="/journal" element={<Journal />} />
-                  <Route path="/journal/products/new" element={<JournalProductNew />} />
-                  <Route path="/journal/brews/new" element={<JournalBrewNew />} />
+                  <Route path="/journal" element={<RequireAuth><Journal /></RequireAuth>} />
+                  <Route path="/journal/products/new" element={<RequireAuth><JournalProductNew /></RequireAuth>} />
+                  <Route path="/journal/brews/new" element={<RequireAuth><JournalBrewNew /></RequireAuth>} />
                   <Route path="/academy" element={<Academy />} />
                   <Route path="/academy/:id" element={<AcademyDetail />} />
-                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
                   <Route path="/jobs" element={<Jobs />} />
                   <Route path="/wiki" element={<Wiki />} />
                   <Route path="/forum" element={<Forum />} />
           <Route path="/library" element={<Library />} />
-          <Route path="/social" element={<SocialConnect />} />
-          <Route path="/messaging" element={<MessagingBoard />} />
-          <Route path="/settings" element={<Settings />}>
+          <Route path="/social" element={<RequireAuth><SocialConnect /></RequireAuth>} />
+          <Route path="/messaging" element={<RequireAuth><MessagingBoard /></RequireAuth>} />
+          <Route path="/settings" element={<RequireAuth roles={["admin"]}><Settings /></RequireAuth>}>
             <Route path="shop-types" element={<ShopTypesManagement />} />
             <Route path="shop-management" element={<ShopManagement />} />
             <Route path="user-management" element={<UserManagement />} />
