@@ -161,12 +161,9 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
-    if (!f.type.startsWith("image/")) {
-      toast.error(`${label}: must be an image`);
-      return;
-    }
-    if (f.size > MAX_IMG) {
-      toast.error(`${label}: max file size is 5MB`);
+    const err = validateImageFile(f, label);
+    if (err) {
+      toast.error(err);
       return;
     }
     const reader = new FileReader();
