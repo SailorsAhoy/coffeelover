@@ -319,7 +319,7 @@ const Shops = () => {
                                   )}
                                   <span className="flex items-center gap-1 text-muted-foreground">
                                     <MapPin className="h-3 w-3" />
-                                    {formatDistance(s.distanceKm)}
+                                    {s.distanceKm.toFixed(1)} km
                                   </span>
                                 </div>
                               </div>
