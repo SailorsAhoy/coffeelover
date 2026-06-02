@@ -118,8 +118,8 @@ export const ShopFilters = ({ value, onChange, activeCount }: Props) => {
             <Slider
               value={[value.maxDistanceKm]}
               min={1}
-              max={50}
-              step={1}
+              max={12000}
+              step={100}
               onValueChange={([v]) => update({ maxDistanceKm: v })}
             />
           </section>
