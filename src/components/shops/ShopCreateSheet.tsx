@@ -195,42 +195,61 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
       toast.error(parsed.error.issues[0].message);
       return;
     }
-    if (!coords || coords.lat === 0) {
-      toast.error("Pick a valid address from the list");
+    if (!addressPicked) {
+      toast.error("Pick an address from the suggestions list");
       return;
     }
-    addShop({
-      name: parsed.data.name,
-      description: parsed.data.description,
-      bio: parsed.data.bio || undefined,
-      type,
-      lat: coords.lat,
-      lng: coords.lng,
-      address: parsed.data.address,
-      priceLevel,
-      baseRating: 0,
-      baseReviewCount: 0,
-      amenities,
-      opening_hours: hours,
-      affiliateLinks: affiliateLinks.filter((l) => l.label && l.url),
-      status: "pending",
-      pendingReview: true,
-      createdBy: user?.id,
-      createdByName: profile?.name ?? user?.email ?? undefined,
-      banner,
-      avatar,
-      ...(isOwner
-        ? {
-            phone: phone.trim() || undefined,
-            whatsapp: whatsapp.trim() || undefined,
-            email: email.trim() || undefined,
-            website: website.trim() || undefined,
-            instagram: instagram.trim() || undefined,
-            facebook: facebook.trim() || undefined,
-            twitter: twitter.trim() || undefined,
-          }
-        : {}),
-    });
+    // Validate affiliate links (owner-only)
+    const cleanLinks: AffiliateLink[] = [];
+    if (isOwner) {
+      for (const l of affiliateLinks) {
+        if (!l.label && !l.url) continue;
+        const r = affiliateLinkSchema.safeParse(l);
+        if (!r.success) {
+          toast.error(r.error.issues[0].message);
+          return;
+        }
+        cleanLinks.push({ ...l, label: r.data.label, url: r.data.url });
+      }
+    }
+    try {
+      addShop({
+        name: parsed.data.name,
+        description: parsed.data.description,
+        bio: parsed.data.bio || undefined,
+        type,
+        lat: coords.lat,
+        lng: coords.lng,
+        address: parsed.data.address,
+        country,
+        priceLevel,
+        baseRating: 0,
+        baseReviewCount: 0,
+        amenities,
+        opening_hours: hours,
+        affiliateLinks: cleanLinks,
+        status: "pending",
+        pendingReview: true,
+        createdBy: user?.id,
+        createdByName: profile?.name ?? user?.email ?? undefined,
+        banner: isOwner ? banner : undefined,
+        avatar: isOwner ? avatar : undefined,
+        ...(isOwner
+          ? {
+              phone: phone.trim() || undefined,
+              whatsapp: whatsapp.trim() || undefined,
+              email: email.trim() || undefined,
+              website: website.trim() || undefined,
+              instagram: instagram.trim() || undefined,
+              facebook: facebook.trim() || undefined,
+              twitter: twitter.trim() || undefined,
+            }
+          : {}),
+      });
+    } catch (err) {
+      toast.error((err as Error).message || "Could not save shop");
+      return;
+    }
     toast.success("Shop submitted! It will appear once an admin verifies it.");
     reset();
     setOpen(false);
