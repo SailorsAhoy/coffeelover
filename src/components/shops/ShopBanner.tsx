@@ -10,9 +10,7 @@ import {
   Instagram,
   Facebook,
   MapPin,
-  ChevronLeft,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import ShopEditSheet from "@/components/shops/ShopEditSheet";
 import { SHOP_TYPE_COLOR, SHOP_TYPE_LABEL, type Shop } from "@/lib/shopsData";
 import { isShopOpen, getTodaySchedule } from "@/lib/shopUtils";
