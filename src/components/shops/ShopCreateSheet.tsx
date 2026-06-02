@@ -139,6 +139,8 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
     setInstagram("");
     setFacebook("");
     setTwitter("");
+    setHours(defaultHours);
+    setAffiliateLinks([]);
   };
 
   const toggle = (k: AmenityKey, v: boolean) =>
