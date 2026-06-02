@@ -41,6 +41,7 @@ import ShopFilters, {
   type ShopFilterValues,
 } from "@/components/shops/ShopFilters";
 import ShopsMapView from "@/components/shops/ShopsMapView";
+import ShopCreateSheet from "@/components/shops/ShopCreateSheet";
 import { toast } from "sonner";
 
 type SortKey = "distance" | "rating" | "reviews" | "price_asc" | "name";
