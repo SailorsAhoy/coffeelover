@@ -241,12 +241,18 @@ const Shops = () => {
                                   {SHOP_TYPE_LABEL[s.type]} · {"$".repeat(s.priceLevel)}
                                 </p>
                                 <div className="mt-1 flex items-center gap-2 text-xs">
-                                  <Badge
-                                    variant={open ? "default" : "secondary"}
-                                    className="h-5 px-1.5"
-                                  >
-                                    {open ? "Open" : "Closed"}
-                                  </Badge>
+                                  {s.pendingReview ? (
+                                    <Badge variant="outline" className="h-5 border-amber-500/40 bg-amber-500/10 px-1.5 text-amber-700 dark:text-amber-400">
+                                      Under review
+                                    </Badge>
+                                  ) : (
+                                    <Badge
+                                      variant={open ? "default" : "secondary"}
+                                      className="h-5 px-1.5"
+                                    >
+                                      {open ? "Open" : "Closed"}
+                                    </Badge>
+                                  )}
                                   <span className="flex items-center gap-1 text-muted-foreground">
                                     <MapPin className="h-3 w-3" />
                                     {formatDistance(s.distanceKm)}
