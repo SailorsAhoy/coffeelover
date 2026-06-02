@@ -403,6 +403,8 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
               <p className="text-[11px] text-amber-600">
                 Pick a suggestion to lock the country & coordinates.
               </p>
+            {addressPicked && country && (
+              <MapPreview lat={coords.lat} lng={coords.lng} />
             )}
           </section>
 
