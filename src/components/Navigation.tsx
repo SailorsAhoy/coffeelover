@@ -1,5 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
-import { Coffee, Home, ShoppingBag, Store, BookOpen, Package, User, PenLine, GraduationCap, LogOut, Settings, Briefcase, BookMarked, MessageSquare, Library, Bell, Users } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Coffee, Home, ShoppingBag, Store, BookOpen, Package, User, PenLine, GraduationCap, LogOut, LogIn, Settings, Briefcase, BookMarked, MessageSquare, Library, Bell, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,9 +11,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const Navigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, profile, hasRole, signOut } = useCurrentUser();
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/auth");
+  };
+
+  const initials = (profile?.name ?? profile?.email ?? "U")
+    .split(" ")
+    .map((p) => p[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   const mobileNavItems = [
     { path: "/", icon: Home, label: "Home" },
