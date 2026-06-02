@@ -30,13 +30,18 @@ interface StaffRow {
   bio: string | null;
   photo_path: string | null;
   managed_by: string | null;
+  staff_user_id: string | null;
   photo_url?: string;
 }
 
 const BUCKET = "shop-photos";
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const staffSchema = z.object({
-  name: z.string().trim().min(1, "Name required").max(80),
+  identifier: z
+    .string()
+    .trim()
+    .min(3, "Enter the user's email or user ID"),
   role: z.string().trim().min(1, "Role required").max(80),
   bio: z.string().trim().max(500).optional(),
 });
@@ -55,11 +60,13 @@ export const ShopStaff = ({ shopId }: Props) => {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
+  const [identifier, setIdentifier] = useState("");
+
   const load = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("shop_staff")
-      .select("id, name, role, bio, photo_path, managed_by")
+      .select("id, name, role, bio, photo_path, managed_by, staff_user_id")
       .eq("shop_id", String(shopId))
       .order("created_at", { ascending: true });
     if (error) {
