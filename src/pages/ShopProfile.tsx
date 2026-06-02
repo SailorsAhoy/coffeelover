@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { MapPin, ChevronLeft, ExternalLink } from "lucide-react";
+import { MapPin, ExternalLink, Check, X, User } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   getShopWithOverrides,
+  setShopStatus,
   subscribeShopOverrides,
   type Shop,
 } from "@/lib/shopsData";
 import { AMENITIES } from "@/lib/shopAmenities";
 import ShopReviews from "@/components/shops/ShopReviews";
-import ShopEditSheet from "@/components/shops/ShopEditSheet";
 import ShopBanner from "@/components/shops/ShopBanner";
 import ShopGallery from "@/components/shops/ShopGallery";
 import ShopStaff from "@/components/shops/ShopStaff";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { toast } from "sonner";
 
 const ShopProfile = () => {
   const { id } = useParams();
