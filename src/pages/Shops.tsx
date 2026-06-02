@@ -33,20 +33,16 @@ import { AMENITIES, type AmenityKey } from "@/lib/shopAmenities";
 import { haversineKm, formatDistance } from "@/lib/geo";
 import { isShopOpen } from "@/lib/shopUtils";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { useReviewAggregates } from "@/hooks/useReviewAggregates";
 import ShopFilters, {
   DEFAULT_FILTERS,
   type ShopFilterValues,
 } from "@/components/shops/ShopFilters";
 import ShopsMapView from "@/components/shops/ShopsMapView";
 import ShopCreateSheet from "@/components/shops/ShopCreateSheet";
-import { toast } from "sonner";
 
 type SortKey = "distance" | "rating" | "reviews" | "price_asc" | "name";
 
 const Shops = () => {
-  useCurrentUser();
   const { coords, loading: geoLoading, request } = useGeolocation(true);
 
   const [search, setSearch] = useState("");
