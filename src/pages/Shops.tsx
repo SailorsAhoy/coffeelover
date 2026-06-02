@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,15 +17,20 @@ import {
   Map as MapIcon,
   Star,
   MapPin,
-  Wifi,
-  Croissant,
-  TreePine,
   Navigation,
   Plus,
   Search,
   LocateFixed,
 } from "lucide-react";
-import { SHOPS, SHOP_TYPE_LABEL, SHOP_TYPE_COLOR } from "@/lib/shopsData";
+import {
+  SHOPS,
+  SHOP_TYPE_LABEL,
+  SHOP_TYPE_COLOR,
+  subscribeShopOverrides,
+  getShopWithOverrides,
+  type Shop,
+} from "@/lib/shopsData";
+import { AMENITIES, type AmenityKey } from "@/lib/shopAmenities";
 import { haversineKm, formatDistance } from "@/lib/geo";
 import { isShopOpen } from "@/lib/shopUtils";
 import { useGeolocation } from "@/hooks/useGeolocation";
@@ -48,30 +53,44 @@ const Shops = () => {
   const [filters, setFilters] = useState<ShopFilterValues>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<SortKey>("distance");
   const [view, setView] = useState<"list" | "map">("list");
+  const [, force] = useState(0);
+
+  useEffect(() => subscribeShopOverrides(() => force((n) => n + 1)), []);
+
+  const shops: Shop[] = useMemo(
+    () => SHOPS.map((s) => getShopWithOverrides(s.id) ?? s),
+    // re-runs on override change via force()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   const fallback = useMemo(
     () =>
       Object.fromEntries(
-        SHOPS.map((s) => [
+        shops.map((s) => [
           s.reviewableId,
           { rating: s.baseRating, reviewCount: s.baseReviewCount },
         ]),
       ),
-    [],
+    [shops],
   );
   const aggs = useReviewAggregates(
-    SHOPS.map((s) => s.reviewableId),
+    shops.map((s) => s.reviewableId),
     "coffee_shop",
     fallback,
   );
 
   const enriched = useMemo(() => {
-    return SHOPS.map((s) => {
+    return shops.map((s) => {
       const a = aggs[s.reviewableId] ?? fallback[s.reviewableId];
       const distanceKm = coords ? haversineKm(coords, { lat: s.lat, lng: s.lng }) : null;
       return { ...s, ...a, distanceKm };
     });
-  }, [aggs, coords, fallback]);
+  }, [shops, aggs, coords, fallback]);
+
+  const requiredAmenities = (Object.keys(filters.amenities) as AmenityKey[]).filter(
+    (k) => filters.amenities[k],
+  );
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -83,6 +102,7 @@ const Shops = () => {
       .filter((s) =>
         s.distanceKm == null ? true : s.distanceKm <= filters.maxDistanceKm,
       )
+      .filter((s) => requiredAmenities.every((k) => s.amenities[k]))
       .filter(
         (s) =>
           !q ||
@@ -105,14 +125,15 @@ const Shops = () => {
             return (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity);
         }
       });
-  }, [enriched, filters, search, sort]);
+  }, [enriched, filters, search, sort, requiredAmenities]);
 
   const activeFilterCount =
     (filters.maxDistanceKm !== DEFAULT_FILTERS.maxDistanceKm ? 1 : 0) +
     (filters.maxPriceLevel !== DEFAULT_FILTERS.maxPriceLevel ? 1 : 0) +
     (filters.minRating !== DEFAULT_FILTERS.minRating ? 1 : 0) +
     (filters.minReviews !== DEFAULT_FILTERS.minReviews ? 1 : 0) +
-    (Object.values(filters.types).filter((v) => !v).length > 0 ? 1 : 0);
+    (Object.values(filters.types).filter((v) => !v).length > 0 ? 1 : 0) +
+    requiredAmenities.length;
 
   const handleSuggest = () => {
     if (!isAuthenticated) {
@@ -212,6 +233,7 @@ const Shops = () => {
               <ul className="space-y-3">
                 {filtered.map((s) => {
                   const open = isShopOpen(s.opening_hours);
+                  const activeAmenities = AMENITIES.filter((a) => s.amenities[a.key]);
                   return (
                     <li key={s.id}>
                       <Link to={`/shop/${s.id}`}>
@@ -252,21 +274,23 @@ const Shops = () => {
                                 </span>
                               </div>
                             </div>
-                            <div className="mt-2 flex flex-wrap gap-1.5">
-                              {s.hasWifi && (
-                                <Badge variant="outline" className="h-5 gap-1 px-1.5 text-[11px]">
-                                  <Wifi className="h-3 w-3" /> WiFi
-                                </Badge>
-                              )}
-                              {s.hasBakery && (
-                                <Badge variant="outline" className="h-5 gap-1 px-1.5 text-[11px]">
-                                  <Croissant className="h-3 w-3" /> Bakery
-                                </Badge>
-                              )}
-                              {s.hasOutdoor && (
-                                <Badge variant="outline" className="h-5 gap-1 px-1.5 text-[11px]">
-                                  <TreePine className="h-3 w-3" /> Outdoor
-                                </Badge>
+                            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                              {activeAmenities.slice(0, 5).map((a) => {
+                                const Icon = a.icon;
+                                return (
+                                  <Badge
+                                    key={a.key}
+                                    variant="outline"
+                                    className="h-5 gap-1 px-1.5 text-[11px]"
+                                  >
+                                    <Icon className="h-3 w-3" /> {a.short}
+                                  </Badge>
+                                );
+                              })}
+                              {activeAmenities.length > 5 && (
+                                <span className="text-[11px] text-muted-foreground">
+                                  +{activeAmenities.length - 5}
+                                </span>
                               )}
                               <Button
                                 size="sm"

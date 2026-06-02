@@ -1,30 +1,43 @@
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   MapPin,
   Clock,
-  Wifi,
-  Croissant,
-  TreePine,
   Star,
   Phone,
   Globe,
   Navigation,
   ChevronLeft,
-  Pencil,
+  ExternalLink,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getShopById, SHOP_TYPE_LABEL, SHOP_TYPE_COLOR } from "@/lib/shopsData";
+import {
+  getShopWithOverrides,
+  subscribeShopOverrides,
+  SHOP_TYPE_LABEL,
+  SHOP_TYPE_COLOR,
+  type Shop,
+} from "@/lib/shopsData";
+import { AMENITIES } from "@/lib/shopAmenities";
 import { isShopOpen, getTodaySchedule } from "@/lib/shopUtils";
 import ShopReviews from "@/components/shops/ShopReviews";
+import ShopEditSheet from "@/components/shops/ShopEditSheet";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const ShopProfile = () => {
   const { id } = useParams();
-  const shop = getShopById(id ?? "1");
   const { can } = useCurrentUser();
+  const [shop, setShop] = useState<Shop | undefined>(() =>
+    getShopWithOverrides(id ?? "1"),
+  );
+
+  useEffect(() => {
+    setShop(getShopWithOverrides(id ?? "1"));
+    return subscribeShopOverrides(() => setShop(getShopWithOverrides(id ?? "1")));
+  }, [id]);
 
   if (!shop) {
     return (
@@ -39,6 +52,7 @@ const ShopProfile = () => {
 
   const open = isShopOpen(shop.opening_hours);
   const schedule = getTodaySchedule(shop.opening_hours);
+  const activeAmenities = AMENITIES.filter((a) => shop.amenities[a.key]);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -48,11 +62,7 @@ const ShopProfile = () => {
             <ChevronLeft className="h-4 w-4" /> Shops
           </Button>
         </Link>
-        {can("list_shop") && (
-          <Button size="sm" variant="outline" className="gap-1">
-            <Pencil className="h-3.5 w-3.5" /> Edit
-          </Button>
-        )}
+        {can("list_shop") && <ShopEditSheet shop={shop} />}
       </div>
 
       <div className="mx-auto max-w-3xl space-y-4 px-4 py-4 md:px-6">
@@ -94,23 +104,18 @@ const ShopProfile = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              {shop.hasWifi && (
-                <Badge variant="outline" className="gap-1">
-                  <Wifi className="h-3 w-3" /> WiFi
-                </Badge>
-              )}
-              {shop.hasBakery && (
-                <Badge variant="outline" className="gap-1">
-                  <Croissant className="h-3 w-3" /> Bakery
-                </Badge>
-              )}
-              {shop.hasOutdoor && (
-                <Badge variant="outline" className="gap-1">
-                  <TreePine className="h-3 w-3" /> Outdoor
-                </Badge>
-              )}
-            </div>
+            {activeAmenities.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {activeAmenities.map((a) => {
+                  const Icon = a.icon;
+                  return (
+                    <Badge key={a.key} variant="outline" className="gap-1">
+                      <Icon className="h-3 w-3" /> {a.short}
+                    </Badge>
+                  );
+                })}
+              </div>
+            )}
 
             <div className="grid grid-cols-3 gap-2 pt-1">
               <Button
@@ -153,6 +158,31 @@ const ShopProfile = () => {
           </CardContent>
         </Card>
 
+        {shop.affiliateLinks && shop.affiliateLinks.length > 0 && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Order & shop online</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2">
+                {shop.affiliateLinks.map((l) => (
+                  <li key={l.id}>
+                    <a
+                      href={l.url}
+                      target="_blank"
+                      rel="noopener noreferrer sponsored"
+                      className="flex items-center justify-between rounded-lg border bg-muted/30 p-3 text-sm transition-colors hover:bg-accent"
+                    >
+                      <span className="truncate font-medium">{l.label}</span>
+                      <ExternalLink className="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
+
         <Tabs defaultValue="reviews" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
@@ -185,6 +215,36 @@ const ShopProfile = () => {
                       </span>
                     </li>
                   ))}
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base">Amenities</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {AMENITIES.map((a) => {
+                    const Icon = a.icon;
+                    const on = !!shop.amenities[a.key];
+                    return (
+                      <li
+                        key={a.key}
+                        className={`flex items-center gap-2 rounded-md border p-2 text-sm ${
+                          on ? "" : "opacity-40"
+                        }`}
+                      >
+                        <Icon className="h-4 w-4 text-muted-foreground" />
+                        <span>{a.label}</span>
+                        {on && (
+                          <Badge variant="secondary" className="ml-auto h-5 px-1.5 text-[10px]">
+                            Yes
+                          </Badge>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </CardContent>
             </Card>
