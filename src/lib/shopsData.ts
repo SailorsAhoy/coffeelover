@@ -9,6 +9,14 @@ export interface AffiliateLink {
   url: string;
 }
 
+export interface StaffMember {
+  id: string;
+  name: string;
+  role: string;
+  avatar?: string;
+  email?: string;
+}
+
 export type Amenities = Partial<Record<AmenityKey, boolean>>;
 
 export interface Shop {
@@ -17,6 +25,8 @@ export interface Shop {
   reviewableId: string;
   name: string;
   description: string;
+  /** Longer-form story shown in the Bio tab. */
+  bio?: string;
   type: ShopType;
   lat: number;
   lng: number;
@@ -36,6 +46,9 @@ export interface Shop {
   opening_hours: OpeningHours;
   affiliateLinks?: AffiliateLink[];
   image?: string;
+  banner?: string;
+  avatar?: string;
+  staff?: StaffMember[];
 }
 
 const uuid = (n: number) =>
@@ -57,6 +70,7 @@ export const SHOPS: Shop[] = [
     reviewableId: uuid(1),
     name: "Artisan Coffee House",
     description: "Single-origin pour-overs and artisanal espresso.",
+    bio: "Founded in 2014, Artisan Coffee House sources beans directly from small farms across Ethiopia, Colombia and Guatemala. Our baristas brew everything by hand, from V60 to espresso, and we host monthly cuppings open to the public.",
     type: "coffee_shop",
     lat: 40.7589,
     lng: -73.9851,
@@ -69,7 +83,15 @@ export const SHOPS: Shop[] = [
     whatsapp: "+12125550101",
     website: "https://example.com",
     email: "hello@artisan.coffee",
+    instagram: "https://instagram.com/artisan",
     opening_hours: stdHours,
+    banner:
+      "https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=1200&q=70&auto=format",
+    staff: [
+      { id: "s1", name: "Maya Chen", role: "Head Barista", email: "maya@artisan.coffee" },
+      { id: "s2", name: "Diego Romero", role: "Roaster" },
+      { id: "s3", name: "Lila Park", role: "Shift Lead" },
+    ],
     affiliateLinks: [
       { id: "a1", label: "Order on Uber Eats", url: "https://ubereats.com" },
       { id: "a2", label: "Buy beans online", url: "https://example.com/shop" },
