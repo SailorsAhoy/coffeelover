@@ -508,6 +508,21 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
                 </div>
               </section>
 
+              <section className="space-y-2">
+                <Label className="text-sm font-semibold">Opening hours</Label>
+                <OpeningHoursEditor value={hours} onChange={setHours} />
+              </section>
+
+              <section className="space-y-2">
+                <Label className="text-sm font-semibold">Affiliate links</Label>
+                <AffiliateLinksEditor
+                  value={affiliateLinks}
+                  onChange={setAffiliateLinks}
+                />
+              </section>
+
+
+
               <p className="rounded-md border bg-muted/40 p-2 text-[11px] text-muted-foreground">
                 Submitting as{" "}
                 <span className="font-medium text-foreground">
