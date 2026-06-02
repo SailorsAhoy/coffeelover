@@ -239,6 +239,7 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
         pendingReview: true,
         createdBy: user?.id,
         createdByName: profile?.name ?? user?.email ?? undefined,
+        createdByRole: isOwner ? "owner" : "user",
         banner: isOwner ? banner : undefined,
         avatar: isOwner ? avatar : undefined,
         ...(isOwner

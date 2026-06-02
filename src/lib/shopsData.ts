@@ -56,6 +56,8 @@ export interface Shop {
   status?: "pending" | "approved" | "rejected";
   createdBy?: string;
   createdByName?: string;
+  /** Role of the submitter at creation time. Used to hide the "submitted by" pill for owners/admins. */
+  createdByRole?: string;
 }
 
 const uuid = (n: number) =>

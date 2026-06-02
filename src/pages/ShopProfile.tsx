@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { MapPin, ExternalLink, Check, X, User } from "lucide-react";
+import { MapPin, ExternalLink, Check, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -106,13 +106,6 @@ const ShopProfile = () => {
           </div>
         )}
 
-        {shop.createdByName && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <User className="h-3.5 w-3.5" />
-            Submitted by{" "}
-            <span className="font-medium text-foreground">{shop.createdByName}</span>
-          </div>
-        )}
 
         <Card>
           <CardContent className="space-y-2 pt-4">
