@@ -33,6 +33,7 @@ import { AMENITIES, type AmenityKey } from "@/lib/shopAmenities";
 import { haversineKm, formatDistance } from "@/lib/geo";
 import { isShopOpen } from "@/lib/shopUtils";
 import { useGeolocation } from "@/hooks/useGeolocation";
+import { useReviewAggregates } from "@/hooks/useReviewAggregates";
 import ShopFilters, {
   DEFAULT_FILTERS,
   type ShopFilterValues,
