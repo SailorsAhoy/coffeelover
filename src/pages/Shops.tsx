@@ -42,7 +42,7 @@ import ShopsMapView from "@/components/shops/ShopsMapView";
 import ShopCreateSheet from "@/components/shops/ShopCreateSheet";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { setShopStatus } from "@/lib/shopsData";
-import { Check, X } from "lucide-react";
+import { Check, X, User as UserIcon } from "lucide-react";
 
 type SortKey = "distance" | "new" | "rating" | "reviews" | "price_asc" | "name";
 type StatusTab = "approved" | "pending" | "all";
@@ -334,6 +334,17 @@ const Shops = () => {
                               </div>
                             </div>
                             <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                              {s.createdByName && s.createdByRole === "user" && (
+                                <Link
+                                  to={s.createdBy ? `/u/${s.createdBy}` : "#"}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="inline-flex h-5 items-center gap-1 rounded-full border bg-muted/40 px-2 text-[11px] text-muted-foreground hover:text-foreground hover:bg-muted"
+                                  title={`Submitted by ${s.createdByName}`}
+                                >
+                                  <UserIcon className="h-3 w-3" />
+                                  <span className="font-medium truncate max-w-[120px]">{s.createdByName}</span>
+                                </Link>
+                              )}
                               {activeAmenities.slice(0, 5).map((a) => {
                                 const Icon = a.icon;
                                 return (
@@ -392,12 +403,6 @@ const Shops = () => {
                                   <X className="h-3 w-3" /> Reject
                                 </Button>
                               </div>
-                            )}
-                            {s.createdByName && (
-                              <p className="mt-1.5 text-[10px] text-muted-foreground">
-                                Submitted by{" "}
-                                <span className="font-medium">{s.createdByName}</span>
-                              </p>
                             )}
                           </CardContent>
                         </Card>
