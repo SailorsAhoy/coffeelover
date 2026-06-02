@@ -6,6 +6,8 @@ export interface AddressSuggestion {
   display: string;
   lat: number;
   lng: number;
+  country?: string;
+  countryCode?: string;
 }
 
 interface Props {
