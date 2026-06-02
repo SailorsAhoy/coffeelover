@@ -141,7 +141,6 @@ const Shops = () => {
       toast.error("Sign in to suggest a shop");
       return;
     }
-    toast.success("Thanks! Your suggestion was sent for review.");
   };
 
   return (
