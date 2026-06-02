@@ -217,6 +217,8 @@ export const ShopEditSheet = ({ shop }: Props) => {
     setOpen(false);
   };
 
+  if (!isOwner) return null;
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
