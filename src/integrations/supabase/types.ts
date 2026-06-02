@@ -782,6 +782,33 @@ export type Database = {
           },
         ]
       }
+      shop_photos: {
+        Row: {
+          caption: string | null
+          created_at: string
+          id: string
+          shop_id: string
+          storage_path: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          shop_id: string
+          storage_path: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          shop_id?: string
+          storage_path?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
       shop_types: {
         Row: {
           created_at: string
