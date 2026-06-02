@@ -18,7 +18,7 @@ export interface ShopFilterValues {
 
 export const DEFAULT_FILTERS: ShopFilterValues = {
   types: { veggie: true, bakery: true, coffee_shop: true, roaster_shop: true },
-  maxDistanceKm: 20,
+  maxDistanceKm: 12000,
   maxPriceLevel: 4,
   minRating: 0,
   minReviews: 0,
