@@ -146,14 +146,18 @@ export const ShopEditSheet = ({ shop }: Props) => {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
-    if (!f.type.startsWith("image/")) return toast.error(`${label}: must be an image`);
-    if (f.size > MAX_IMG) return toast.error(`${label}: max 5MB`);
+    const err = validateImageFile(f, label);
+    if (err) return toast.error(err);
     const reader = new FileReader();
     reader.onload = () => set(String(reader.result));
     reader.readAsDataURL(f);
   };
 
   const save = () => {
+    if (!isOwner) {
+      toast.error("You don't have permission to edit this shop");
+      return;
+    }
     const parsed = schema.safeParse({
       name,
       description,
