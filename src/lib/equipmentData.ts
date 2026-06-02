@@ -167,3 +167,64 @@ export const findBrand = (slug: string) => brands.find((b) => b.slug === slug);
 export const findMachine = (slug: string) => machines.find((m) => m.slug === slug);
 export const findAccessory = (slug: string) => accessories.find((a) => a.slug === slug);
 export const machinesByBrand = (slug: string) => machines.filter((m) => m.brandSlug === slug);
+
+export interface RecipeRef { id: string; title: string; url: string; }
+
+export const recipesForMachineType = (type: Machine["type"]): RecipeRef[] => {
+  switch (type) {
+    case "Espresso Machine":
+      return [
+        { id: "rec-latte", title: "Caramel Macchiato", url: "/recipes" },
+        { id: "rec-cortado", title: "Cortado", url: "/recipes" },
+        { id: "rec-flat", title: "Flat White", url: "/recipes" },
+      ];
+    case "Drip Coffee Maker":
+      return [
+        { id: "rec-batch", title: "Batch Brew Ratios", url: "/recipes" },
+        { id: "rec-iced", title: "Japanese Iced Coffee", url: "/recipes" },
+      ];
+    case "Pour Over":
+      return [
+        { id: "rec-46", title: "V60 4:6 Method", url: "/recipes" },
+        { id: "rec-iced-pour", title: "Iced Pour Over", url: "/recipes" },
+      ];
+    default:
+      return [{ id: "rec-cold", title: "Iced Vanilla Cold Brew", url: "/recipes" }];
+  }
+};
+
+export const recipesForAccessoryCategory = (cat: Accessory["category"]): RecipeRef[] => {
+  if (cat === "Grinder") return [{ id: "rec-grind", title: "Grind Size by Method", url: "/recipes" }];
+  if (cat === "Accessories") return [{ id: "rec-milk", title: "Milk Textures for Latte Art", url: "/recipes" }];
+  return [{ id: "rec-cold", title: "Iced Vanilla Cold Brew", url: "/recipes" }];
+};
+
+// Related items across catalog
+export const relatedMachines = (m: Machine, n = 3) =>
+  machines.filter((o) => o.slug !== m.slug && (o.type === m.type || o.brandSlug === m.brandSlug)).slice(0, n);
+
+export const relatedAccessoriesForMachine = (m: Machine, n = 3): Accessory[] => {
+  if (m.type === "Espresso Machine") {
+    return accessories.filter((a) => ["Grinder", "Tools", "Cleaning", "Glassware"].includes(a.category)).slice(0, n);
+  }
+  if (m.type === "Pour Over" || m.type === "Drip Coffee Maker") {
+    return accessories.filter((a) => ["Grinder", "Accessories", "Tools"].includes(a.category)).slice(0, n);
+  }
+  return accessories.slice(0, n);
+};
+
+export const relatedMachinesForAccessory = (a: Accessory, n = 3): Machine[] => {
+  if (a.category === "Grinder" || a.category === "Tools") return machines.slice(0, n);
+  if (a.category === "Accessories") return machines.filter((m) => m.type === "Espresso Machine").slice(0, n);
+  return machines.slice(0, n);
+};
+
+export const ratingDistribution = (reviews: Review[]) => {
+  const dist = [0, 0, 0, 0, 0]; // index 0 -> 1 star, index 4 -> 5 star
+  reviews.forEach((r) => {
+    const idx = Math.min(5, Math.max(1, Math.round(r.rating))) - 1;
+    dist[idx] += 1;
+  });
+  return dist;
+};
+
