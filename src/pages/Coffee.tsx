@@ -1,98 +1,113 @@
+import { useMemo, useState } from "react";
 import { ShoppingCart, Star, MapPin } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+interface CoffeeItem {
+  id: number;
+  name: string;
+  roaster: string;
+  type: "Arabica" | "Robusta" | "Blend";
+  roast: "Light" | "Medium" | "Dark";
+  origin: string;
+  price: number;
+  rating: number;
+}
+
+const mockCoffees: CoffeeItem[] = [
+  { id: 1, name: "Ethiopian Yirgacheffe", roaster: "Heritage Roasters", type: "Arabica", roast: "Light", origin: "Ethiopia", price: 24.99, rating: 4.9 },
+  { id: 2, name: "Colombian Supremo", roaster: "Modern Bean Co.", type: "Arabica", roast: "Medium", origin: "Colombia", price: 19.99, rating: 4.7 },
+  { id: 3, name: "Sumatra Mandheling", roaster: "Altitude Coffee", type: "Arabica", roast: "Dark", origin: "Indonesia", price: 22.99, rating: 4.8 },
+  { id: 4, name: "Kenya AA Nyeri", roaster: "Heritage Roasters", type: "Arabica", roast: "Medium", origin: "Kenya", price: 27.5, rating: 4.85 },
+  { id: 5, name: "Guatemala Antigua", roaster: "Brooklyn Roast & Shop", type: "Arabica", roast: "Medium", origin: "Guatemala", price: 21.0, rating: 4.6 },
+  { id: 6, name: "Brazilian Santos", roaster: "Café del Sol", type: "Arabica", roast: "Dark", origin: "Brazil", price: 16.5, rating: 4.3 },
+  { id: 7, name: "Costa Rica Tarrazú", roaster: "Andes Origin", type: "Arabica", roast: "Light", origin: "Costa Rica", price: 23.0, rating: 4.7 },
+  { id: 8, name: "Vietnamese Robusta", roaster: "Saigon Roast House", type: "Robusta", roast: "Dark", origin: "Vietnam", price: 14.99, rating: 4.2 },
+  { id: 9, name: "House Espresso Blend", roaster: "Roma Espresso Lab", type: "Blend", roast: "Dark", origin: "Italy", price: 18.0, rating: 4.5 },
+  { id: 10, name: "Berlin Ferment Lot #4", roaster: "Berlin Bean Lab", type: "Arabica", roast: "Light", origin: "Ethiopia", price: 32.0, rating: 4.9 },
+  { id: 11, name: "Highland Breakfast", roaster: "Highland Roasters", type: "Blend", roast: "Medium", origin: "Scotland", price: 17.5, rating: 4.4 },
+  { id: 12, name: "Sakura Single Origin", roaster: "Sakura Coffee Works", type: "Arabica", roast: "Light", origin: "Japan", price: 34.0, rating: 4.95 },
+];
+
 const Coffee = () => {
-  const mockCoffees = [
-    {
-      id: 1,
-      name: "Ethiopian Yirgacheffe",
-      roaster: "Heritage Roasters",
-      type: "Arabica",
-      roast: "Light",
-      origin: "Ethiopia",
-      price: 24.99,
-      rating: 4.9,
-    },
-    {
-      id: 2,
-      name: "Colombian Supremo",
-      roaster: "Modern Bean Co.",
-      type: "Arabica",
-      roast: "Medium",
-      origin: "Colombia",
-      price: 19.99,
-      rating: 4.7,
-    },
-    {
-      id: 3,
-      name: "Sumatra Mandheling",
-      roaster: "Altitude Coffee",
-      type: "Arabica",
-      roast: "Dark",
-      origin: "Indonesia",
-      price: 22.99,
-      rating: 4.8,
-    },
-  ];
+  const [q, setQ] = useState("");
+  const [type, setType] = useState("all");
+  const [roast, setRoast] = useState("all");
+  const [price, setPrice] = useState("all");
+  const [sort, setSort] = useState("rating");
+
+  const filtered = useMemo(() => {
+    const s = q.trim().toLowerCase();
+    const within = (p: number) =>
+      price === "under20" ? p < 20 : price === "20-30" ? p >= 20 && p <= 30 : price === "over30" ? p > 30 : true;
+    const rows = mockCoffees.filter((c) =>
+      (type === "all" || c.type.toLowerCase() === type) &&
+      (roast === "all" || c.roast.toLowerCase() === roast) &&
+      within(c.price) &&
+      (!s || c.name.toLowerCase().includes(s) || c.roaster.toLowerCase().includes(s) || c.origin.toLowerCase().includes(s)),
+    );
+    return [...rows].sort((a, b) => {
+      if (sort === "price-low") return a.price - b.price;
+      if (sort === "price-high") return b.price - a.price;
+      return b.rating - a.rating;
+    });
+  }, [q, type, roast, price, sort]);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
       <div className="max-w-7xl mx-auto space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-2">Coffee Selection</h1>
-          <p className="text-muted-foreground">
-            Premium coffee beans from around the world
-          </p>
+          <p className="text-muted-foreground">Premium coffee beans from around the world</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Coffee Type" />
-            </SelectTrigger>
+        <Input placeholder="Search by bean, roaster or origin..." value={q} onChange={(e) => setQ(e.target.value)} />
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Select value={type} onValueChange={setType}>
+            <SelectTrigger><SelectValue placeholder="Coffee Type" /></SelectTrigger>
             <SelectContent>
+              <SelectItem value="all">All types</SelectItem>
               <SelectItem value="arabica">Arabica</SelectItem>
               <SelectItem value="robusta">Robusta</SelectItem>
               <SelectItem value="blend">Blend</SelectItem>
             </SelectContent>
           </Select>
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Roast Level" />
-            </SelectTrigger>
+          <Select value={roast} onValueChange={setRoast}>
+            <SelectTrigger><SelectValue placeholder="Roast Level" /></SelectTrigger>
             <SelectContent>
+              <SelectItem value="all">All roasts</SelectItem>
               <SelectItem value="light">Light</SelectItem>
               <SelectItem value="medium">Medium</SelectItem>
               <SelectItem value="dark">Dark</SelectItem>
             </SelectContent>
           </Select>
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Price Range" />
-            </SelectTrigger>
+          <Select value={price} onValueChange={setPrice}>
+            <SelectTrigger><SelectValue placeholder="Price Range" /></SelectTrigger>
             <SelectContent>
+              <SelectItem value="all">Any price</SelectItem>
               <SelectItem value="under20">Under $20</SelectItem>
               <SelectItem value="20-30">$20 - $30</SelectItem>
               <SelectItem value="over30">Over $30</SelectItem>
             </SelectContent>
           </Select>
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
+          <Select value={sort} onValueChange={setSort}>
+            <SelectTrigger><SelectValue placeholder="Sort by" /></SelectTrigger>
             <SelectContent>
+              <SelectItem value="rating">Highest Rated</SelectItem>
               <SelectItem value="price-low">Price: Low to High</SelectItem>
               <SelectItem value="price-high">Price: High to Low</SelectItem>
-              <SelectItem value="rating">Highest Rated</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
+        <p className="text-sm text-muted-foreground">{filtered.length} coffee{filtered.length === 1 ? "" : "s"}</p>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {mockCoffees.map((coffee) => (
+          {filtered.map((coffee) => (
             <Card key={coffee.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">
