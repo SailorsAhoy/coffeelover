@@ -47,6 +47,8 @@ import { Check, X } from "lucide-react";
 type SortKey = "distance" | "new" | "rating" | "reviews" | "price_asc" | "name";
 type StatusTab = "approved" | "pending" | "all";
 
+const DEFAULT_CENTER = { lat: 40.7589, lng: -73.9851 };
+
 const Shops = () => {
   // Do not auto-request geolocation; only fetch when the user enables the locator.
   const { coords, loading: geoLoading, request } = useGeolocation(false);
@@ -62,6 +64,10 @@ const Shops = () => {
   const [, force] = useState(0);
 
   useEffect(() => subscribeShopOverrides(() => force((n) => n + 1)), []);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Effective coords only when the locator is active. Otherwise treat as unknown
   // so the distance filter is not applied and "nearest" sort falls back.
@@ -105,9 +111,8 @@ const Shops = () => {
   const enriched = useMemo(() => {
     return shops.map((s) => {
       const a = aggs[s.reviewableId] ?? fallback[s.reviewableId];
-      const distanceKm = activeCoords
-        ? haversineKm(activeCoords, { lat: s.lat, lng: s.lng })
-        : null;
+      const ref = activeCoords ?? DEFAULT_CENTER;
+      const distanceKm = haversineKm(ref, { lat: s.lat, lng: s.lng });
       return { ...s, ...a, distanceKm };
     });
   }, [shops, aggs, activeCoords, fallback]);
@@ -314,7 +319,7 @@ const Shops = () => {
                                   )}
                                   <span className="flex items-center gap-1 text-muted-foreground">
                                     <MapPin className="h-3 w-3" />
-                                    {formatDistance(s.distanceKm)}
+                                    {s.distanceKm.toFixed(1)} km
                                   </span>
                                 </div>
                               </div>
