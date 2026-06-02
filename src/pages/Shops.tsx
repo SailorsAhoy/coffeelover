@@ -135,7 +135,7 @@ const Shops = () => {
             return (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity);
         }
       });
-  }, [enriched, filters, search, sort, requiredAmenities]);
+  }, [enriched, filters, search, sort, requiredAmenities, statusTab]);
 
   const activeFilterCount =
     (filters.maxDistanceKm !== DEFAULT_FILTERS.maxDistanceKm ? 1 : 0) +
