@@ -17,6 +17,7 @@ import Coffee from "./pages/Coffee";
 import Guides from "./pages/Guides";
 import Recipes from "./pages/Recipes";
 import Equipment from "./pages/Equipment";
+import EquipmentDetail from "./pages/EquipmentDetail";
 import Journal from "./pages/Journal";
 import JournalProductNew from "./pages/JournalProductNew";
 import JournalBrewNew from "./pages/JournalBrewNew";
@@ -75,6 +76,9 @@ const App = () => (
                   <Route path="/guides" element={<Guides />} />
                   <Route path="/recipes" element={<Recipes />} />
                   <Route path="/equipment" element={<Equipment />} />
+                  <Route path="/equipment/brand/:slug" element={<EquipmentDetail kind="brand" />} />
+                  <Route path="/equipment/machine/:slug" element={<EquipmentDetail kind="machine" />} />
+                  <Route path="/equipment/accessory/:slug" element={<EquipmentDetail kind="accessory" />} />
                   <Route path="/journal" element={<RequireAuth><Journal /></RequireAuth>} />
                   <Route path="/journal/products/new" element={<RequireAuth><JournalProductNew /></RequireAuth>} />
                   <Route path="/journal/brews/new" element={<RequireAuth><JournalBrewNew /></RequireAuth>} />
