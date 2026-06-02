@@ -13,6 +13,8 @@ const LABELS: Record<AppRole, string> = {
   coffee_shop: "Coffee Shop",
   producer: "Producer",
   user: "Member",
+  manufacturer: "Equipment Manufacturer",
+  supplier: "Supplier",
 };
 
 export const RolesCard = () => {
