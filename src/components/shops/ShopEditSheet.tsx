@@ -298,12 +298,15 @@ export const ShopEditSheet = ({ shop }: Props) => {
               onSelect={(s) => {
                 setAddress(s.display);
                 setCoords({ lat: s.lat, lng: s.lng });
+                setCountry(s.country);
               }}
             />
             <p className="text-xs text-muted-foreground">
+              {country ? `${country} · ` : ""}
               Lat {coords.lat.toFixed(4)}, Lng {coords.lng.toFixed(4)}
             </p>
           </section>
+
 
           <section className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
