@@ -70,35 +70,45 @@ const Navigation = () => {
               <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">5</Badge>
             </button>
             
-            <DropdownMenu>
-              <DropdownMenuTrigger className="outline-none">
-                <Avatar className="cursor-pointer hover:ring-2 ring-primary transition-all">
-                  <AvatarImage src="" />
-                  <AvatarFallback className="bg-primary text-primary-foreground">
-                    <User className="w-5 h-5" />
-                  </AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-card">
-                <DropdownMenuItem asChild>
-                  <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
-                    <User className="w-4 h-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
-                    <Settings className="w-4 h-4" />
-                    <span>Settings</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-destructive">
-                  <LogOut className="w-4 h-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="outline-none">
+                  <Avatar className="cursor-pointer hover:ring-2 ring-primary transition-all">
+                    <AvatarImage src={profile?.avatar_url ?? ""} />
+                    <AvatarFallback className="bg-primary text-primary-foreground text-sm">{initials}</AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-card">
+                  {profile && (
+                    <div className="px-2 py-1.5 text-xs text-muted-foreground truncate">{profile.name ?? profile.email}</div>
+                  )}
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
+                      <User className="w-4 h-4" />
+                      <span>Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  {hasRole("admin") && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/settings/user-management" className="flex items-center gap-2 cursor-pointer">
+                        <Settings className="w-4 h-4" />
+                        <span>Admin Settings</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onSelect={handleLogout} className="flex items-center gap-2 cursor-pointer text-destructive">
+                    <LogOut className="w-4 h-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/auth" className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium">
+                <LogIn className="w-4 h-4" />
+                Sign in
+              </Link>
+            )}
           </div>
         </div>
       </nav>
@@ -113,35 +123,45 @@ const Navigation = () => {
             <span className="text-lg font-bold">CoffeeLovers</span>
           </Link>
           
-          <DropdownMenu>
-            <DropdownMenuTrigger className="outline-none">
-              <Avatar className="cursor-pointer hover:ring-2 ring-primary transition-all h-9 w-9">
-                <AvatarImage src="" />
-                <AvatarFallback className="bg-primary text-primary-foreground">
-                  <User className="w-4 h-4" />
-                </AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48 bg-card">
-              <DropdownMenuItem asChild>
-                <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
-                  <User className="w-4 h-4" />
-                  <span>Profile</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
-                  <Settings className="w-4 h-4" />
-                  <span>Settings</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-destructive">
-                <LogOut className="w-4 h-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="outline-none">
+                <Avatar className="cursor-pointer hover:ring-2 ring-primary transition-all h-9 w-9">
+                  <AvatarImage src={profile?.avatar_url ?? ""} />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">{initials}</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 bg-card">
+                {profile && (
+                  <div className="px-2 py-1.5 text-xs text-muted-foreground truncate">{profile.name ?? profile.email}</div>
+                )}
+                <DropdownMenuItem asChild>
+                  <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
+                    <User className="w-4 h-4" />
+                    <span>Profile</span>
+                  </Link>
+                </DropdownMenuItem>
+                {hasRole("admin") && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/settings/user-management" className="flex items-center gap-2 cursor-pointer">
+                      <Settings className="w-4 h-4" />
+                      <span>Admin Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={handleLogout} className="flex items-center gap-2 cursor-pointer text-destructive">
+                  <LogOut className="w-4 h-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link to="/auth" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium">
+              <LogIn className="w-4 h-4" />
+              Sign in
+            </Link>
+          )}
         </div>
       </nav>
 
