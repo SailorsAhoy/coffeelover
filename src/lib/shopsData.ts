@@ -1,6 +1,15 @@
 import type { OpeningHours } from "@/lib/shopUtils";
+import type { AmenityKey } from "@/lib/shopAmenities";
 
 export type ShopType = "veggie" | "bakery" | "coffee_shop" | "roaster_shop";
+
+export interface AffiliateLink {
+  id: string;
+  label: string;
+  url: string;
+}
+
+export type Amenities = Partial<Record<AmenityKey, boolean>>;
 
 export interface Shop {
   id: number;
@@ -16,9 +25,7 @@ export interface Shop {
   priceLevel: 1 | 2 | 3 | 4;
   baseRating: number;
   baseReviewCount: number;
-  hasWifi?: boolean;
-  hasBakery?: boolean;
-  hasOutdoor?: boolean;
+  amenities: Amenities;
   phone?: string;
   whatsapp?: string;
   website?: string;
@@ -27,6 +34,7 @@ export interface Shop {
   instagram?: string;
   twitter?: string;
   opening_hours: OpeningHours;
+  affiliateLinks?: AffiliateLink[];
   image?: string;
 }
 
@@ -52,17 +60,20 @@ export const SHOPS: Shop[] = [
     type: "coffee_shop",
     lat: 40.7589,
     lng: -73.9851,
-    address: "123 Main Street, Midtown",
+    address: "123 Main Street, Midtown, New York, NY",
     priceLevel: 3,
     baseRating: 4.8,
     baseReviewCount: 142,
-    hasWifi: true,
-    hasBakery: true,
+    amenities: { wifi: true, bakery: true, takeaway: true, dineIn: true, bikeParking: true },
     phone: "+12125550101",
     whatsapp: "+12125550101",
     website: "https://example.com",
     email: "hello@artisan.coffee",
     opening_hours: stdHours,
+    affiliateLinks: [
+      { id: "a1", label: "Order on Uber Eats", url: "https://ubereats.com" },
+      { id: "a2", label: "Buy beans online", url: "https://example.com/shop" },
+    ],
   },
   {
     id: 2,
@@ -72,12 +83,11 @@ export const SHOPS: Shop[] = [
     type: "coffee_shop",
     lat: 40.7614,
     lng: -73.9776,
-    address: "55 Park Ave, Midtown East",
+    address: "55 Park Ave, Midtown East, New York, NY",
     priceLevel: 2,
     baseRating: 4.6,
     baseReviewCount: 88,
-    hasWifi: true,
-    hasOutdoor: true,
+    amenities: { wifi: true, outdoor: true, petFriendly: true, dineIn: true, takeaway: true },
     phone: "+12125550102",
     instagram: "https://instagram.com",
     opening_hours: { ...stdHours, sunday: { open: "00:00", close: "00:00", closed: true } },
@@ -90,14 +100,17 @@ export const SHOPS: Shop[] = [
     type: "roaster_shop",
     lat: 40.7489,
     lng: -73.968,
-    address: "210 Roebling St, Williamsburg",
+    address: "210 Roebling St, Williamsburg, Brooklyn, NY",
     priceLevel: 3,
     baseRating: 4.9,
     baseReviewCount: 203,
-    hasWifi: true,
+    amenities: { wifi: true, bikeParking: true, takeaway: true, dineIn: true },
     phone: "+12125550103",
     website: "https://example.com",
     opening_hours: stdHours,
+    affiliateLinks: [
+      { id: "a1", label: "Subscribe to monthly beans", url: "https://example.com/sub" },
+    ],
   },
   {
     id: 4,
@@ -107,11 +120,11 @@ export const SHOPS: Shop[] = [
     type: "roaster_shop",
     lat: 40.74,
     lng: -73.99,
-    address: "8 W 18th St, Flatiron",
+    address: "8 W 18th St, Flatiron, New York, NY",
     priceLevel: 4,
     baseRating: 4.9,
     baseReviewCount: 311,
-    hasBakery: true,
+    amenities: { bakery: true, wheelchairAccessible: true, dineIn: true, takeaway: true },
     phone: "+12125550104",
     opening_hours: stdHours,
   },
@@ -123,12 +136,18 @@ export const SHOPS: Shop[] = [
     type: "veggie",
     lat: 40.7505,
     lng: -73.9934,
-    address: "402 8th Ave, Chelsea",
+    address: "402 8th Ave, Chelsea, New York, NY",
     priceLevel: 2,
     baseRating: 4.5,
     baseReviewCount: 64,
-    hasWifi: true,
-    hasOutdoor: true,
+    amenities: {
+      wifi: true,
+      outdoor: true,
+      veganOptions: true,
+      petFriendly: true,
+      bikeParking: true,
+      dineIn: true,
+    },
     opening_hours: stdHours,
   },
   {
@@ -139,11 +158,11 @@ export const SHOPS: Shop[] = [
     type: "veggie",
     lat: 40.752,
     lng: -73.975,
-    address: "77 E 42nd St, Midtown",
+    address: "77 E 42nd St, Midtown, New York, NY",
     priceLevel: 2,
     baseRating: 4.6,
     baseReviewCount: 51,
-    hasWifi: true,
+    amenities: { wifi: true, veganOptions: true, takeaway: true, dineIn: true },
     opening_hours: stdHours,
   },
   {
@@ -154,11 +173,11 @@ export const SHOPS: Shop[] = [
     type: "bakery",
     lat: 40.765,
     lng: -73.97,
-    address: "1 Central Park S, Midtown",
+    address: "1 Central Park S, Midtown, New York, NY",
     priceLevel: 3,
     baseRating: 4.7,
     baseReviewCount: 119,
-    hasBakery: true,
+    amenities: { bakery: true, takeaway: true, dineIn: true, wheelchairAccessible: true },
     opening_hours: stdHours,
   },
   {
@@ -169,13 +188,15 @@ export const SHOPS: Shop[] = [
     type: "bakery",
     lat: 40.7549,
     lng: -73.984,
-    address: "350 5th Ave, Midtown",
+    address: "350 5th Ave, Midtown, New York, NY",
     priceLevel: 1,
     baseRating: 4.8,
     baseReviewCount: 96,
-    hasBakery: true,
-    hasOutdoor: true,
+    amenities: { bakery: true, outdoor: true, bikeParking: true, takeaway: true },
     opening_hours: stdHours,
+    affiliateLinks: [
+      { id: "a1", label: "Order on DoorDash", url: "https://doordash.com" },
+    ],
   },
 ];
 
@@ -195,3 +216,30 @@ export const SHOP_TYPE_COLOR: Record<ShopType, string> = {
 
 export const getShopById = (id: number | string) =>
   SHOPS.find((s) => String(s.id) === String(id));
+
+/**
+ * In-memory overrides for shop edits made through the UI.
+ * Persists for the lifetime of the page since mock shops have no backend yet.
+ */
+const overrides = new Map<number, Partial<Shop>>();
+const listeners = new Set<() => void>();
+
+export const getShopWithOverrides = (id: number | string): Shop | undefined => {
+  const base = getShopById(id);
+  if (!base) return undefined;
+  const o = overrides.get(base.id);
+  return o ? { ...base, ...o } : base;
+};
+
+export const updateShopOverride = (id: number, patch: Partial<Shop>) => {
+  const current = overrides.get(id) ?? {};
+  overrides.set(id, { ...current, ...patch });
+  listeners.forEach((l) => l());
+};
+
+export const subscribeShopOverrides = (cb: () => void): (() => void) => {
+  listeners.add(cb);
+  return () => {
+    listeners.delete(cb);
+  };
+};
