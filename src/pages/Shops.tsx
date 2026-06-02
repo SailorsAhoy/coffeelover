@@ -136,12 +136,8 @@ const Shops = () => {
     (Object.values(filters.types).filter((v) => !v).length > 0 ? 1 : 0) +
     requiredAmenities.length;
 
-  const handleSuggest = () => {
-    if (!isAuthenticated) {
-      toast.error("Sign in to suggest a shop");
-      return;
-    }
-  };
+
+
 
   return (
     <div className="min-h-screen bg-background pb-24">
