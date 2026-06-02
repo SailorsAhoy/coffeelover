@@ -82,6 +82,8 @@ const schema = z.object({
 const MAX_IMG = MAX_IMAGE_BYTES;
 
 export const ShopEditSheet = ({ shop }: Props) => {
+  const { can } = useCurrentUser();
+  const isOwner = can("list_shop");
   const [open, setOpen] = useState(false);
 
   const [name, setName] = useState(shop.name);
@@ -90,6 +92,7 @@ export const ShopEditSheet = ({ shop }: Props) => {
   const [type, setType] = useState<ShopType>(shop.type);
   const [priceLevel, setPriceLevel] = useState<1 | 2 | 3 | 4>(shop.priceLevel);
   const [address, setAddress] = useState(shop.address);
+  const [country, setCountry] = useState<string | undefined>(shop.country);
   const [coords, setCoords] = useState({ lat: shop.lat, lng: shop.lng });
   const [amenities, setAmenities] = useState({ ...shop.amenities });
   const [hours, setHours] = useState<OpeningHours>(shop.opening_hours);
