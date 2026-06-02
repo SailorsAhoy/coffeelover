@@ -377,82 +377,100 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
             <Label>Address *</Label>
             <AddressAutocomplete
               value={address}
-              onChange={setAddress}
+              onChange={(v) => {
+                setAddress(v);
+                setAddressPicked(false);
+              }}
               onSelect={(s) => {
                 setAddress(s.display);
                 setCoords({ lat: s.lat, lng: s.lng });
+                setCountry(s.country);
+                setAddressPicked(true);
               }}
             />
+            {addressPicked && (
+              <p className="text-[11px] text-muted-foreground">
+                {country ? `${country} · ` : ""}
+                {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}
+              </p>
+            )}
+            {!addressPicked && address.length >= 3 && (
+              <p className="text-[11px] text-amber-600">
+                Pick a suggestion to lock the country & coordinates.
+              </p>
+            )}
           </section>
 
-          <section className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold">Banner</Label>
-              <input
-                ref={bannerInput}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => onPickImage(e, setBanner, "Banner")}
-              />
-              {banner ? (
-                <div className="relative h-20 w-full overflow-hidden rounded-md border">
-                  <img src={banner} alt="banner" className="h-full w-full object-cover" />
-                  <button
+          {isOwner && (
+            <section className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Banner</Label>
+                <input
+                  ref={bannerInput}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => onPickImage(e, setBanner, "Banner")}
+                />
+                {banner ? (
+                  <div className="relative h-20 w-full overflow-hidden rounded-md border">
+                    <img src={banner} alt="banner" className="h-full w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setBanner(undefined)}
+                      className="absolute right-1 top-1 rounded-full bg-background/90 p-0.5"
+                      aria-label="Remove banner"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <Button
                     type="button"
-                    onClick={() => setBanner(undefined)}
-                    className="absolute right-1 top-1 rounded-full bg-background/90 p-0.5"
-                    aria-label="Remove banner"
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-1"
+                    onClick={() => bannerInput.current?.click()}
                   >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ) : (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="w-full gap-1"
-                  onClick={() => bannerInput.current?.click()}
-                >
-                  <Upload className="h-3.5 w-3.5" /> Upload
-                </Button>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-semibold">Avatar</Label>
-              <input
-                ref={avatarInput}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => onPickImage(e, setAvatar, "Avatar")}
-              />
-              {avatar ? (
-                <div className="relative h-20 w-20 overflow-hidden rounded-full border">
-                  <img src={avatar} alt="avatar" className="h-full w-full object-cover" />
-                  <button
+                    <Upload className="h-3.5 w-3.5" /> Upload
+                  </Button>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Avatar</Label>
+                <input
+                  ref={avatarInput}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => onPickImage(e, setAvatar, "Avatar")}
+                />
+                {avatar ? (
+                  <div className="relative h-20 w-20 overflow-hidden rounded-full border">
+                    <img src={avatar} alt="avatar" className="h-full w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setAvatar(undefined)}
+                      className="absolute right-0 top-0 rounded-full bg-background/90 p-0.5"
+                      aria-label="Remove avatar"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <Button
                     type="button"
-                    onClick={() => setAvatar(undefined)}
-                    className="absolute right-0 top-0 rounded-full bg-background/90 p-0.5"
-                    aria-label="Remove avatar"
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-1"
+                    onClick={() => avatarInput.current?.click()}
                   >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ) : (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="w-full gap-1"
-                  onClick={() => avatarInput.current?.click()}
-                >
-                  <Upload className="h-3.5 w-3.5" /> Upload
-                </Button>
-              )}
-            </div>
-          </section>
+                    <Upload className="h-3.5 w-3.5" /> Upload
+                  </Button>
+                )}
+              </div>
+            </section>
+          )}
 
           {isOwner && (
             <>
