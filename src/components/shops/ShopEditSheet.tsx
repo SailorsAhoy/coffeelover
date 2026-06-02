@@ -34,6 +34,12 @@ import {
   type ShopType,
 } from "@/lib/shopsData";
 import type { OpeningHours } from "@/lib/shopUtils";
+import {
+  affiliateLinkSchema as linkSchema,
+  validateImageFile,
+  MAX_IMAGE_BYTES,
+} from "@/lib/shopValidation";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 interface Props {
   shop: Shop;
@@ -43,7 +49,7 @@ const optionalUrl = z
   .string()
   .trim()
   .max(500)
-  .refine((v) => v === "" || /^https?:\/\/\S+/i.test(v), "Must start with http(s)://")
+  .refine((v) => v === "" || /^https?:\/\/\S+\.\S+/i.test(v), "Must be a valid http(s):// URL")
   .optional()
   .or(z.literal(""));
 
@@ -73,12 +79,7 @@ const schema = z.object({
   twitter: optionalUrl,
 });
 
-const linkSchema = z.object({
-  label: z.string().trim().min(1, "Label required").max(60),
-  url: z.string().trim().url("Must be a valid URL").max(500),
-});
-
-const MAX_IMG = 5 * 1024 * 1024;
+const MAX_IMG = MAX_IMAGE_BYTES;
 
 export const ShopEditSheet = ({ shop }: Props) => {
   const [open, setOpen] = useState(false);
