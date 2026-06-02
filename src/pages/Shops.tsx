@@ -44,22 +44,39 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { setShopStatus } from "@/lib/shopsData";
 import { Check, X } from "lucide-react";
 
-type SortKey = "distance" | "rating" | "reviews" | "price_asc" | "name";
+type SortKey = "distance" | "new" | "rating" | "reviews" | "price_asc" | "name";
 type StatusTab = "approved" | "pending" | "all";
 
 const Shops = () => {
-  const { coords, loading: geoLoading, request } = useGeolocation(true);
+  // Do not auto-request geolocation; only fetch when the user enables the locator.
+  const { coords, loading: geoLoading, request } = useGeolocation(false);
+  const [locatorActive, setLocatorActive] = useState(false);
   const { hasRole, user } = useCurrentUser();
   const isAdmin = hasRole("admin");
 
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<ShopFilterValues>(DEFAULT_FILTERS);
-  const [sort, setSort] = useState<SortKey>("distance");
+  const [sort, setSort] = useState<SortKey>("rating");
   const [view, setView] = useState<"list" | "map">("list");
   const [statusTab, setStatusTab] = useState<StatusTab>("approved");
   const [, force] = useState(0);
 
   useEffect(() => subscribeShopOverrides(() => force((n) => n + 1)), []);
+
+  // Effective coords only when the locator is active. Otherwise treat as unknown
+  // so the distance filter is not applied and "nearest" sort falls back.
+  const activeCoords = locatorActive ? coords : null;
+
+  const toggleLocator = () => {
+    if (locatorActive) {
+      setLocatorActive(false);
+      if (sort === "distance") setSort("rating");
+    } else {
+      setLocatorActive(true);
+      request();
+      setSort("distance");
+    }
+  };
 
   const shops: Shop[] = useMemo(
     () => SHOPS.map((s) => getShopWithOverrides(s.id) ?? s),
@@ -67,6 +84,7 @@ const Shops = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
+
 
   const fallback = useMemo(
     () =>
@@ -87,10 +105,12 @@ const Shops = () => {
   const enriched = useMemo(() => {
     return shops.map((s) => {
       const a = aggs[s.reviewableId] ?? fallback[s.reviewableId];
-      const distanceKm = coords ? haversineKm(coords, { lat: s.lat, lng: s.lng }) : null;
+      const distanceKm = activeCoords
+        ? haversineKm(activeCoords, { lat: s.lat, lng: s.lng })
+        : null;
       return { ...s, ...a, distanceKm };
     });
-  }, [shops, aggs, coords, fallback]);
+  }, [shops, aggs, activeCoords, fallback]);
 
   const requiredAmenities = (Object.keys(filters.amenities) as AmenityKey[]).filter(
     (k) => filters.amenities[k],
@@ -109,8 +129,12 @@ const Shops = () => {
       .filter((s) => s.priceLevel <= filters.maxPriceLevel)
       .filter((s) => s.rating >= filters.minRating)
       .filter((s) => s.reviewCount >= filters.minReviews)
+      // Distance cap only applies when the locator is active. Otherwise show
+      // every shop regardless of distance (could be thousands of km away).
       .filter((s) =>
-        s.distanceKm == null ? true : s.distanceKm <= filters.maxDistanceKm,
+        !activeCoords || s.distanceKm == null
+          ? true
+          : s.distanceKm <= filters.maxDistanceKm,
       )
       .filter((s) => requiredAmenities.every((k) => s.amenities[k]))
       .filter(
@@ -130,12 +154,16 @@ const Shops = () => {
             return a.priceLevel - b.priceLevel;
           case "name":
             return a.name.localeCompare(b.name);
+          case "new":
+            // Higher id = more recently added (no createdAt on mock shops)
+            return Number(b.id) - Number(a.id);
           case "distance":
           default:
+            if (!activeCoords) return b.rating - a.rating;
             return (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity);
         }
       });
-  }, [enriched, filters, search, sort, requiredAmenities, statusTab]);
+  }, [enriched, filters, search, sort, requiredAmenities, statusTab, activeCoords]);
 
   const activeFilterCount =
     (filters.maxDistanceKm !== DEFAULT_FILTERS.maxDistanceKm ? 1 : 0) +
@@ -144,6 +172,7 @@ const Shops = () => {
     (filters.minReviews !== DEFAULT_FILTERS.minReviews ? 1 : 0) +
     (Object.values(filters.types).filter((v) => !v).length > 0 ? 1 : 0) +
     requiredAmenities.length;
+
 
 
 
@@ -157,9 +186,9 @@ const Shops = () => {
             <div>
               <h1 className="text-2xl font-bold md:text-3xl">Coffee Shops</h1>
               <p className="text-xs text-muted-foreground md:text-sm">
-                {coords
+                {activeCoords
                   ? `${filtered.length} near you`
-                  : "Enable location for distance"}
+                  : `${filtered.length} shop${filtered.length === 1 ? "" : "s"} · enable location to sort by distance`}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -184,7 +213,10 @@ const Shops = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="distance">Nearest</SelectItem>
+                <SelectItem value="distance" disabled={!activeCoords}>
+                  Nearest{!activeCoords ? " (enable locator)" : ""}
+                </SelectItem>
+                <SelectItem value="new">Newest</SelectItem>
                 <SelectItem value="rating">Top rated</SelectItem>
                 <SelectItem value="reviews">Most reviewed</SelectItem>
                 <SelectItem value="price_asc">Cheapest</SelectItem>
@@ -192,12 +224,14 @@ const Shops = () => {
               </SelectContent>
             </Select>
             <Button
-              variant="ghost"
+              variant={locatorActive ? "default" : "ghost"}
               size="sm"
-              onClick={request}
+              onClick={toggleLocator}
               disabled={geoLoading}
               className="gap-1"
-              aria-label="Refresh location"
+              aria-pressed={locatorActive}
+              aria-label={locatorActive ? "Disable nearest sorting" : "Enable nearest sorting"}
+              title={locatorActive ? "Locator on — sorting by nearest" : "Use my location"}
             >
               <LocateFixed className="h-4 w-4" />
             </Button>
@@ -221,6 +255,7 @@ const Shops = () => {
               )}
             </TabsList>
           </Tabs>
+
         </div>
       </div>
 
