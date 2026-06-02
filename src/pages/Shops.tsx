@@ -158,18 +158,7 @@ const Shops = () => {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              {can("list_shop") && (
-                <Button size="sm" className="gap-1">
-                  <Plus className="h-4 w-4" />
-                  <span className="hidden sm:inline">List shop</span>
-                </Button>
-              )}
-              {can("suggest_shop") && !can("list_shop") && (
-                <Button size="sm" variant="outline" className="gap-1" onClick={handleSuggest}>
-                  <Plus className="h-4 w-4" />
-                  <span className="hidden sm:inline">Suggest</span>
-                </Button>
-              )}
+              <ShopCreateSheet />
             </div>
           </div>
 
