@@ -47,6 +47,8 @@ import { Check, X } from "lucide-react";
 type SortKey = "distance" | "new" | "rating" | "reviews" | "price_asc" | "name";
 type StatusTab = "approved" | "pending" | "all";
 
+const DEFAULT_CENTER = { lat: 40.7589, lng: -73.9851 };
+
 const Shops = () => {
   // Do not auto-request geolocation; only fetch when the user enables the locator.
   const { coords, loading: geoLoading, request } = useGeolocation(false);
