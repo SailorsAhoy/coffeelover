@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+import { Plus, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import AddressAutocomplete from "@/components/shops/AddressAutocomplete";
@@ -37,11 +37,48 @@ interface Props {
   trigger?: React.ReactNode;
 }
 
-const schema = z.object({
-  name: z.string().trim().min(2, "Name required").max(80),
-  description: z.string().trim().min(5, "Tell us a bit about the shop").max(280),
-  address: z.string().trim().min(5, "Address required").max(250),
+const optionalUrl = z
+  .string()
+  .trim()
+  .max(500, "Max 500 characters")
+  .refine((v) => v === "" || /^https?:\/\/\S+/i.test(v), "Must start with http(s)://")
+  .optional()
+  .or(z.literal(""));
+
+const baseSchema = z.object({
+  name: z.string().trim().min(2, "Name must be at least 2 chars").max(80, "Max 80 chars"),
+  description: z
+    .string()
+    .trim()
+    .min(10, "Description must be at least 10 chars")
+    .max(280, "Max 280 chars"),
+  bio: z.string().trim().max(2000, "Max 2000 chars").optional().or(z.literal("")),
+  address: z.string().trim().min(5, "Address required").max(250, "Max 250 chars"),
 });
+
+const ownerSchema = baseSchema.extend({
+  phone: z
+    .string()
+    .trim()
+    .max(30)
+    .refine((v) => v === "" || /^[+\d\s()-]{6,}$/.test(v), "Invalid phone")
+    .optional()
+    .or(z.literal("")),
+  email: z
+    .string()
+    .trim()
+    .max(120)
+    .refine((v) => v === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "Invalid email")
+    .optional()
+    .or(z.literal("")),
+  website: optionalUrl,
+  instagram: optionalUrl,
+  facebook: optionalUrl,
+  twitter: optionalUrl,
+  whatsapp: z.string().trim().max(30).optional().or(z.literal("")),
+});
+
+const MAX_IMG = 5 * 1024 * 1024;
 
 const defaultHours: OpeningHours = {
   monday: { open: "08:00", close: "18:00" },
@@ -54,49 +91,107 @@ const defaultHours: OpeningHours = {
 };
 
 export const ShopCreateSheet = ({ trigger }: Props) => {
-  const { user, can, isAuthenticated } = useCurrentUser();
+  const { user, profile, can, isAuthenticated } = useCurrentUser();
   const isOwner = can("list_shop");
 
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [bio, setBio] = useState("");
   const [type, setType] = useState<ShopType>("coffee_shop");
   const [priceLevel, setPriceLevel] = useState<1 | 2 | 3 | 4>(2);
   const [address, setAddress] = useState("");
   const [coords, setCoords] = useState({ lat: 40.7589, lng: -73.9851 });
   const [amenities, setAmenities] = useState<Amenities>({});
+  const [banner, setBanner] = useState<string | undefined>();
+  const [avatar, setAvatar] = useState<string | undefined>();
+  const bannerInput = useRef<HTMLInputElement>(null);
+  const avatarInput = useRef<HTMLInputElement>(null);
 
   // owner-only
   const [phone, setPhone] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState("");
   const [instagram, setInstagram] = useState("");
+  const [facebook, setFacebook] = useState("");
+  const [twitter, setTwitter] = useState("");
 
   const reset = () => {
     setName("");
     setDescription("");
+    setBio("");
     setType("coffee_shop");
     setPriceLevel(2);
     setAddress("");
     setAmenities({});
+    setBanner(undefined);
+    setAvatar(undefined);
     setPhone("");
+    setWhatsapp("");
     setEmail("");
     setWebsite("");
     setInstagram("");
+    setFacebook("");
+    setTwitter("");
   };
 
   const toggle = (k: AmenityKey, v: boolean) =>
     setAmenities((a) => ({ ...a, [k]: v }));
 
+  const onPickImage = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    set: (s: string | undefined) => void,
+    label: string,
+  ) => {
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    if (!f) return;
+    if (!f.type.startsWith("image/")) {
+      toast.error(`${label}: must be an image`);
+      return;
+    }
+    if (f.size > MAX_IMG) {
+      toast.error(`${label}: max file size is 5MB`);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => set(String(reader.result));
+    reader.onerror = () => toast.error(`${label}: failed to read file`);
+    reader.readAsDataURL(f);
+  };
+
   const submit = () => {
-    const parsed = schema.safeParse({ name, description, address });
+    const schema = isOwner ? ownerSchema : baseSchema;
+    const parsed = schema.safeParse(
+      isOwner
+        ? {
+            name,
+            description,
+            bio,
+            address,
+            phone,
+            whatsapp,
+            email,
+            website,
+            instagram,
+            facebook,
+            twitter,
+          }
+        : { name, description, bio, address },
+    );
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
+      return;
+    }
+    if (!coords || coords.lat === 0) {
+      toast.error("Pick a valid address from the list");
       return;
     }
     addShop({
       name: parsed.data.name,
       description: parsed.data.description,
+      bio: parsed.data.bio || undefined,
       type,
       lat: coords.lat,
       lng: coords.lng,
@@ -106,14 +201,21 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
       baseReviewCount: 0,
       amenities,
       opening_hours: defaultHours,
+      status: "pending",
       pendingReview: true,
       createdBy: user?.id,
+      createdByName: profile?.name ?? user?.email ?? undefined,
+      banner,
+      avatar,
       ...(isOwner
         ? {
             phone: phone.trim() || undefined,
+            whatsapp: whatsapp.trim() || undefined,
             email: email.trim() || undefined,
             website: website.trim() || undefined,
             instagram: instagram.trim() || undefined,
+            facebook: facebook.trim() || undefined,
+            twitter: twitter.trim() || undefined,
           }
         : {}),
     });
@@ -169,6 +271,7 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
               maxLength={80}
               placeholder="e.g. Maya's Slow Bar"
             />
+            <p className="text-[11px] text-muted-foreground">{name.length}/80</p>
           </section>
 
           <section className="grid grid-cols-2 gap-3">
@@ -218,6 +321,23 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
               rows={3}
               placeholder="A one-liner about the vibe, beans or specialty…"
             />
+            <p className="text-[11px] text-muted-foreground">
+              {description.length}/280
+            </p>
+          </section>
+
+          <section className="space-y-2">
+            <Label>Bio (long-form)</Label>
+            <Textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              maxLength={2000}
+              rows={4}
+              placeholder="Tell the story of the shop, beans sourcing, vibe…"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              {bio.length}/2000
+            </p>
           </section>
 
           <section className="space-y-2">
@@ -232,6 +352,75 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
             />
           </section>
 
+          <section className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Banner</Label>
+              <input
+                ref={bannerInput}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => onPickImage(e, setBanner, "Banner")}
+              />
+              {banner ? (
+                <div className="relative h-20 w-full overflow-hidden rounded-md border">
+                  <img src={banner} alt="banner" className="h-full w-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setBanner(undefined)}
+                    className="absolute right-1 top-1 rounded-full bg-background/90 p-0.5"
+                    aria-label="Remove banner"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-1"
+                  onClick={() => bannerInput.current?.click()}
+                >
+                  <Upload className="h-3.5 w-3.5" /> Upload
+                </Button>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Avatar</Label>
+              <input
+                ref={avatarInput}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => onPickImage(e, setAvatar, "Avatar")}
+              />
+              {avatar ? (
+                <div className="relative h-20 w-20 overflow-hidden rounded-full border">
+                  <img src={avatar} alt="avatar" className="h-full w-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setAvatar(undefined)}
+                    className="absolute right-0 top-0 rounded-full bg-background/90 p-0.5"
+                    aria-label="Remove avatar"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-1"
+                  onClick={() => avatarInput.current?.click()}
+                >
+                  <Upload className="h-3.5 w-3.5" /> Upload
+                </Button>
+              )}
+            </div>
+          </section>
+
           {isOwner && (
             <>
               <section className="space-y-3">
@@ -241,24 +430,49 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   inputMode="tel"
+                  maxLength={30}
+                />
+                <Input
+                  placeholder="WhatsApp number"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                  inputMode="tel"
+                  maxLength={30}
                 />
                 <Input
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   inputMode="email"
+                  maxLength={120}
                 />
                 <Input
                   placeholder="Website https://…"
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                   inputMode="url"
+                  maxLength={500}
                 />
                 <Input
                   placeholder="Instagram URL"
                   value={instagram}
                   onChange={(e) => setInstagram(e.target.value)}
                   inputMode="url"
+                  maxLength={500}
+                />
+                <Input
+                  placeholder="Facebook URL"
+                  value={facebook}
+                  onChange={(e) => setFacebook(e.target.value)}
+                  inputMode="url"
+                  maxLength={500}
+                />
+                <Input
+                  placeholder="Twitter/X URL"
+                  value={twitter}
+                  onChange={(e) => setTwitter(e.target.value)}
+                  inputMode="url"
+                  maxLength={500}
                 />
               </section>
 
@@ -285,6 +499,14 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
                   })}
                 </div>
               </section>
+
+              <p className="rounded-md border bg-muted/40 p-2 text-[11px] text-muted-foreground">
+                Submitting as{" "}
+                <span className="font-medium text-foreground">
+                  {profile?.name ?? user?.email}
+                </span>
+                . You'll be credited as the author on the shop profile.
+              </p>
             </>
           )}
         </div>

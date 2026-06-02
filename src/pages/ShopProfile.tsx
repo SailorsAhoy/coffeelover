@@ -1,26 +1,28 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { MapPin, ChevronLeft, ExternalLink } from "lucide-react";
+import { MapPin, ExternalLink, Check, X, User } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   getShopWithOverrides,
+  setShopStatus,
   subscribeShopOverrides,
   type Shop,
 } from "@/lib/shopsData";
 import { AMENITIES } from "@/lib/shopAmenities";
 import ShopReviews from "@/components/shops/ShopReviews";
-import ShopEditSheet from "@/components/shops/ShopEditSheet";
 import ShopBanner from "@/components/shops/ShopBanner";
 import ShopGallery from "@/components/shops/ShopGallery";
 import ShopStaff from "@/components/shops/ShopStaff";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { toast } from "sonner";
 
 const ShopProfile = () => {
   const { id } = useParams();
-  const { can } = useCurrentUser();
+  const { hasRole } = useCurrentUser();
+  const isAdmin = hasRole("admin");
   const [shop, setShop] = useState<Shop | undefined>(() =>
     getShopWithOverrides(id ?? "1"),
   );
@@ -47,8 +49,71 @@ const ShopProfile = () => {
     <div className="min-h-screen bg-background pb-24">
       <ShopBanner shop={shop} />
 
-
       <div className="mx-auto max-w-3xl space-y-4 px-4 py-4 md:px-6">
+        {(shop.status === "pending" || shop.pendingReview) && (
+          <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="border-amber-500/50 bg-amber-500/20 text-amber-700 dark:text-amber-300">
+                  Under review
+                </Badge>
+                <span className="text-xs text-muted-foreground">
+                  This shop is awaiting admin verification.
+                </span>
+              </div>
+              {isAdmin && (
+                <div className="flex gap-1.5">
+                  <Button
+                    size="sm"
+                    className="h-7 gap-1 text-xs"
+                    onClick={() => {
+                      setShopStatus(shop.id, "approved");
+                      toast.success("Shop approved");
+                    }}
+                  >
+                    <Check className="h-3 w-3" /> Approve
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 gap-1 text-xs"
+                    onClick={() => {
+                      setShopStatus(shop.id, "rejected");
+                      toast.error("Shop rejected");
+                    }}
+                  >
+                    <X className="h-3 w-3" /> Reject
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {shop.status === "rejected" && (
+          <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm">
+            <Badge variant="destructive">Rejected</Badge>
+            {isAdmin && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="ml-2 h-7 text-xs"
+                onClick={() => setShopStatus(shop.id, "pending")}
+              >
+                Re-open for review
+              </Button>
+            )}
+          </div>
+        )}
+
+        {shop.createdByName && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <User className="h-3.5 w-3.5" />
+            Submitted by{" "}
+            <span className="font-medium text-foreground">{shop.createdByName}</span>
+          </div>
+        )}
+
         <Card>
           <CardContent className="space-y-2 pt-4">
             <p className="text-sm text-muted-foreground">{shop.description}</p>

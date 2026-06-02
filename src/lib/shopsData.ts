@@ -49,8 +49,11 @@ export interface Shop {
   banner?: string;
   avatar?: string;
   staff?: StaffMember[];
+  /** legacy alias for status === 'pending' */
   pendingReview?: boolean;
+  status?: "pending" | "approved" | "rejected";
   createdBy?: string;
+  createdByName?: string;
 }
 
 const uuid = (n: number) =>
@@ -274,8 +277,21 @@ export const addShop = (shop: Omit<Shop, "id" | "reviewableId">): Shop => {
     ...shop,
     id: nextId,
     reviewableId: uuid(nextId),
+    status: shop.status ?? "pending",
+    pendingReview: shop.pendingReview ?? true,
   };
   SHOPS.unshift(created);
   listeners.forEach((l) => l());
   return created;
 };
+
+export const setShopStatus = (
+  id: number,
+  status: "approved" | "rejected" | "pending",
+) => {
+  updateShopOverride(id, {
+    status,
+    pendingReview: status === "pending",
+  });
+};
+

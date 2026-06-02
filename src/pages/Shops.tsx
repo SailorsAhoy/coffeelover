@@ -40,16 +40,23 @@ import ShopFilters, {
 } from "@/components/shops/ShopFilters";
 import ShopsMapView from "@/components/shops/ShopsMapView";
 import ShopCreateSheet from "@/components/shops/ShopCreateSheet";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { setShopStatus } from "@/lib/shopsData";
+import { Check, X } from "lucide-react";
 
 type SortKey = "distance" | "rating" | "reviews" | "price_asc" | "name";
+type StatusTab = "approved" | "pending" | "all";
 
 const Shops = () => {
   const { coords, loading: geoLoading, request } = useGeolocation(true);
+  const { hasRole, user } = useCurrentUser();
+  const isAdmin = hasRole("admin");
 
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<ShopFilterValues>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<SortKey>("distance");
   const [view, setView] = useState<"list" | "map">("list");
+  const [statusTab, setStatusTab] = useState<StatusTab>("approved");
   const [, force] = useState(0);
 
   useEffect(() => subscribeShopOverrides(() => force((n) => n + 1)), []);
@@ -92,6 +99,12 @@ const Shops = () => {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return enriched
+      .filter((s) => {
+        const isPending = s.status === "pending" || s.pendingReview;
+        if (statusTab === "approved") return !isPending && s.status !== "rejected";
+        if (statusTab === "pending") return isPending;
+        return s.status !== "rejected";
+      })
       .filter((s) => filters.types[s.type])
       .filter((s) => s.priceLevel <= filters.maxPriceLevel)
       .filter((s) => s.rating >= filters.minRating)
@@ -122,7 +135,7 @@ const Shops = () => {
             return (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity);
         }
       });
-  }, [enriched, filters, search, sort, requiredAmenities]);
+  }, [enriched, filters, search, sort, requiredAmenities, statusTab]);
 
   const activeFilterCount =
     (filters.maxDistanceKm !== DEFAULT_FILTERS.maxDistanceKm ? 1 : 0) +
@@ -189,6 +202,25 @@ const Shops = () => {
               <LocateFixed className="h-4 w-4" />
             </Button>
           </div>
+
+          <Tabs
+            value={statusTab}
+            onValueChange={(v) => setStatusTab(v as StatusTab)}
+          >
+            <TabsList className="h-8">
+              <TabsTrigger value="approved" className="h-7 text-xs">
+                Approved
+              </TabsTrigger>
+              <TabsTrigger value="pending" className="h-7 text-xs">
+                Under review
+              </TabsTrigger>
+              {isAdmin && (
+                <TabsTrigger value="all" className="h-7 text-xs">
+                  All
+                </TabsTrigger>
+              )}
+            </TabsList>
+          </Tabs>
         </div>
       </div>
 
@@ -295,6 +327,38 @@ const Shops = () => {
                                 Directions
                               </Button>
                             </div>
+                            {isAdmin && (s.status === "pending" || s.pendingReview) && (
+                              <div className="mt-2 flex gap-2 border-t pt-2">
+                                <Button
+                                  size="sm"
+                                  variant="default"
+                                  className="h-7 flex-1 gap-1 text-xs"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setShopStatus(s.id, "approved");
+                                  }}
+                                >
+                                  <Check className="h-3 w-3" /> Approve
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 flex-1 gap-1 text-xs"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setShopStatus(s.id, "rejected");
+                                  }}
+                                >
+                                  <X className="h-3 w-3" /> Reject
+                                </Button>
+                              </div>
+                            )}
+                            {s.createdByName && (
+                              <p className="mt-1.5 text-[10px] text-muted-foreground">
+                                Submitted by{" "}
+                                <span className="font-medium">{s.createdByName}</span>
+                              </p>
+                            )}
                           </CardContent>
                         </Card>
                       </Link>
