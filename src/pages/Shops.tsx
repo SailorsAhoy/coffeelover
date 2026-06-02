@@ -46,7 +46,7 @@ import { toast } from "sonner";
 type SortKey = "distance" | "rating" | "reviews" | "price_asc" | "name";
 
 const Shops = () => {
-  const { isAuthenticated } = useCurrentUser();
+  useCurrentUser();
   const { coords, loading: geoLoading, request } = useGeolocation(true);
 
   const [search, setSearch] = useState("");
