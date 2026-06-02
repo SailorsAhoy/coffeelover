@@ -31,7 +31,9 @@ describe("permissions — shop manager gating", () => {
     expect(evaluate("list_shop", ctx(["coffee_shop"]))).toBe(false);
   });
 
-  it("admin bypasses module requirement", () => {
-    expect(evaluate("list_shop", ctx(["admin"]))).toBe(true);
+  it("admin bypasses the module subscription requirement", () => {
+    // admin still needs an owning role; module check is the part it bypasses
+    expect(evaluate("list_shop", ctx(["admin", "coffee_shop"]))).toBe(true);
+    expect(evaluate("list_shop", ctx(["coffee_shop"]))).toBe(false);
   });
 });
