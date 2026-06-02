@@ -18,7 +18,6 @@ import {
   Star,
   MapPin,
   Navigation,
-  Plus,
   Search,
   LocateFixed,
 } from "lucide-react";
@@ -34,19 +33,17 @@ import { AMENITIES, type AmenityKey } from "@/lib/shopAmenities";
 import { haversineKm, formatDistance } from "@/lib/geo";
 import { isShopOpen } from "@/lib/shopUtils";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useReviewAggregates } from "@/hooks/useReviewAggregates";
 import ShopFilters, {
   DEFAULT_FILTERS,
   type ShopFilterValues,
 } from "@/components/shops/ShopFilters";
 import ShopsMapView from "@/components/shops/ShopsMapView";
-import { toast } from "sonner";
+import ShopCreateSheet from "@/components/shops/ShopCreateSheet";
 
 type SortKey = "distance" | "rating" | "reviews" | "price_asc" | "name";
 
 const Shops = () => {
-  const { can, isAuthenticated } = useCurrentUser();
   const { coords, loading: geoLoading, request } = useGeolocation(true);
 
   const [search, setSearch] = useState("");
@@ -135,13 +132,8 @@ const Shops = () => {
     (Object.values(filters.types).filter((v) => !v).length > 0 ? 1 : 0) +
     requiredAmenities.length;
 
-  const handleSuggest = () => {
-    if (!isAuthenticated) {
-      toast.error("Sign in to suggest a shop");
-      return;
-    }
-    toast.success("Thanks! Your suggestion was sent for review.");
-  };
+
+
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -158,18 +150,7 @@ const Shops = () => {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              {can("list_shop") && (
-                <Button size="sm" className="gap-1">
-                  <Plus className="h-4 w-4" />
-                  <span className="hidden sm:inline">List shop</span>
-                </Button>
-              )}
-              {can("suggest_shop") && !can("list_shop") && (
-                <Button size="sm" variant="outline" className="gap-1" onClick={handleSuggest}>
-                  <Plus className="h-4 w-4" />
-                  <span className="hidden sm:inline">Suggest</span>
-                </Button>
-              )}
+              <ShopCreateSheet />
             </div>
           </div>
 
@@ -252,12 +233,18 @@ const Shops = () => {
                                   {SHOP_TYPE_LABEL[s.type]} · {"$".repeat(s.priceLevel)}
                                 </p>
                                 <div className="mt-1 flex items-center gap-2 text-xs">
-                                  <Badge
-                                    variant={open ? "default" : "secondary"}
-                                    className="h-5 px-1.5"
-                                  >
-                                    {open ? "Open" : "Closed"}
-                                  </Badge>
+                                  {s.pendingReview ? (
+                                    <Badge variant="outline" className="h-5 border-amber-500/40 bg-amber-500/10 px-1.5 text-amber-700 dark:text-amber-400">
+                                      Under review
+                                    </Badge>
+                                  ) : (
+                                    <Badge
+                                      variant={open ? "default" : "secondary"}
+                                      className="h-5 px-1.5"
+                                    >
+                                      {open ? "Open" : "Closed"}
+                                    </Badge>
+                                  )}
                                   <span className="flex items-center gap-1 text-muted-foreground">
                                     <MapPin className="h-3 w-3" />
                                     {formatDistance(s.distanceKm)}

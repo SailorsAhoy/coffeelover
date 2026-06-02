@@ -49,6 +49,8 @@ export interface Shop {
   banner?: string;
   avatar?: string;
   staff?: StaffMember[];
+  pendingReview?: boolean;
+  createdBy?: string;
 }
 
 const uuid = (n: number) =>
@@ -264,4 +266,16 @@ export const subscribeShopOverrides = (cb: () => void): (() => void) => {
   return () => {
     listeners.delete(cb);
   };
+};
+
+export const addShop = (shop: Omit<Shop, "id" | "reviewableId">): Shop => {
+  const nextId = SHOPS.reduce((m, s) => Math.max(m, s.id), 0) + 1;
+  const created: Shop = {
+    ...shop,
+    id: nextId,
+    reviewableId: uuid(nextId),
+  };
+  SHOPS.unshift(created);
+  listeners.forEach((l) => l());
+  return created;
 };
