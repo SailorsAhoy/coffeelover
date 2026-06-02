@@ -261,6 +261,7 @@ export const getShopWithOverrides = (id: number | string): Shop | undefined => {
 };
 
 export const updateShopOverride = (id: number, patch: Partial<Shop>) => {
+  assertValidShop(patch);
   const current = overrides.get(id) ?? {};
   overrides.set(id, { ...current, ...patch });
   listeners.forEach((l) => l());
