@@ -86,7 +86,7 @@ const ownerSchema = baseSchema.extend({
   whatsapp: z.string().trim().max(30).optional().or(z.literal("")),
 });
 
-const MAX_IMG = 5 * 1024 * 1024;
+const MAX_IMG = MAX_IMAGE_BYTES;
 
 const defaultHours: OpeningHours = {
   monday: { open: "08:00", close: "18:00" },
