@@ -237,6 +237,7 @@ const ShopProfile = () => {
           <TabsContent value="reviews" className="mt-3">
             <ShopReviews
               reviewableId={shop.reviewableId}
+              shopId={shop.id}
               fallbackRating={shop.baseRating}
               fallbackCount={shop.baseReviewCount}
             />
