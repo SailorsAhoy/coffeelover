@@ -39,6 +39,14 @@ import ShopManagement from "./pages/settings/ShopManagement";
 import UserManagement from "./pages/settings/UserManagement";
 import ContentManagement from "./pages/settings/ContentManagement";
 import SystemSettings from "./pages/settings/SystemSettings";
+import DashboardHome from "./pages/dashboard/DashboardHome";
+import AdminDashboard from "./pages/dashboard/AdminDashboard";
+import UserDashboard from "./pages/dashboard/UserDashboard";
+import TeacherDashboard from "./pages/dashboard/TeacherDashboard";
+import ShopOwnerDashboard from "./pages/dashboard/ShopOwnerDashboard";
+import RoasteryDashboard from "./pages/dashboard/RoasteryDashboard";
+import ManufacturerDashboard from "./pages/dashboard/ManufacturerDashboard";
+import SupplierDashboard from "./pages/dashboard/SupplierDashboard";
 
 const queryClient = new QueryClient();
 
