@@ -25,6 +25,7 @@ import { z } from "zod";
 import AddressAutocomplete from "@/components/shops/AddressAutocomplete";
 import OpeningHoursEditor from "@/components/shops/OpeningHoursEditor";
 import AffiliateLinksEditor from "@/components/shops/AffiliateLinksEditor";
+import MapPreview from "@/components/shops/MapPreview";
 import { AMENITIES, type AmenityKey } from "@/lib/shopAmenities";
 import {
   addShop,
@@ -199,6 +200,10 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
     }
     if (!addressPicked) {
       toast.error("Pick an address from the suggestions list");
+      return;
+    }
+    if (!country || !Number.isFinite(coords.lat) || !Number.isFinite(coords.lng)) {
+      toast.error("Address is missing country or coordinates — re-pick a suggestion");
       return;
     }
     // Validate affiliate links (owner-only)
@@ -398,6 +403,9 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
               <p className="text-[11px] text-amber-600">
                 Pick a suggestion to lock the country & coordinates.
               </p>
+            )}
+            {addressPicked && country && (
+              <MapPreview lat={coords.lat} lng={coords.lng} />
             )}
           </section>
 

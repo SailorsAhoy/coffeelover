@@ -25,6 +25,7 @@ import { z } from "zod";
 import AddressAutocomplete from "@/components/shops/AddressAutocomplete";
 import OpeningHoursEditor from "@/components/shops/OpeningHoursEditor";
 import AffiliateLinksEditor from "@/components/shops/AffiliateLinksEditor";
+import MapPreview from "@/components/shops/MapPreview";
 import { AMENITIES, type AmenityKey } from "@/lib/shopAmenities";
 import {
   SHOP_TYPE_LABEL,
@@ -94,6 +95,7 @@ export const ShopEditSheet = ({ shop }: Props) => {
   const [address, setAddress] = useState(shop.address);
   const [country, setCountry] = useState<string | undefined>(shop.country);
   const [coords, setCoords] = useState({ lat: shop.lat, lng: shop.lng });
+  const [addressPicked, setAddressPicked] = useState(true);
   const [amenities, setAmenities] = useState({ ...shop.amenities });
   const [hours, setHours] = useState<OpeningHours>(shop.opening_hours);
   const [links, setLinks] = useState<AffiliateLink[]>(shop.affiliateLinks ?? []);
@@ -121,6 +123,7 @@ export const ShopEditSheet = ({ shop }: Props) => {
     setAddress(shop.address);
     setCountry(shop.country);
     setCoords({ lat: shop.lat, lng: shop.lng });
+    setAddressPicked(true);
     setAmenities({ ...shop.amenities });
     setHours(shop.opening_hours);
     setLinks(shop.affiliateLinks ?? []);
@@ -173,6 +176,14 @@ export const ShopEditSheet = ({ shop }: Props) => {
     });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
+      return;
+    }
+    if (!addressPicked) {
+      toast.error("Address changed — pick a suggestion to refresh country & coordinates");
+      return;
+    }
+    if (!country || !Number.isFinite(coords.lat) || !Number.isFinite(coords.lng)) {
+      toast.error("Address is missing country or coordinates");
       return;
     }
     const cleaned: AffiliateLink[] = [];
@@ -294,17 +305,29 @@ export const ShopEditSheet = ({ shop }: Props) => {
             <Label>Address *</Label>
             <AddressAutocomplete
               value={address}
-              onChange={setAddress}
+              onChange={(v) => {
+                setAddress(v);
+                setAddressPicked(false);
+              }}
               onSelect={(s) => {
                 setAddress(s.display);
                 setCoords({ lat: s.lat, lng: s.lng });
                 setCountry(s.country);
+                setAddressPicked(true);
               }}
             />
             <p className="text-xs text-muted-foreground">
               {country ? `${country} · ` : ""}
               Lat {coords.lat.toFixed(4)}, Lng {coords.lng.toFixed(4)}
             </p>
+            {!addressPicked && (
+              <p className="text-[11px] text-amber-600">
+                Pick a suggestion to lock country & coordinates.
+              </p>
+            )}
+            {addressPicked && country && Number.isFinite(coords.lat) && (
+              <MapPreview lat={coords.lat} lng={coords.lng} />
+            )}
           </section>
 
 
