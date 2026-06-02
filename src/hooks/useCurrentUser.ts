@@ -3,7 +3,7 @@ import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { type Permission, evaluate } from "@/lib/permissions";
 
-export type AppRole = "admin" | "company" | "staff" | "pro_user" | "teacher" | "roaster" | "coffee_shop" | "producer" | "user";
+export type AppRole = "admin" | "company" | "staff" | "pro_user" | "teacher" | "roaster" | "coffee_shop" | "producer" | "user" | "manufacturer" | "supplier";
 
 export interface Profile {
   id: string;

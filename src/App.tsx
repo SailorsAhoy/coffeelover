@@ -39,6 +39,14 @@ import ShopManagement from "./pages/settings/ShopManagement";
 import UserManagement from "./pages/settings/UserManagement";
 import ContentManagement from "./pages/settings/ContentManagement";
 import SystemSettings from "./pages/settings/SystemSettings";
+import DashboardHome from "./pages/dashboard/DashboardHome";
+import AdminDashboard from "./pages/dashboard/AdminDashboard";
+import UserDashboard from "./pages/dashboard/UserDashboard";
+import TeacherDashboard from "./pages/dashboard/TeacherDashboard";
+import ShopOwnerDashboard from "./pages/dashboard/ShopOwnerDashboard";
+import RoasteryDashboard from "./pages/dashboard/RoasteryDashboard";
+import ManufacturerDashboard from "./pages/dashboard/ManufacturerDashboard";
+import SupplierDashboard from "./pages/dashboard/SupplierDashboard";
 
 const queryClient = new QueryClient();
 
@@ -89,6 +97,14 @@ const App = () => (
           <Route path="/shop/:id" element={<ShopProfile />} />
           <Route path="/roaster/:id" element={<RoasterProfile />} />
           <Route path="/coffee/:id" element={<CoffeeProduct />} />
+          <Route path="/dashboard" element={<RequireAuth><DashboardHome /></RequireAuth>} />
+          <Route path="/dashboard/admin" element={<RequireAuth roles={["admin"]}><AdminDashboard /></RequireAuth>} />
+          <Route path="/dashboard/user" element={<RequireAuth><UserDashboard /></RequireAuth>} />
+          <Route path="/dashboard/teacher" element={<RequireAuth roles={["teacher","admin"]}><TeacherDashboard /></RequireAuth>} />
+          <Route path="/dashboard/shop" element={<RequireAuth roles={["coffee_shop","company","staff","admin"]}><ShopOwnerDashboard /></RequireAuth>} />
+          <Route path="/dashboard/roastery" element={<RequireAuth roles={["roaster","producer","admin"]}><RoasteryDashboard /></RequireAuth>} />
+          <Route path="/dashboard/manufacturer" element={<RequireAuth roles={["manufacturer","admin"]}><ManufacturerDashboard /></RequireAuth>} />
+          <Route path="/dashboard/supplier" element={<RequireAuth roles={["supplier","admin"]}><SupplierDashboard /></RequireAuth>} />
           <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
