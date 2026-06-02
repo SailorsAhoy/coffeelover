@@ -13,7 +13,18 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Star, Plus, ImagePlus, X, Loader2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Star, Plus, ImagePlus, X, Loader2, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 
@@ -80,10 +91,12 @@ export const ShopReviews = ({
 
   // Dialog state
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
@@ -119,6 +132,32 @@ export const ShopReviews = ({
     setRating(5);
     setComment("");
     setFiles([]);
+    setEditingId(null);
+  };
+
+  const openNew = () => {
+    resetForm();
+    setOpen(true);
+  };
+
+  const openEdit = (r: Review) => {
+    setEditingId(r.id);
+    setRating(r.rating);
+    setComment(r.comment ?? "");
+    setFiles([]);
+    setOpen(true);
+  };
+
+  const removeReview = async (id: string) => {
+    setDeletingId(id);
+    const { error } = await supabase.from("reviews").delete().eq("id", id);
+    setDeletingId(null);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Review deleted");
+    setReviews((prev) => prev.filter((r) => r.id !== id));
   };
 
   const addFiles = (incoming: FileList | null) => {
@@ -148,6 +187,28 @@ export const ShopReviews = ({
   const submit = async () => {
     if (!user) return;
     setSubmitting(true);
+
+    if (editingId) {
+      const { error } = await supabase
+        .from("reviews")
+        .update({
+          rating,
+          comment: comment.trim() || null,
+        })
+        .eq("id", editingId)
+        .eq("user_id", user.id);
+
+      setSubmitting(false);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      toast.success("Review updated");
+      resetForm();
+      setOpen(false);
+      load();
+      return;
+    }
 
     const { error } = await supabase.from("reviews").insert({
       user_id: user.id,
@@ -217,7 +278,17 @@ export const ShopReviews = ({
         <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base">
           <span className="flex items-center gap-2">
             Reviews
-            {canReview ? (
+            {canReview && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 gap-1 px-2 text-xs"
+                onClick={openNew}
+              >
+                <Plus className="h-3.5 w-3.5" /> Add review
+              </Button>
+            )}
+            {canReview && (
               <Dialog
                 open={open}
                 onOpenChange={(o) => {
@@ -225,14 +296,11 @@ export const ShopReviews = ({
                   if (!o) resetForm();
                 }}
               >
-                <DialogTrigger asChild>
-                  <Button size="sm" variant="outline" className="h-7 gap-1 px-2 text-xs">
-                    <Plus className="h-3.5 w-3.5" /> Add review
-                  </Button>
-                </DialogTrigger>
                 <DialogContent className="max-w-md">
                   <DialogHeader>
-                    <DialogTitle>Write a review</DialogTitle>
+                    <DialogTitle>
+                      {editingId ? "Edit your review" : "Write a review"}
+                    </DialogTitle>
                   </DialogHeader>
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
@@ -265,7 +333,7 @@ export const ShopReviews = ({
                       }}
                     />
 
-                    {shopId !== undefined && (
+                    {!editingId && shopId !== undefined && (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-medium">
@@ -315,8 +383,49 @@ export const ShopReviews = ({
                         </p>
                       </div>
                     )}
+                    {editingId && (
+                      <p className="text-[10px] text-muted-foreground">
+                        Photos uploaded with the original review remain in the
+                        community gallery and can be removed there.
+                      </p>
+                    )}
                   </div>
-                  <DialogFooter>
+                  <DialogFooter className="gap-2 sm:gap-2">
+                    {editingId && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="destructive"
+                            className="mr-auto gap-1"
+                            disabled={submitting}
+                          >
+                            <Trash2 className="h-4 w-4" /> Delete
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete this review?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This cannot be undone. Photos in the community
+                              gallery are kept and can be removed separately.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={async () => {
+                                const id = editingId;
+                                setOpen(false);
+                                resetForm();
+                                if (id) await removeReview(id);
+                              }}
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
                     <Button
                       variant="ghost"
                       onClick={() => setOpen(false)}
@@ -328,8 +437,10 @@ export const ShopReviews = ({
                       {submitting ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Posting…
+                          {editingId ? "Saving…" : "Posting…"}
                         </>
+                      ) : editingId ? (
+                        "Save changes"
                       ) : (
                         "Post review"
                       )}
@@ -337,7 +448,7 @@ export const ShopReviews = ({
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
-            ) : null}
+            )}
           </span>
           <div className="flex items-center gap-2 text-sm font-normal">
             <StarRow value={Math.round(avg)} />
@@ -364,31 +475,78 @@ export const ShopReviews = ({
           </p>
         ) : (
           <ul className="space-y-3">
-            {reviews.map((r) => (
-              <li key={r.id} className="flex gap-3 border-b pb-3 last:border-0">
-                <Avatar className="h-8 w-8 shrink-0">
-                  <AvatarFallback>
-                    {(r.profile?.name ?? "U").slice(0, 1).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="truncate text-sm font-medium">
-                      {r.profile?.name ?? "Anonymous"}
-                    </span>
-                    <StarRow value={r.rating} />
+            {reviews.map((r) => {
+              const isMine = user?.id === r.user_id;
+              return (
+                <li key={r.id} className="flex gap-3 border-b pb-3 last:border-0">
+                  <Avatar className="h-8 w-8 shrink-0">
+                    <AvatarFallback>
+                      {(r.profile?.name ?? "U").slice(0, 1).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="truncate text-sm font-medium">
+                        {r.profile?.name ?? "Anonymous"}
+                      </span>
+                      <StarRow value={r.rating} />
+                    </div>
+                    {r.comment && (
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {r.comment}
+                      </p>
+                    )}
+                    <div className="mt-1 flex items-center justify-between gap-2">
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(r.created_at).toLocaleDateString()}
+                      </p>
+                      {isMine && (
+                        <div className="flex items-center gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 gap-1 px-2 text-[11px]"
+                            onClick={() => openEdit(r)}
+                          >
+                            <Pencil className="h-3 w-3" /> Edit
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 gap-1 px-2 text-[11px] text-destructive hover:text-destructive"
+                                disabled={deletingId === r.id}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                                {deletingId === r.id ? "Deleting…" : "Delete"}
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete this review?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This cannot be undone. Photos in the community
+                                  gallery are kept and can be removed separately.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => removeReview(r.id)}
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  {r.comment && (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {r.comment}
-                    </p>
-                  )}
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {new Date(r.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         )}
       </CardContent>
