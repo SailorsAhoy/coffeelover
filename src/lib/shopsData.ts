@@ -49,8 +49,11 @@ export interface Shop {
   banner?: string;
   avatar?: string;
   staff?: StaffMember[];
+  /** legacy alias for status === 'pending' */
   pendingReview?: boolean;
+  status?: "pending" | "approved" | "rejected";
   createdBy?: string;
+  createdByName?: string;
 }
 
 const uuid = (n: number) =>
