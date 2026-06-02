@@ -275,6 +275,7 @@ export const subscribeShopOverrides = (cb: () => void): (() => void) => {
 };
 
 export const addShop = (shop: Omit<Shop, "id" | "reviewableId">): Shop => {
+  assertValidShop(shop);
   const nextId = SHOPS.reduce((m, s) => Math.max(m, s.id), 0) + 1;
   const created: Shop = {
     ...shop,
