@@ -65,6 +65,10 @@ const Shops = () => {
 
   useEffect(() => subscribeShopOverrides(() => force((n) => n + 1)), []);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Effective coords only when the locator is active. Otherwise treat as unknown
   // so the distance filter is not applied and "nearest" sort falls back.
   const activeCoords = locatorActive ? coords : null;
