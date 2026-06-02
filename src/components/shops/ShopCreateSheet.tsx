@@ -35,6 +35,11 @@ import {
 } from "@/lib/shopsData";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import type { OpeningHours } from "@/lib/shopUtils";
+import {
+  affiliateLinkSchema,
+  validateImageFile,
+  MAX_IMAGE_BYTES,
+} from "@/lib/shopValidation";
 
 interface Props {
   trigger?: React.ReactNode;
