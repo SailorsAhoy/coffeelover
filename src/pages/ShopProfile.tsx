@@ -106,13 +106,6 @@ const ShopProfile = () => {
           </div>
         )}
 
-        {shop.createdByName && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <User className="h-3.5 w-3.5" />
-            Submitted by{" "}
-            <span className="font-medium text-foreground">{shop.createdByName}</span>
-          </div>
-        )}
 
         <Card>
           <CardContent className="space-y-2 pt-4">
