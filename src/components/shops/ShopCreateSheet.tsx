@@ -119,6 +119,8 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
   const [instagram, setInstagram] = useState("");
   const [facebook, setFacebook] = useState("");
   const [twitter, setTwitter] = useState("");
+  const [hours, setHours] = useState<OpeningHours>(defaultHours);
+  const [affiliateLinks, setAffiliateLinks] = useState<AffiliateLink[]>([]);
 
   const reset = () => {
     setName("");
