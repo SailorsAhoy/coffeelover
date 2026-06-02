@@ -40,16 +40,23 @@ import ShopFilters, {
 } from "@/components/shops/ShopFilters";
 import ShopsMapView from "@/components/shops/ShopsMapView";
 import ShopCreateSheet from "@/components/shops/ShopCreateSheet";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { setShopStatus } from "@/lib/shopsData";
+import { Check, X } from "lucide-react";
 
 type SortKey = "distance" | "rating" | "reviews" | "price_asc" | "name";
+type StatusTab = "approved" | "pending" | "all";
 
 const Shops = () => {
   const { coords, loading: geoLoading, request } = useGeolocation(true);
+  const { hasRole, user } = useCurrentUser();
+  const isAdmin = hasRole("admin");
 
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<ShopFilterValues>(DEFAULT_FILTERS);
   const [sort, setSort] = useState<SortKey>("distance");
   const [view, setView] = useState<"list" | "map">("list");
+  const [statusTab, setStatusTab] = useState<StatusTab>("approved");
   const [, force] = useState(0);
 
   useEffect(() => subscribeShopOverrides(() => force((n) => n + 1)), []);
