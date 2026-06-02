@@ -77,20 +77,20 @@ export const ShopBanner = ({ shop }: Props) => {
         )}
       </div>
 
-      <div className="-mt-10 flex items-end gap-3 px-4 sm:px-6">
+      <div className="mt-1.5 flex items-center gap-3 px-4 sm:px-6">
         <Avatar
-          className="h-20 w-20 border-4 border-background shadow-md"
-          style={{ backgroundColor: color }}
+          className="h-15 w-15 border-4 border-background shadow-md"
+          style={{ backgroundColor: color, height: 60, width: 60 }}
         >
           <AvatarImage src={shop.avatar ?? shop.image} alt={shop.name} />
           <AvatarFallback
-            className="text-lg font-bold text-white"
+            className="text-base font-bold text-white"
             style={{ backgroundColor: color }}
           >
             {fallback}
           </AvatarFallback>
         </Avatar>
-        <div className="min-w-0 flex-1 pb-2">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
             <span
               className="h-2 w-2 rounded-full"
