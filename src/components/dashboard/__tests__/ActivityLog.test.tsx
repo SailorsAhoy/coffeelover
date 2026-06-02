@@ -2,6 +2,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
+// jsdom doesn't implement these; Radix Select needs them
+(Element.prototype as any).scrollIntoView = (Element.prototype as any).scrollIntoView ?? (() => {});
+(Element.prototype as any).hasPointerCapture = (Element.prototype as any).hasPointerCapture ?? (() => false);
+(Element.prototype as any).releasePointerCapture = (Element.prototype as any).releasePointerCapture ?? (() => {});
+
 // Build a chainable query mock that records each filter call.
 type Call = { method: string; args: any[] };
 let calls: Call[] = [];
