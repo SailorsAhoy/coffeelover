@@ -18,7 +18,7 @@ export interface ShopFilterValues {
 
 export const DEFAULT_FILTERS: ShopFilterValues = {
   types: { veggie: true, bakery: true, coffee_shop: true, roaster_shop: true },
-  maxDistanceKm: 20,
+  maxDistanceKm: 12000,
   maxPriceLevel: 4,
   minRating: 0,
   minReviews: 0,
@@ -118,8 +118,8 @@ export const ShopFilters = ({ value, onChange, activeCount }: Props) => {
             <Slider
               value={[value.maxDistanceKm]}
               min={1}
-              max={50}
-              step={1}
+              max={12000}
+              step={100}
               onValueChange={([v]) => update({ maxDistanceKm: v })}
             />
           </section>
