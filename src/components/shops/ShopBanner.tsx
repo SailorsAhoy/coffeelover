@@ -43,7 +43,7 @@ export const ShopBanner = ({ shop }: Props) => {
 
   return (
     <div className="relative">
-      <div className="relative h-44 w-full overflow-hidden sm:h-56">
+      <div className="relative h-32 w-full overflow-hidden sm:h-44">
         <img
           src={banner}
           alt={`${shop.name} banner`}
