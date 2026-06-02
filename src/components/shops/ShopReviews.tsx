@@ -1,11 +1,19 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Star } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Star, Plus, ImagePlus, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 
@@ -21,9 +29,15 @@ interface Review {
 interface Props {
   reviewableId: string;
   reviewableType?: string;
+  /** Shop id used to attach uploaded review photos to the shop's community gallery. */
+  shopId?: number | string;
   fallbackRating?: number;
   fallbackCount?: number;
 }
+
+const PHOTO_BUCKET = "shop-photos";
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+const MAX_PHOTOS = 4;
 
 const StarRow = ({
   value,
@@ -56,15 +70,21 @@ const StarRow = ({
 export const ShopReviews = ({
   reviewableId,
   reviewableType = "coffee_shop",
+  shopId,
   fallbackRating,
   fallbackCount,
 }: Props) => {
   const { user, can, profile } = useCurrentUser();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Dialog state
+  const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -95,9 +115,40 @@ export const ShopReviews = ({
     load();
   }, [load]);
 
+  const resetForm = () => {
+    setRating(5);
+    setComment("");
+    setFiles([]);
+  };
+
+  const addFiles = (incoming: FileList | null) => {
+    if (!incoming) return;
+    const next = [...files];
+    for (const f of Array.from(incoming)) {
+      if (!f.type.startsWith("image/")) {
+        toast.error(`${f.name}: only images allowed`);
+        continue;
+      }
+      if (f.size > MAX_PHOTO_BYTES) {
+        toast.error(`${f.name}: max 5MB`);
+        continue;
+      }
+      if (next.length >= MAX_PHOTOS) {
+        toast.error(`Up to ${MAX_PHOTOS} photos per review`);
+        break;
+      }
+      next.push(f);
+    }
+    setFiles(next);
+  };
+
+  const removeFile = (idx: number) =>
+    setFiles((prev) => prev.filter((_, i) => i !== idx));
+
   const submit = async () => {
     if (!user) return;
     setSubmitting(true);
+
     const { error } = await supabase.from("reviews").insert({
       user_id: user.id,
       reviewable_type: reviewableType,
@@ -105,29 +156,189 @@ export const ShopReviews = ({
       rating,
       comment: comment.trim() || null,
     });
-    setSubmitting(false);
+
     if (error) {
+      setSubmitting(false);
       toast.error(error.message);
       return;
     }
-    toast.success("Review posted");
-    setComment("");
-    setRating(5);
+
+    // Upload any attached photos to the shop's community gallery
+    if (files.length && shopId !== undefined) {
+      let uploaded = 0;
+      for (const file of files) {
+        const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+        const path = `${user.id}/${shopId}/${crypto.randomUUID()}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from(PHOTO_BUCKET)
+          .upload(path, file, { contentType: file.type });
+        if (upErr) continue;
+        const { error: insErr } = await supabase.from("shop_photos").insert({
+          shop_id: String(shopId),
+          storage_path: path,
+          uploaded_by: user.id,
+          kind: "user",
+          caption: comment.trim().slice(0, 140) || null,
+        });
+        if (insErr) {
+          await supabase.storage.from(PHOTO_BUCKET).remove([path]);
+          continue;
+        }
+        uploaded += 1;
+      }
+      if (uploaded > 0) {
+        toast.success(
+          `Review posted with ${uploaded} photo${uploaded > 1 ? "s" : ""}`,
+        );
+      } else {
+        toast.success("Review posted");
+      }
+    } else {
+      toast.success("Review posted");
+    }
+
+    setSubmitting(false);
+    resetForm();
+    setOpen(false);
     load();
   };
 
-  const myReview = reviews.find((r) => r.user_id === user?.id);
   const count = reviews.length || fallbackCount || 0;
   const avg =
     reviews.length > 0
       ? reviews.reduce((a, r) => a + r.rating, 0) / reviews.length
       : fallbackRating ?? 0;
 
+  const canReview = can("rate");
+
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center justify-between text-base">
-          <span>Reviews</span>
+        <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base">
+          <span className="flex items-center gap-2">
+            Reviews
+            {canReview ? (
+              <Dialog
+                open={open}
+                onOpenChange={(o) => {
+                  setOpen(o);
+                  if (!o) resetForm();
+                }}
+              >
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="h-7 gap-1 px-2 text-xs">
+                    <Plus className="h-3.5 w-3.5" /> Add review
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Write a review</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback>
+                          {(profile?.name ?? "U").slice(0, 1).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <StarRow value={rating} size={22} onChange={setRating} />
+                    </div>
+                    <Textarea
+                      placeholder="Share your experience…"
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value.slice(0, 500))}
+                      rows={4}
+                    />
+                    <div className="text-right text-[10px] text-muted-foreground">
+                      {comment.length}/500
+                    </div>
+
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      hidden
+                      onChange={(e) => {
+                        addFiles(e.target.files);
+                        e.target.value = "";
+                      }}
+                    />
+
+                    {shopId !== undefined && (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-medium">
+                            Photos ({files.length}/{MAX_PHOTOS})
+                          </span>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="h-7 gap-1 px-2 text-xs"
+                            disabled={files.length >= MAX_PHOTOS}
+                            onClick={() => fileRef.current?.click()}
+                          >
+                            <ImagePlus className="h-3.5 w-3.5" /> Add photo
+                          </Button>
+                        </div>
+                        {files.length > 0 && (
+                          <div className="grid grid-cols-4 gap-2">
+                            {files.map((f, i) => {
+                              const url = URL.createObjectURL(f);
+                              return (
+                                <div
+                                  key={i}
+                                  className="relative aspect-square overflow-hidden rounded-md border bg-muted"
+                                >
+                                  <img
+                                    src={url}
+                                    alt={f.name}
+                                    className="h-full w-full object-cover"
+                                    onLoad={() => URL.revokeObjectURL(url)}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => removeFile(i)}
+                                    className="absolute right-1 top-1 rounded-full bg-background/90 p-0.5 text-foreground shadow"
+                                    aria-label="Remove photo"
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                        <p className="text-[10px] text-muted-foreground">
+                          Photos are added to this shop's community gallery.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      variant="ghost"
+                      onClick={() => setOpen(false)}
+                      disabled={submitting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button onClick={submit} disabled={submitting}>
+                      {submitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Posting…
+                        </>
+                      ) : (
+                        "Post review"
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            ) : null}
+          </span>
           <div className="flex items-center gap-2 text-sm font-normal">
             <StarRow value={Math.round(avg)} />
             <span className="font-semibold">{avg.toFixed(1)}</span>
@@ -136,35 +347,7 @@ export const ShopReviews = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {can("rate") ? (
-          myReview ? (
-            <p className="text-xs text-muted-foreground">
-              You already reviewed this shop.
-            </p>
-          ) : (
-            <div className="space-y-2 rounded-lg border bg-muted/30 p-3">
-              <div className="flex items-center gap-2">
-                <Avatar className="h-7 w-7">
-                  <AvatarFallback>
-                    {(profile?.name ?? "U").slice(0, 1).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <StarRow value={rating} size={18} onChange={setRating} />
-              </div>
-              <Textarea
-                placeholder="Share your experience…"
-                value={comment}
-                onChange={(e) => setComment(e.target.value.slice(0, 500))}
-                rows={3}
-              />
-              <div className="flex justify-end">
-                <Button size="sm" onClick={submit} disabled={submitting}>
-                  {submitting ? "Posting…" : "Post review"}
-                </Button>
-              </div>
-            </div>
-          )
-        ) : (
+        {!canReview && (
           <div className="rounded-lg border bg-muted/30 p-3 text-sm text-muted-foreground">
             <Link to="/auth" className="text-primary underline">
               Sign in
