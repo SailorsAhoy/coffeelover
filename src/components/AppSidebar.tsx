@@ -1,5 +1,5 @@
 import { NavLink } from "@/components/NavLink";
-import { Coffee, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap, User, Briefcase, BookMarked, MessageSquare, Library, ChevronLeft, ChevronRight, Users, MessageCircle, Settings } from "lucide-react";
+import { Coffee, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap, User, Briefcase, BookMarked, MessageSquare, Library, ChevronLeft, ChevronRight, Users, MessageCircle, Settings, LayoutDashboard } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import {
   Sidebar,
