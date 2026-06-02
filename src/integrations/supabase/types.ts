@@ -782,11 +782,42 @@ export type Database = {
           },
         ]
       }
+      shop_branding: {
+        Row: {
+          avatar_path: string | null
+          banner_path: string | null
+          created_at: string
+          id: string
+          managed_by: string | null
+          shop_id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_path?: string | null
+          banner_path?: string | null
+          created_at?: string
+          id?: string
+          managed_by?: string | null
+          shop_id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_path?: string | null
+          banner_path?: string | null
+          created_at?: string
+          id?: string
+          managed_by?: string | null
+          shop_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       shop_photos: {
         Row: {
           caption: string | null
           created_at: string
           id: string
+          kind: string
           shop_id: string
           storage_path: string
           uploaded_by: string | null
@@ -795,6 +826,7 @@ export type Database = {
           caption?: string | null
           created_at?: string
           id?: string
+          kind?: string
           shop_id: string
           storage_path: string
           uploaded_by?: string | null
@@ -803,9 +835,46 @@ export type Database = {
           caption?: string | null
           created_at?: string
           id?: string
+          kind?: string
           shop_id?: string
           storage_path?: string
           uploaded_by?: string | null
+        }
+        Relationships: []
+      }
+      shop_staff: {
+        Row: {
+          bio: string | null
+          created_at: string
+          id: string
+          managed_by: string | null
+          name: string
+          photo_path: string | null
+          role: string
+          shop_id: string
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          id?: string
+          managed_by?: string | null
+          name: string
+          photo_path?: string | null
+          role: string
+          shop_id: string
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          id?: string
+          managed_by?: string | null
+          name?: string
+          photo_path?: string | null
+          role?: string
+          shop_id?: string
+          updated_at?: string
         }
         Relationships: []
       }

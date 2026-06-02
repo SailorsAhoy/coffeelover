@@ -45,16 +45,8 @@ const ShopProfile = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <div className="sticky top-0 z-20 flex items-center justify-between border-b bg-background/95 px-3 py-2 backdrop-blur">
-        <Link to="/shops">
-          <Button variant="ghost" size="sm" className="gap-1">
-            <ChevronLeft className="h-4 w-4" /> Shops
-          </Button>
-        </Link>
-        {can("list_shop") && <ShopEditSheet shop={shop} />}
-      </div>
-
       <ShopBanner shop={shop} />
+
 
       <div className="mx-auto max-w-3xl space-y-4 px-4 py-4 md:px-6">
         <Card>
@@ -157,8 +149,9 @@ const ShopProfile = () => {
           </TabsContent>
 
           <TabsContent value="staff" className="mt-3">
-            <ShopStaff staff={shop.staff ?? []} />
+            <ShopStaff shopId={shop.id} />
           </TabsContent>
+
 
           <TabsContent value="hours" className="mt-3">
             <Card>
