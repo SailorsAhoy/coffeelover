@@ -202,6 +202,25 @@ const Shops = () => {
               <LocateFixed className="h-4 w-4" />
             </Button>
           </div>
+
+          <Tabs
+            value={statusTab}
+            onValueChange={(v) => setStatusTab(v as StatusTab)}
+          >
+            <TabsList className="h-8">
+              <TabsTrigger value="approved" className="h-7 text-xs">
+                Approved
+              </TabsTrigger>
+              <TabsTrigger value="pending" className="h-7 text-xs">
+                Under review
+              </TabsTrigger>
+              {isAdmin && (
+                <TabsTrigger value="all" className="h-7 text-xs">
+                  All
+                </TabsTrigger>
+              )}
+            </TabsList>
+          </Tabs>
         </div>
       </div>
 
