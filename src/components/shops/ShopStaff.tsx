@@ -30,13 +30,18 @@ interface StaffRow {
   bio: string | null;
   photo_path: string | null;
   managed_by: string | null;
+  staff_user_id: string | null;
   photo_url?: string;
 }
 
 const BUCKET = "shop-photos";
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const staffSchema = z.object({
-  name: z.string().trim().min(1, "Name required").max(80),
+  identifier: z
+    .string()
+    .trim()
+    .min(3, "Enter the user's email or user ID"),
   role: z.string().trim().min(1, "Role required").max(80),
   bio: z.string().trim().max(500).optional(),
 });
@@ -55,11 +60,13 @@ export const ShopStaff = ({ shopId }: Props) => {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
+  const [identifier, setIdentifier] = useState("");
+
   const load = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("shop_staff")
-      .select("id, name, role, bio, photo_path, managed_by")
+      .select("id, name, role, bio, photo_path, managed_by, staff_user_id")
       .eq("shop_id", String(shopId))
       .order("created_at", { ascending: true });
     if (error) {
@@ -89,6 +96,7 @@ export const ShopStaff = ({ shopId }: Props) => {
     setName("");
     setRole("");
     setBio("");
+    setIdentifier("");
     setPhotoFile(null);
   };
 
@@ -101,18 +109,38 @@ export const ShopStaff = ({ shopId }: Props) => {
     setName(s.name);
     setRole(s.role);
     setBio(s.bio ?? "");
+    setIdentifier(s.staff_user_id ?? "");
     setPhotoFile(null);
     setOpen(true);
   };
 
   const save = async () => {
     if (!user) return;
-    const parsed = staffSchema.safeParse({ name, role, bio });
+    const parsed = staffSchema.safeParse({ identifier, role, bio });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
     }
     setSaving(true);
+
+    // Resolve identifier (email or uuid) to a registered profile
+    const id = parsed.data.identifier;
+    const base = supabase.from("profiles").select("id, name, email");
+    const { data: matches, error: lookupErr } = UUID_RE.test(id)
+      ? await base.eq("id", id).limit(1)
+      : await base.ilike("email", id).limit(1);
+    if (lookupErr) {
+      toast.error("Could not verify user");
+      setSaving(false);
+      return;
+    }
+    const profile = matches?.[0];
+    if (!profile) {
+      toast.error("No registered user matches that email or ID");
+      setSaving(false);
+      return;
+    }
+
     let photo_path = editing?.photo_path ?? null;
 
     if (photoFile) {
@@ -141,11 +169,12 @@ export const ShopStaff = ({ shopId }: Props) => {
 
     const payload = {
       shop_id: String(shopId),
-      name: parsed.data.name,
+      name: profile.name || profile.email || "Staff member",
       role: parsed.data.role,
       bio: parsed.data.bio || null,
       photo_path,
       managed_by: user.id,
+      staff_user_id: profile.id,
     };
 
     const { error } = editing
@@ -246,13 +275,19 @@ export const ShopStaff = ({ shopId }: Props) => {
                   </label>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Name</Label>
+                  <Label>Registered user (email or user ID)</Label>
                   <Input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    maxLength={80}
-                    placeholder="Maya Chen"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    maxLength={120}
+                    placeholder="maya@example.com or UUID"
+                    autoComplete="off"
+                    disabled={!!editing}
                   />
+                  <p className="text-[11px] text-muted-foreground">
+                    Staff must already have an account on the platform. Their
+                    profile name will be used.
+                  </p>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Role</Label>
