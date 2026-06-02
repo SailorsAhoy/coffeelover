@@ -49,6 +49,8 @@ export interface Shop {
   banner?: string;
   avatar?: string;
   staff?: StaffMember[];
+  pendingReview?: boolean;
+  createdBy?: string;
 }
 
 const uuid = (n: number) =>
