@@ -149,8 +149,9 @@ const ShopProfile = () => {
           </TabsContent>
 
           <TabsContent value="staff" className="mt-3">
-            <ShopStaff staff={shop.staff ?? []} />
+            <ShopStaff shopId={shop.id} />
           </TabsContent>
+
 
           <TabsContent value="hours" className="mt-3">
             <Card>
