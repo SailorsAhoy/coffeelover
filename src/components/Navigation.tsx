@@ -146,6 +146,19 @@ const Navigation = () => {
             <span className="text-lg font-bold">CoffeeLovers</span>
           </Link>
           
+          {isAuthenticated && (
+            <div className="flex items-center gap-1 ml-auto mr-2">
+              <Link to="/messages" className="relative p-1.5 hover:bg-accent rounded-lg">
+                <MessageSquare className="w-5 h-5" />
+                {msgUnread > 0 && (
+                  <Badge className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 text-[10px]">
+                    {msgUnread > 9 ? "9+" : msgUnread}
+                  </Badge>
+                )}
+              </Link>
+              <NotificationBell />
+            </div>
+          )}
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="outline-none">
