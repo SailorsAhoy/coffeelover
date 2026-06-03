@@ -50,14 +50,12 @@ export async function markAllRead() {
 }
 
 export function subscribeNotifications(userId: string, onChange: () => void) {
-  const ch = supabase
-    .channel(`notif:${userId}`)
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
-      () => onChange(),
-    )
-    .subscribe();
+  const ch = supabase.channel(`notif:${userId}:${Math.random().toString(36).slice(2)}`);
+  ch.on(
+    "postgres_changes" as any,
+    { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+    () => onChange(),
+  ).subscribe();
   return () => {
     supabase.removeChannel(ch);
   };
