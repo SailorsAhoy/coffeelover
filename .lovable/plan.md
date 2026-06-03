@@ -1,106 +1,80 @@
-# Foundation: Auth, Roles & Subscriptions
+## Goal
 
-Build the central identity layer that every module (Shops, Roasters, Coffee, Equipment, Jobs, Academy, etc.) will plug into. Mobile-first, no changes to existing module screens beyond what's needed to wire them to the new auth/role system.
+Three deliverables:
 
-## 1. Role model (extend existing)
+1. **Extend the "New Shop" form so all fields render, gated by a DB-backed permission matrix.**
+2. **Admin dashboard panel to toggle each field (per category × per role) on/off.**
+3. **Fix bugs**: admin Shop Management shows 4 hardcoded shops (should show all 8 + any added); Edit buttons in admin list and on ShopProfile don't open the edit form.
 
-Current DB already has `app_role` enum (`admin`, `roaster`, `coffee_shop`, `producer`, `user`) and a `user_roles` table. Extend to cover all the personas you listed:
+---
 
-- `admin` — full control
-- `company` — generic company owner account (umbrella for roaster / shop / producer / equipment seller / job poster / course provider). Companies are differentiated by which profile row they own (roaster_profiles, coffee_shop_profiles, etc.)
-- `staff` — personnel attached to a company (linked via a new `company_members` table)
-- `pro_user` — paid individual (job seekers, advanced journal, etc.)
-- `teacher` — academy course author
-- `user` — default viewer (can suggest shops/brands, comment, rate)
+## 1. Field Permission Matrix (DB)
 
-A user can hold multiple roles (already supported by `user_roles`).
+New table `field_permissions`:
 
-## 2. Subscriptions
+- `category` text — one of `shop`, `roaster`, `beans`, `equipment`
+- `role` text — `admin`, `owner`, `roaster`, `coffee_shop`, `producer`, `user`
+- `field_key` text — e.g. `phone`, `banner`, `affiliateLinks`
+- `can_edit` boolean
+- unique (category, role, field_key)
 
-New `subscription_plans` table (seeded with: Free, Pro User, Company Basic, Company Plus, Academy Teacher) and `user_subscriptions` linking a user to one or more active plans with `status`, `started_at`, `expires_at`, and the `module` it unlocks (e.g. `jobs`, `journal_pro`, `shop_listing`, `course_publishing`). No real Stripe yet — a simulated "Activate" button in Settings will insert a row.
+Seed rows for the **shop** category covering every shop form field, with sensible defaults (admin/owner = all, user = `name/type/description/bio/address/priceLevel/amenities/hours` only). Other categories seeded as empty for now (admin panel can populate later).
 
-Helper SQL function `has_active_subscription(_user_id, _module)` mirroring the existing `has_role` pattern, so RLS and UI can gate features cleanly.
+RLS:
+- `SELECT` for everyone (cheap, drives form rendering).
+- `INSERT/UPDATE/DELETE` admin-only via `has_role('admin')`.
+- GRANTs: `anon`, `authenticated` SELECT; `service_role` ALL; `authenticated` INSERT/UPDATE/DELETE (gated by RLS).
 
-## 3. Permissions helper
+Client helper `useFieldPermissions(category)` returns `{ can(field): boolean }` for the current user's highest applicable role.
 
-A single `src/hooks/useCurrentUser.ts` returning `{ user, profile, roles, subscriptions, can(permission) }`. The `can()` function centralises rules like:
+## 2. ShopCreateSheet — render all fields, gate by matrix
 
-- `can('suggest_shop')` → any logged-in user
-- `can('comment')` → any logged-in user
-- `can('post_job')` → role `company` + active `jobs` subscription
-- `can('publish_course')` → role `teacher` + active `course_publishing` subscription
-- `can('manage_company', companyId)` → owner or staff of that company
+- Render every field (banner, avatar, contact block, socials, hours, affiliate links) for all authenticated users.
+- Wrap each gated section in `{canField('banner') && …}` driven by the matrix.
+- Same treatment for `ShopEditSheet`.
+- If a user lacks permission for a field, it is simply not rendered (not just disabled).
 
-Modules will import this hook instead of doing ad-hoc auth checks.
+## 3. Admin permissions panel
 
-## 4. Auth UI overhaul (the only existing screen touched: `/auth`)
+New page `src/pages/settings/FieldPermissions.tsx`:
 
-Rebuild `src/pages/Auth.tsx` mobile-first with tabs:
+- Category tabs: Shop / Roaster / Beans / Equipment.
+- Inside each, a table of `field × role` with checkboxes.
+- Edits write straight to `field_permissions` via Supabase.
+- Linked from `AdminDashboard` and Settings nav.
 
-- Sign in (email/password)
-- Sign up (email/password + name + role selector: "I'm a coffee lover / a professional / a company")
-- Forgot password → sends reset email, redirects to new `/reset-password`
-- Social login buttons: Google, Apple, Facebook — **simulated**. Clicking creates/uses a deterministic demo account (`demo-google@coffeelover.app`, etc.) via `signInWithPassword`, with a clear "Demo mode" toast. Wiring point left in place for real OAuth later.
+For non-shop categories we register field lists in code (`src/lib/fieldRegistry.ts`) — easy to extend later.
 
-New `/reset-password` page handles the recovery hash and calls `updateUser({ password })`.
+## 4. Bug fixes
 
-Add `signOut()` action in the profile menu (Navigation already exists — only minimal hook-up, no layout change).
+**Shop Management list (`src/pages/settings/ShopManagement.tsx`)** — currently hardcoded:
+- Replace static array with `SHOPS.map(getShopWithOverrides)` so all 8 (+ user-added) appear.
+- Wire the Edit button to open `ShopEditSheet` for that shop.
+- Wire Delete (admin-only) via a new `deleteShop(id)` in `shopsData.ts`.
+- Add search + type-filter behavior to actually filter the live list.
 
-Enable Lovable Cloud **leaked password protection** (HIBP) via configure_auth.
+**ShopProfile edit button**: confirm `ShopEditSheet` is mounted and visible to owners/admins; if `can("list_shop")` gating blocks admins, switch to `isOwner || hasRole("admin")`.
 
-## 5. Role-aware routing guard
+**8 vs 4 reconciliation**: The "DB" for shops is the in-memory `SHOPS` array (8 entries). The admin page just hardcoded 4 names. After fix #1 above, the admin list will reflect the same 8 the public page shows. No DB seeding needed — there is no shops table.
 
-`src/components/RequireAuth.tsx` and `RequireRole.tsx` wrappers. Apply only to routes that clearly need it now:
+---
 
-- `/settings/*` (admin only) — replaces the current unguarded admin pages
-- `/journal/*` (already uses `useAuthGuard`, migrate to new hook)
-- `/profile` (any logged-in user)
+## Files
 
-Module pages stay public-readable; write actions inside them will call `can()` and route to `/auth` if needed. No visual changes to those pages in this step.
+- **new**: `supabase/migrations/<ts>_field_permissions.sql`
+- **new**: `src/hooks/useFieldPermissions.ts`
+- **new**: `src/lib/fieldRegistry.ts`
+- **new**: `src/pages/settings/FieldPermissions.tsx`
+- **edit**: `src/components/shops/ShopCreateSheet.tsx` — remove `isOwner ?` gating, use matrix
+- **edit**: `src/components/shops/ShopEditSheet.tsx` — same
+- **edit**: `src/pages/settings/ShopManagement.tsx` — live data + working Edit/Delete
+- **edit**: `src/lib/shopsData.ts` — add `deleteShop(id)`
+- **edit**: `src/pages/dashboard/AdminDashboard.tsx` + sidebar — link to new panel
+- **edit**: `src/App.tsx` — route for `/settings/field-permissions`
 
-## 6. Profile & account hub
+## Out of scope
 
-Light extension of `/profile`:
+- Migrating mock shops into a real Supabase `shops` table (the project is still mock-shop-based; only `coffee_shop_profiles` exists and isn't wired to the directory).
+- Building full Roaster/Beans/Equipment create forms — the matrix table is ready, only Shop forms consume it now.
 
-- Show current roles and active subscriptions
-- "Become a company / teacher / pro user" buttons → simulated subscription activation
-- Manage staff (only visible to company owners) — list + invite-by-email stub
-
-## Technical details
-
-**Migration (single call):**
-
-```sql
--- extend enum
-ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'company';
-ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'staff';
-ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'pro_user';
-ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'teacher';
-
--- subscription_plans, user_subscriptions, company_members tables
--- + GRANTs + RLS + has_active_subscription() SECURITY DEFINER fn
--- + seed plans
-```
-
-**New files**
-
-- `src/hooks/useCurrentUser.ts`
-- `src/lib/permissions.ts` (the `can()` rule table)
-- `src/components/RequireAuth.tsx`, `RequireRole.tsx`
-- `src/pages/ResetPassword.tsx`
-- `src/pages/ForgotPassword.tsx`
-- `src/components/auth/SocialLoginButtons.tsx` (simulated)
-- `src/components/profile/SubscriptionsCard.tsx`
-- `src/components/profile/RolesCard.tsx`
-
-**Edited files (minimal)**
-
-- `src/pages/Auth.tsx` — rebuild with tabs + social + role pick on signup
-- `src/App.tsx` — add `/reset-password`, `/forgot-password`, wrap admin routes
-- `src/pages/Profile.tsx` — mount roles/subscriptions cards
-- `src/hooks/useAuthGuard.ts` — re-export from `useCurrentUser` for back-compat
-- `supabase/functions` — none needed for this step
-
-**Out of scope for this step** (next modules will consume the foundation): Shops, Roasters, Coffee, Equipment, Jobs, Academy UI changes; real OAuth providers; real Stripe billing; staff invitation emails.
-
-After you approve, I'll run the migration first, then wire the code.
+Confirm and I'll build, or tell me what to adjust.

@@ -567,6 +567,36 @@ export type Database = {
         }
         Relationships: []
       }
+      field_permissions: {
+        Row: {
+          can_edit: boolean
+          category: string
+          created_at: string
+          field_key: string
+          id: string
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          can_edit?: boolean
+          category: string
+          created_at?: string
+          field_key: string
+          id?: string
+          role: string
+          updated_at?: string
+        }
+        Update: {
+          can_edit?: boolean
+          category?: string
+          created_at?: string
+          field_key?: string
+          id?: string
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       follows: {
         Row: {
           created_at: string

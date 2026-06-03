@@ -44,13 +44,17 @@ const baseShop: any = {
 
 describe("ShopEditSheet — role gating", () => {
   it("renders nothing for a regular member (cannot edit banner/hours/affiliates)", () => {
-    (useCurrentUser as any).mockReturnValue({ can: () => false });
+    (useCurrentUser as any).mockReturnValue({
+      can: () => false, hasRole: () => false, user: null,
+    });
     const { container } = render(<ShopEditSheet shop={baseShop} />);
     expect(container.firstChild).toBeNull();
   });
 
   it("renders the edit trigger for a shop manager", () => {
-    (useCurrentUser as any).mockReturnValue({ can: (p: string) => p === "list_shop" });
+    (useCurrentUser as any).mockReturnValue({
+      can: (p: string) => p === "list_shop", hasRole: () => false, user: null,
+    });
     const { getByRole } = render(<ShopEditSheet shop={baseShop} />);
     expect(getByRole("button", { name: /edit/i })).toBeInTheDocument();
   });

@@ -301,3 +301,10 @@ export const setShopStatus = (
   });
 };
 
+export const deleteShop = (id: number) => {
+  const idx = SHOPS.findIndex((s) => s.id === id);
+  if (idx >= 0) SHOPS.splice(idx, 1);
+  overrides.delete(id);
+  listeners.forEach((l) => l());
+};
+

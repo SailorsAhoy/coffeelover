@@ -35,6 +35,7 @@ import {
   type ShopType,
 } from "@/lib/shopsData";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useFieldPermissions } from "@/hooks/useFieldPermissions";
 import type { OpeningHours } from "@/lib/shopUtils";
 import {
   affiliateLinkSchema,
@@ -100,8 +101,13 @@ const defaultHours: OpeningHours = {
 };
 
 export const ShopCreateSheet = ({ trigger }: Props) => {
-  const { user, profile, can, isAuthenticated } = useCurrentUser();
+  const { user, profile, can, isAuthenticated, hasRole } = useCurrentUser();
   const isOwner = can("list_shop");
+  const { canField } = useFieldPermissions("shop");
+  const showMedia = canField("banner") || canField("avatar");
+  const showContact =
+    canField("phone") || canField("whatsapp") || canField("email") || canField("website");
+  const showSocial = canField("instagram") || canField("facebook") || canField("twitter");
 
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -176,24 +182,19 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
   };
 
   const submit = () => {
-    const schema = isOwner ? ownerSchema : baseSchema;
-    const parsed = schema.safeParse(
-      isOwner
-        ? {
-            name,
-            description,
-            bio,
-            address,
-            phone,
-            whatsapp,
-            email,
-            website,
-            instagram,
-            facebook,
-            twitter,
-          }
-        : { name, description, bio, address },
-    );
+    const parsed = ownerSchema.safeParse({
+      name,
+      description,
+      bio,
+      address,
+      phone,
+      whatsapp,
+      email,
+      website,
+      instagram,
+      facebook,
+      twitter,
+    });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
@@ -206,9 +207,8 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
       toast.error("Address is missing country or coordinates — re-pick a suggestion");
       return;
     }
-    // Validate affiliate links (owner-only)
     const cleanLinks: AffiliateLink[] = [];
-    if (isOwner) {
+    if (canField("affiliateLinks")) {
       for (const l of affiliateLinks) {
         if (!l.label && !l.url) continue;
         const r = affiliateLinkSchema.safeParse(l);
@@ -239,20 +239,16 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
         pendingReview: true,
         createdBy: user?.id,
         createdByName: profile?.name ?? user?.email ?? undefined,
-        createdByRole: isOwner ? "owner" : "user",
-        banner: isOwner ? banner : undefined,
-        avatar: isOwner ? avatar : undefined,
-        ...(isOwner
-          ? {
-              phone: phone.trim() || undefined,
-              whatsapp: whatsapp.trim() || undefined,
-              email: email.trim() || undefined,
-              website: website.trim() || undefined,
-              instagram: instagram.trim() || undefined,
-              facebook: facebook.trim() || undefined,
-              twitter: twitter.trim() || undefined,
-            }
-          : {}),
+        createdByRole: hasRole("admin") ? "admin" : isOwner ? "owner" : "user",
+        banner: canField("banner") ? banner : undefined,
+        avatar: canField("avatar") ? avatar : undefined,
+        phone: canField("phone") ? phone.trim() || undefined : undefined,
+        whatsapp: canField("whatsapp") ? whatsapp.trim() || undefined : undefined,
+        email: canField("email") ? email.trim() || undefined : undefined,
+        website: canField("website") ? website.trim() || undefined : undefined,
+        instagram: canField("instagram") ? instagram.trim() || undefined : undefined,
+        facebook: canField("facebook") ? facebook.trim() || undefined : undefined,
+        twitter: canField("twitter") ? twitter.trim() || undefined : undefined,
       });
     } catch (err) {
       toast.error((err as Error).message || "Could not save shop");
@@ -410,7 +406,7 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
             )}
           </section>
 
-          {isOwner && (
+          {showMedia && (
             <section className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label className="text-sm font-semibold">Banner</Label>
@@ -481,109 +477,78 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
             </section>
           )}
 
-          {isOwner && (
-            <>
-              <section className="space-y-3">
-                <Label className="text-sm font-semibold">Contact</Label>
-                <Input
-                  placeholder="Phone"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  inputMode="tel"
-                  maxLength={30}
-                />
-                <Input
-                  placeholder="WhatsApp number"
-                  value={whatsapp}
-                  onChange={(e) => setWhatsapp(e.target.value)}
-                  inputMode="tel"
-                  maxLength={30}
-                />
-                <Input
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  inputMode="email"
-                  maxLength={120}
-                />
-                <Input
-                  placeholder="Website https://…"
-                  value={website}
-                  onChange={(e) => setWebsite(e.target.value)}
-                  inputMode="url"
-                  maxLength={500}
-                />
-                <Input
-                  placeholder="Instagram URL"
-                  value={instagram}
-                  onChange={(e) => setInstagram(e.target.value)}
-                  inputMode="url"
-                  maxLength={500}
-                />
-                <Input
-                  placeholder="Facebook URL"
-                  value={facebook}
-                  onChange={(e) => setFacebook(e.target.value)}
-                  inputMode="url"
-                  maxLength={500}
-                />
-                <Input
-                  placeholder="Twitter/X URL"
-                  value={twitter}
-                  onChange={(e) => setTwitter(e.target.value)}
-                  inputMode="url"
-                  maxLength={500}
-                />
-              </section>
-
-              <section className="space-y-3">
-                <Label className="text-sm font-semibold">Amenities</Label>
-                <div className="grid grid-cols-1 gap-2">
-                  {AMENITIES.map((a) => {
-                    const Icon = a.icon;
-                    return (
-                      <label
-                        key={a.key}
-                        className="flex items-center justify-between rounded-lg border p-2.5"
-                      >
-                        <span className="flex items-center gap-2 text-sm">
-                          <Icon className="h-4 w-4 text-muted-foreground" />
-                          {a.label}
-                        </span>
-                        <Switch
-                          checked={!!amenities[a.key]}
-                          onCheckedChange={(v) => toggle(a.key, v)}
-                        />
-                      </label>
-                    );
-                  })}
-                </div>
-              </section>
-
-              <section className="space-y-2">
-                <Label className="text-sm font-semibold">Opening hours</Label>
-                <OpeningHoursEditor value={hours} onChange={setHours} />
-              </section>
-
-              <section className="space-y-2">
-                <Label className="text-sm font-semibold">Affiliate links</Label>
-                <AffiliateLinksEditor
-                  value={affiliateLinks}
-                  onChange={setAffiliateLinks}
-                />
-              </section>
-
-
-
-              <p className="rounded-md border bg-muted/40 p-2 text-[11px] text-muted-foreground">
-                Submitting as{" "}
-                <span className="font-medium text-foreground">
-                  {profile?.name ?? user?.email}
-                </span>
-                . You'll be credited as the author on the shop profile.
-              </p>
-            </>
+          {showContact && (
+            <section className="space-y-3">
+              <Label className="text-sm font-semibold">Contact</Label>
+              {canField("phone") && (
+                <Input placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} inputMode="tel" maxLength={30} />
+              )}
+              {canField("whatsapp") && (
+                <Input placeholder="WhatsApp number" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} inputMode="tel" maxLength={30} />
+              )}
+              {canField("email") && (
+                <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} inputMode="email" maxLength={120} />
+              )}
+              {canField("website") && (
+                <Input placeholder="Website https://…" value={website} onChange={(e) => setWebsite(e.target.value)} inputMode="url" maxLength={500} />
+              )}
+            </section>
           )}
+
+          {showSocial && (
+            <section className="space-y-3">
+              <Label className="text-sm font-semibold">Social</Label>
+              {canField("instagram") && (
+                <Input placeholder="Instagram URL" value={instagram} onChange={(e) => setInstagram(e.target.value)} inputMode="url" maxLength={500} />
+              )}
+              {canField("facebook") && (
+                <Input placeholder="Facebook URL" value={facebook} onChange={(e) => setFacebook(e.target.value)} inputMode="url" maxLength={500} />
+              )}
+              {canField("twitter") && (
+                <Input placeholder="Twitter/X URL" value={twitter} onChange={(e) => setTwitter(e.target.value)} inputMode="url" maxLength={500} />
+              )}
+            </section>
+          )}
+
+          {canField("amenities") && (
+            <section className="space-y-3">
+              <Label className="text-sm font-semibold">Amenities</Label>
+              <div className="grid grid-cols-1 gap-2">
+                {AMENITIES.map((a) => {
+                  const Icon = a.icon;
+                  return (
+                    <label key={a.key} className="flex items-center justify-between rounded-lg border p-2.5">
+                      <span className="flex items-center gap-2 text-sm">
+                        <Icon className="h-4 w-4 text-muted-foreground" />
+                        {a.label}
+                      </span>
+                      <Switch checked={!!amenities[a.key]} onCheckedChange={(v) => toggle(a.key, v)} />
+                    </label>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {canField("opening_hours") && (
+            <section className="space-y-2">
+              <Label className="text-sm font-semibold">Opening hours</Label>
+              <OpeningHoursEditor value={hours} onChange={setHours} />
+            </section>
+          )}
+
+          {canField("affiliateLinks") && (
+            <section className="space-y-2">
+              <Label className="text-sm font-semibold">Affiliate links</Label>
+              <AffiliateLinksEditor value={affiliateLinks} onChange={setAffiliateLinks} />
+            </section>
+          )}
+
+          <p className="rounded-md border bg-muted/40 p-2 text-[11px] text-muted-foreground">
+            Submitting as{" "}
+            <span className="font-medium text-foreground">{profile?.name ?? user?.email}</span>
+            . You'll be credited as the author on the shop profile.
+          </p>
         </div>
 
         <SheetFooter>
