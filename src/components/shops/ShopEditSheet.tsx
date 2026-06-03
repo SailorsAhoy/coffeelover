@@ -41,6 +41,7 @@ import {
   MAX_IMAGE_BYTES,
 } from "@/lib/shopValidation";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useFieldPermissions } from "@/hooks/useFieldPermissions";
 
 interface Props {
   shop: Shop;
@@ -83,8 +84,11 @@ const schema = z.object({
 const MAX_IMG = MAX_IMAGE_BYTES;
 
 export const ShopEditSheet = ({ shop }: Props) => {
-  const { can } = useCurrentUser();
-  const isOwner = can("list_shop");
+  const { can, hasRole, user } = useCurrentUser();
+  const isAdmin = hasRole("admin");
+  const isCreator = !!user && !!shop.createdBy && shop.createdBy === user.id;
+  const canEdit = isAdmin || can("list_shop") || isCreator;
+  const { canField } = useFieldPermissions("shop");
   const [open, setOpen] = useState(false);
 
   const [name, setName] = useState(shop.name);
