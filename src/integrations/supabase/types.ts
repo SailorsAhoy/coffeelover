@@ -22,6 +22,7 @@ export type Database = {
           id: string
           logo_url: string | null
           name: string
+          owner_user_id: string | null
           slug: string | null
           updated_at: string
           website_url: string | null
@@ -33,6 +34,7 @@ export type Database = {
           id?: string
           logo_url?: string | null
           name: string
+          owner_user_id?: string | null
           slug?: string | null
           updated_at?: string
           website_url?: string | null
@@ -44,6 +46,7 @@ export type Database = {
           id?: string
           logo_url?: string | null
           name?: string
+          owner_user_id?: string | null
           slug?: string | null
           updated_at?: string
           website_url?: string | null
@@ -957,6 +960,48 @@ export type Database = {
           },
         ]
       }
+      listing_claims: {
+        Row: {
+          claimant_user_id: string
+          created_at: string
+          id: string
+          listing_id: string
+          listing_type: string
+          note: string | null
+          requested_role: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          claimant_user_id: string
+          created_at?: string
+          id?: string
+          listing_id: string
+          listing_type: string
+          note?: string | null
+          requested_role?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          claimant_user_id?: string
+          created_at?: string
+          id?: string
+          listing_id?: string
+          listing_type?: string
+          note?: string | null
+          requested_role?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       machine_brands: {
         Row: {
           created_at: string
@@ -1097,6 +1142,7 @@ export type Database = {
           email: string | null
           id: string
           logo_url: string | null
+          owner_user_id: string | null
           phone: string | null
           slug: string | null
           updated_at: string
@@ -1111,6 +1157,7 @@ export type Database = {
           email?: string | null
           id?: string
           logo_url?: string | null
+          owner_user_id?: string | null
           phone?: string | null
           slug?: string | null
           updated_at?: string
@@ -1125,6 +1172,7 @@ export type Database = {
           email?: string | null
           id?: string
           logo_url?: string | null
+          owner_user_id?: string | null
           phone?: string | null
           slug?: string | null
           updated_at?: string
@@ -1406,7 +1454,14 @@ export type Database = {
       roasters: {
         Row: {
           address: string | null
+          affiliate_links: Json | null
+          amenities: Json | null
+          avatar: string | null
+          banner: string | null
           banner_url: string | null
+          base_rating: number | null
+          base_review_count: number | null
+          bio: string | null
           country: string | null
           created_at: string
           created_by: string | null
@@ -1417,10 +1472,13 @@ export type Database = {
           id: string
           instagram: string | null
           lat: number | null
+          linked_shop_id: string | null
           lng: number | null
           logo_url: string | null
           name: string
           offers_free_shipping: boolean | null
+          opening_hours: Json | null
+          owner_user_id: string | null
           phone: string | null
           slug: string | null
           status: string | null
@@ -1431,7 +1489,14 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          affiliate_links?: Json | null
+          amenities?: Json | null
+          avatar?: string | null
+          banner?: string | null
           banner_url?: string | null
+          base_rating?: number | null
+          base_review_count?: number | null
+          bio?: string | null
           country?: string | null
           created_at?: string
           created_by?: string | null
@@ -1442,10 +1507,13 @@ export type Database = {
           id?: string
           instagram?: string | null
           lat?: number | null
+          linked_shop_id?: string | null
           lng?: number | null
           logo_url?: string | null
           name: string
           offers_free_shipping?: boolean | null
+          opening_hours?: Json | null
+          owner_user_id?: string | null
           phone?: string | null
           slug?: string | null
           status?: string | null
@@ -1456,7 +1524,14 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          affiliate_links?: Json | null
+          amenities?: Json | null
+          avatar?: string | null
+          banner?: string | null
           banner_url?: string | null
+          base_rating?: number | null
+          base_review_count?: number | null
+          bio?: string | null
           country?: string | null
           created_at?: string
           created_by?: string | null
@@ -1467,10 +1542,13 @@ export type Database = {
           id?: string
           instagram?: string | null
           lat?: number | null
+          linked_shop_id?: string | null
           lng?: number | null
           logo_url?: string | null
           name?: string
           offers_free_shipping?: boolean | null
+          opening_hours?: Json | null
+          owner_user_id?: string | null
           phone?: string | null
           slug?: string | null
           status?: string | null
@@ -1492,6 +1570,7 @@ export type Database = {
           email: string | null
           id: string
           logo_url: string | null
+          owner_user_id: string | null
           phone: string | null
           slug: string | null
           updated_at: string
@@ -1507,6 +1586,7 @@ export type Database = {
           email?: string | null
           id?: string
           logo_url?: string | null
+          owner_user_id?: string | null
           phone?: string | null
           slug?: string | null
           updated_at?: string
@@ -1522,6 +1602,7 @@ export type Database = {
           email?: string | null
           id?: string
           logo_url?: string | null
+          owner_user_id?: string | null
           phone?: string | null
           slug?: string | null
           updated_at?: string
@@ -1685,9 +1766,11 @@ export type Database = {
           id: string
           instagram: string | null
           lat: number | null
+          linked_roaster_id: string | null
           lng: number | null
           name: string
           opening_hours: Json | null
+          owner_user_id: string | null
           phone: string | null
           price_level: number | null
           slug: string | null
@@ -1716,9 +1799,11 @@ export type Database = {
           id?: string
           instagram?: string | null
           lat?: number | null
+          linked_roaster_id?: string | null
           lng?: number | null
           name: string
           opening_hours?: Json | null
+          owner_user_id?: string | null
           phone?: string | null
           price_level?: number | null
           slug?: string | null
@@ -1747,9 +1832,11 @@ export type Database = {
           id?: string
           instagram?: string | null
           lat?: number | null
+          linked_roaster_id?: string | null
           lng?: number | null
           name?: string
           opening_hours?: Json | null
+          owner_user_id?: string | null
           phone?: string | null
           price_level?: number | null
           slug?: string | null
