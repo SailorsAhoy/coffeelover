@@ -39,6 +39,24 @@ const Guides = () => {
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
+      <Helmet>
+        <title>Brewing Guides | CoffeeMart</title>
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "Brewing Guides",
+          itemListElement: mockGuides.map((g, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            item: {
+              "@type": "Article",
+              headline: g.title,
+              about: g.machine,
+              articleSection: "Brewing Guide",
+            },
+          })),
+        })}</script>
+      </Helmet>
       <div className="max-w-7xl mx-auto space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-2">Brewing Guides</h1>
