@@ -25,9 +25,27 @@ interface Coffee {
   description: string | null;
   origin_country: string | null;
   price_per_kg: number | null;
+  currency: string | null;
   image_url: string | null;
   affiliate_link: string | null;
 }
+
+const CURRENCY_SYMBOLS: Record<string, string> = { EUR: "€", USD: "$", GBP: "£", JPY: "¥" };
+const formatPrice = (price: number, currency: string | null) => {
+  const code = (currency || "EUR").toUpperCase();
+  const sym = CURRENCY_SYMBOLS[code] ?? code + " ";
+  return `${sym}${price.toFixed(2)} / kg`;
+};
+
+const stripRoasterPrefix = (name: string, roasterName: string) => {
+  const seps = [" — ", " - ", " – "];
+  for (const s of seps) {
+    const prefix = roasterName + s;
+    if (name.startsWith(prefix)) return name.slice(prefix.length);
+  }
+  return name;
+};
+
 
 const RoasterProfile = () => {
   const { id } = useParams();
