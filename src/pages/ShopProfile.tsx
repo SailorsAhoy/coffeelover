@@ -49,6 +49,7 @@ const ShopProfile = () => {
         .eq("id", shop.reviewableId)
         .maybeSingle();
       setMeta((data as any) ?? null);
+      setMyClaim(await getMyClaim("shop", shop.reviewableId));
     })();
   }, [shop?.reviewableId]);
 
