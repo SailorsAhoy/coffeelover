@@ -1,6 +1,7 @@
 import type { OpeningHours } from "@/lib/shopUtils";
 import type { AmenityKey } from "@/lib/shopAmenities";
 import { assertValidShop } from "@/lib/shopValidation";
+import { supabase } from "@/integrations/supabase/client";
 
 export type ShopType = "veggie" | "bakery" | "coffee_shop" | "roaster_shop";
 
