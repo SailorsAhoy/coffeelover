@@ -61,7 +61,7 @@ const Shops = () => {
   const [sort, setSort] = useState<SortKey>("rating");
   const [view, setView] = useState<"list" | "map">("list");
   const [statusTab, setStatusTab] = useState<StatusTab>("approved");
-  const [, force] = useState(0);
+  const [tick, force] = useState(0);
 
   useEffect(() => subscribeShopOverrides(() => force((n) => n + 1)), []);
 
@@ -86,9 +86,9 @@ const Shops = () => {
 
   const shops: Shop[] = useMemo(
     () => SHOPS.map((s) => getShopWithOverrides(s.id) ?? s),
-    // re-runs on override change via force()
+    // re-runs when addShop / updateShopOverride / deleteShop bump `tick`
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [tick],
   );
 
 
