@@ -87,6 +87,12 @@ const ImportCategory = () => {
           >
             <Download className="w-4 h-4 mr-2" /> Download template
           </Button>
+          <Button
+            variant="outline"
+            onClick={() => downloadCsv(`${schema.key}-sample.csv`, buildSample(schema))}
+          >
+            <Download className="w-4 h-4 mr-2" /> Download sample
+          </Button>
           {schema.parentExports?.map((p) => (
             <Button
               key={p.table}
