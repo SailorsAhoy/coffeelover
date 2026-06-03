@@ -26,6 +26,7 @@ import {
   SHOP_TYPE_LABEL,
   SHOP_TYPE_COLOR,
   subscribeShopOverrides,
+  loadShopsFromDb,
   getShopWithOverrides,
   type Shop,
 } from "@/lib/shopsData";
