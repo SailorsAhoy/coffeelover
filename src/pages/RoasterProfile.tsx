@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useParams, Link } from "react-router-dom";
 import { ExternalLink, Check, X, Package } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -96,6 +97,11 @@ const RoasterProfile = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
+      <Helmet>
+        <title>{roaster.name} | CoffeeMart</title>
+        <meta property="og:title" content={`${roaster.name} | CoffeeMart`} />
+        <meta property="og:description" content={roaster.description} />
+      </Helmet>
       <RoasterBanner roaster={roaster} />
 
       <div className="mx-auto max-w-3xl space-y-4 px-4 py-4 md:px-6">

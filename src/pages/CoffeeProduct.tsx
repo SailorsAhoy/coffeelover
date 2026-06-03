@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { Link, useParams, Navigate } from "react-router-dom";
 import { Star, ShoppingCart, Truck, Shield, Coffee, ArrowLeft, ExternalLink, CheckCircle2, XCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -108,6 +109,11 @@ const CoffeeProduct = () => {
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
+      <Helmet>
+        <title>{product.name} by {product.roaster} | CoffeeMart</title>
+        <meta property="og:title" content={`${product.name} by ${product.roaster} | CoffeeMart`} />
+        <meta property="og:description" content={product.description} />
+      </Helmet>
       <div className="max-w-7xl mx-auto space-y-6">
         <Link to="/coffee" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="w-4 h-4 mr-1" /> Back to Coffee

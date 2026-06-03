@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useParams, Link } from "react-router-dom";
 import { MapPin, ExternalLink, Check, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -70,6 +71,11 @@ const ShopProfile = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
+      <Helmet>
+        <title>{shop.name} | CoffeeMart</title>
+        <meta property="og:title" content={`${shop.name} | CoffeeMart`} />
+        <meta property="og:description" content={shop.description} />
+      </Helmet>
       <ShopBanner shop={shop} />
 
       <div className="mx-auto max-w-3xl space-y-4 px-4 py-4 md:px-6">
