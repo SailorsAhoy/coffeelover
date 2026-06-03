@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { Clock, Users, ChefHat } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +37,26 @@ const Recipes = () => {
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
+      <Helmet>
+        <title>Coffee Recipes | CoffeeMart</title>
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "Coffee Recipes",
+          itemListElement: mockRecipes.map((r, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            item: {
+              "@type": "Recipe",
+              name: r.title,
+              description: r.description,
+              recipeYield: `${r.servings} serving${r.servings > 1 ? "s" : ""}`,
+              totalTime: `PT${r.prepTime}M`,
+              recipeCategory: "Coffee",
+            },
+          })),
+        })}</script>
+      </Helmet>
       <div className="max-w-7xl mx-auto space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-2">Coffee Recipes</h1>

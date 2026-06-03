@@ -75,6 +75,16 @@ const ShopProfile = () => {
         <title>{shop.name} | CoffeeMart</title>
         <meta property="og:title" content={`${shop.name} | CoffeeMart`} />
         <meta property="og:description" content={shop.description} />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          name: shop.name,
+          description: shop.description,
+          address: shop.address ? { "@type": "PostalAddress", streetAddress: shop.address } : undefined,
+          geo: shop.lat && shop.lng ? { "@type": "GeoCoordinates", latitude: shop.lat, longitude: shop.lng } : undefined,
+          image: (shop as any).image || (shop as any).bannerUrl || undefined,
+          url: typeof window !== "undefined" ? window.location.href : undefined,
+        })}</script>
       </Helmet>
       <ShopBanner shop={shop} />
 

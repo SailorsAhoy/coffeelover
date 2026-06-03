@@ -113,6 +113,27 @@ const CoffeeProduct = () => {
         <title>{product.name} by {product.roaster} | CoffeeMart</title>
         <meta property="og:title" content={`${product.name} by ${product.roaster} | CoffeeMart`} />
         <meta property="og:description" content={product.description} />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.name,
+          description: product.description,
+          brand: { "@type": "Brand", name: product.roaster },
+          category: "Coffee",
+          image: isUuid ? imageUrl : undefined,
+          offers: {
+            "@type": "Offer",
+            price: product.price,
+            priceCurrency: currencyCode,
+            availability: isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+            url: productUrl || affiliate || (typeof window !== "undefined" ? window.location.href : undefined),
+          },
+          aggregateRating: product.reviews.length > 0 ? {
+            "@type": "AggregateRating",
+            ratingValue: product.rating,
+            reviewCount: product.reviews.length,
+          } : undefined,
+        })}</script>
       </Helmet>
       <div className="max-w-7xl mx-auto space-y-6">
         <Link to="/coffee" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
