@@ -161,7 +161,7 @@ export const ShopEditSheet = ({ shop }: Props) => {
   };
 
   const save = () => {
-    if (!isOwner) {
+    if (!canEdit) {
       toast.error("You don't have permission to edit this shop");
       return;
     }
@@ -232,7 +232,7 @@ export const ShopEditSheet = ({ shop }: Props) => {
     setOpen(false);
   };
 
-  if (!isOwner) return null;
+  if (!canEdit) return null;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
