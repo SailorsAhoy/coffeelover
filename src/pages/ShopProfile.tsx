@@ -16,8 +16,13 @@ import ShopReviews from "@/components/shops/ShopReviews";
 import ShopBanner from "@/components/shops/ShopBanner";
 import ShopGallery from "@/components/shops/ShopGallery";
 import ShopStaff from "@/components/shops/ShopStaff";
+import ClaimButton from "@/components/listings/ClaimButton";
+import LinkedListingButton from "@/components/listings/LinkedListingButton";
+import CloneAcrossTypeButton from "@/components/listings/CloneAcrossTypeButton";
+import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { toast } from "sonner";
+
 
 const ShopProfile = () => {
   const { id } = useParams();
