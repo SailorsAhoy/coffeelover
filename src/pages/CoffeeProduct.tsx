@@ -1,10 +1,27 @@
+import { useEffect, useState } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
 import { Star, ShoppingCart, Truck, Shield, Coffee, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { findCoffee, relatedCoffees } from "@/lib/coffeeData";
+import { findCoffee, relatedCoffees, type CoffeeItem } from "@/lib/coffeeData";
+import { supabase } from "@/integrations/supabase/client";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const CURRENCY_SYMBOLS: Record<string, string> = { EUR: "€", USD: "$", GBP: "£", JPY: "¥" };
+const currencySymbol = (code: string | null) => {
+  const c = (code || "EUR").toUpperCase();
+  return CURRENCY_SYMBOLS[c] ?? c + " ";
+};
+const stripRoasterPrefix = (name: string, roasterName: string) => {
+  for (const s of [" — ", " - ", " – "]) {
+    const p = roasterName + s;
+    if (name.startsWith(p)) return name.slice(p.length);
+  }
+  return name;
+};
+
 
 const StarRow = ({ value, size = 4 }: { value: number; size?: number }) => (
   <div className="flex items-center gap-1">
