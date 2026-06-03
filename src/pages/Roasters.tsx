@@ -1,84 +1,282 @@
-import { useMemo, useState } from "react";
-import { Map } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import RoasterMapModal from "@/components/RoasterMapModal";
-import RoasterCard from "@/components/RoasterCard";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import {
+  List, Map as MapIcon, Star, MapPin, Navigation, Search, LocateFixed,
+  Check, X, User as UserIcon, Truck, Tag,
+} from "lucide-react";
+import {
+  ROASTERS, loadRoastersFromDb, subscribeRoasters, setRoasterStatus, type Roaster,
+} from "@/lib/roastersData";
+import { AMENITIES, type AmenityKey } from "@/lib/shopAmenities";
+import { haversineKm } from "@/lib/geo";
+import { isShopOpen } from "@/lib/shopUtils";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import { useReviewAggregates } from "@/hooks/useReviewAggregates";
+import RoasterFilters, { DEFAULT_ROASTER_FILTERS, type RoasterFilterValues } from "@/components/RoasterFilters";
+import RoastersMapView from "@/components/shops/RoastersMapView";
+import RoasterCreateSheet from "@/components/shops/RoasterCreateSheet";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
-const hours = (open: string, close: string) => ({
-  monday: { open, close }, tuesday: { open, close }, wednesday: { open, close },
-  thursday: { open, close }, friday: { open, close }, saturday: { open, close },
-  sunday: { closed: true },
-});
+type SortKey = "distance" | "new" | "rating" | "reviews" | "name";
+type StatusTab = "approved" | "pending" | "all";
 
-const mockRoasters = [
-  { id: 1, name: "Heritage Roasters", description: "Traditional roasting since 1985", rating: 4.9, freeShipping: true, hasDiscounts: true, specialty: "Single Origin", country: "USA", phone: "+12125550101", whatsapp: "+12125550101", website: "https://example.com", email: "info@heritage.com", facebook: "https://facebook.com", instagram: "https://instagram.com", latitude: 40.7589, longitude: -73.9851, openingHours: hours("08:00", "18:00") },
-  { id: 2, name: "Modern Bean Co.", description: "Innovative blends, sustainable sourcing", rating: 4.7, freeShipping: false, hasDiscounts: true, specialty: "Blends", country: "USA", phone: "+12125550102", website: "https://example.com", email: "info@modernbean.com", instagram: "https://instagram.com", twitter: "https://twitter.com", latitude: 40.7614, longitude: -73.9776, openingHours: hours("07:00", "19:00") },
-  { id: 3, name: "Altitude Coffee", description: "High-altitude specialty beans", rating: 4.8, freeShipping: true, hasDiscounts: false, specialty: "Specialty Grade", country: "Colombia", phone: "+5712345678", whatsapp: "+5712345678", website: "https://example.com", email: "info@altitude.com", facebook: "https://facebook.com", latitude: 4.7110, longitude: -74.0721, openingHours: hours("08:00", "17:00") },
-  { id: 4, name: "Brooklyn Roast & Shop", description: "Brooklyn-roasted small batches", rating: 4.6, freeShipping: false, hasDiscounts: true, specialty: "Single Origin", country: "USA", phone: "+17185550104", website: "https://example.com", email: "hello@brooklynroast.com", instagram: "https://instagram.com", latitude: 40.6782, longitude: -73.9442, openingHours: hours("07:30", "18:30") },
-  { id: 5, name: "Andes Origin", description: "Direct trade from Peruvian highlands", rating: 4.5, freeShipping: true, hasDiscounts: false, specialty: "Direct Trade", country: "Peru", phone: "+5114567890", whatsapp: "+5114567890", website: "https://example.com", email: "info@andesorigin.com", latitude: -12.0464, longitude: -77.0428, openingHours: hours("08:00", "17:00") },
-  { id: 6, name: "Sakura Coffee Works", description: "Japanese precision, single-origin focus", rating: 4.9, freeShipping: false, hasDiscounts: false, specialty: "Single Origin", country: "Japan", phone: "+81312345678", website: "https://example.com", email: "info@sakura.coffee", instagram: "https://instagram.com", latitude: 35.6762, longitude: 139.6503, openingHours: hours("09:00", "20:00") },
-  { id: 7, name: "Café del Sol", description: "Mediterranean blends, family-run", rating: 4.4, freeShipping: true, hasDiscounts: true, specialty: "Blends", country: "Spain", phone: "+34912345678", whatsapp: "+34912345678", website: "https://example.com", email: "hola@cafedelsol.es", facebook: "https://facebook.com", latitude: 40.4168, longitude: -3.7038, openingHours: hours("08:00", "20:00") },
-  { id: 8, name: "Highland Roasters", description: "Scottish craft roastery", rating: 4.6, freeShipping: false, hasDiscounts: true, specialty: "Dark Roasts", country: "UK", phone: "+441312345678", website: "https://example.com", email: "info@highland.coffee", latitude: 55.9533, longitude: -3.1883, openingHours: hours("08:00", "18:00") },
-  { id: 9, name: "Addis Beans", description: "Ethiopian heritage, washed and natural", rating: 4.8, freeShipping: true, hasDiscounts: false, specialty: "Single Origin", country: "Ethiopia", phone: "+251111234567", whatsapp: "+251111234567", website: "https://example.com", email: "hello@addisbeans.et", instagram: "https://instagram.com", latitude: 9.0320, longitude: 38.7469, openingHours: hours("07:00", "19:00") },
-  { id: 10, name: "Berlin Bean Lab", description: "Experimental ferments and micro-lots", rating: 4.7, freeShipping: false, hasDiscounts: true, specialty: "Micro-lots", country: "Germany", phone: "+493012345678", website: "https://example.com", email: "lab@berlinbean.de", twitter: "https://twitter.com", latitude: 52.5200, longitude: 13.4050, openingHours: hours("09:00", "20:00") },
-  { id: 11, name: "Roma Espresso Lab", description: "Classic Italian espresso, dark and bold", rating: 4.5, freeShipping: true, hasDiscounts: false, specialty: "Espresso", country: "Italy", phone: "+390612345678", website: "https://example.com", email: "info@romaespresso.it", facebook: "https://facebook.com", latitude: 41.9028, longitude: 12.4964, openingHours: hours("07:00", "21:00") },
-  { id: 12, name: "Saigon Roast House", description: "Vietnamese robusta and arabica blends", rating: 4.3, freeShipping: false, hasDiscounts: true, specialty: "Blends", country: "Vietnam", phone: "+842812345678", whatsapp: "+842812345678", website: "https://example.com", email: "hello@saigonroast.vn", instagram: "https://instagram.com", latitude: 10.8231, longitude: 106.6297, openingHours: hours("06:30", "22:00") },
-];
-
-const SPECIALTIES = ["all", "Single Origin", "Blends", "Specialty Grade", "Direct Trade", "Dark Roasts", "Espresso", "Micro-lots"];
+const DEFAULT_CENTER = { lat: 40.7589, lng: -73.9851 };
+const ROASTER_COLOR = "#C48B28";
 
 const Roasters = () => {
-  const [mapOpen, setMapOpen] = useState(false);
-  const [q, setQ] = useState("");
-  const [specialty, setSpecialty] = useState("all");
-  const [shippingOnly, setShippingOnly] = useState(false);
+  const { coords, loading: geoLoading, request } = useGeolocation(false);
+  const [locatorActive, setLocatorActive] = useState(false);
+  const { hasRole } = useCurrentUser();
+  const isAdmin = hasRole("admin");
+
+  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState<RoasterFilterValues>(DEFAULT_ROASTER_FILTERS);
+  const [sort, setSort] = useState<SortKey>("rating");
+  const [view, setView] = useState<"list" | "map">("list");
+  const [statusTab, setStatusTab] = useState<StatusTab>("approved");
+  const [, force] = useState(0);
+
+  useEffect(() => subscribeRoasters(() => force((n) => n + 1)), []);
+  useEffect(() => { loadRoastersFromDb(); }, []);
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  const activeCoords = locatorActive ? coords : null;
+
+  const toggleLocator = () => {
+    if (locatorActive) {
+      setLocatorActive(false);
+      if (sort === "distance") setSort("rating");
+    } else {
+      setLocatorActive(true);
+      request();
+      setSort("distance");
+    }
+  };
+
+  const roasters: Roaster[] = ROASTERS();
+
+  const fallback = useMemo(
+    () => Object.fromEntries(roasters.map((r) => [r.id, { rating: r.baseRating, reviewCount: r.baseReviewCount }])),
+    [roasters],
+  );
+  const aggs = useReviewAggregates(roasters.map((r) => r.id), "roaster", fallback);
+
+  const enriched = useMemo(() => {
+    return roasters.map((r) => {
+      const a = aggs[r.id] ?? fallback[r.id];
+      const ref = activeCoords ?? DEFAULT_CENTER;
+      const distanceKm = haversineKm(ref, { lat: r.lat, lng: r.lng });
+      return { ...r, ...a, distanceKm };
+    });
+  }, [roasters, aggs, activeCoords, fallback]);
+
+  const requiredAmenities = (Object.keys(filters.amenities) as AmenityKey[]).filter((k) => filters.amenities[k]);
 
   const filtered = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    return mockRoasters.filter((r) => {
-      if (specialty !== "all" && r.specialty !== specialty) return false;
-      if (shippingOnly && !r.freeShipping) return false;
-      if (!s) return true;
-      return r.name.toLowerCase().includes(s) || r.description.toLowerCase().includes(s) || r.country.toLowerCase().includes(s);
-    });
-  }, [q, specialty, shippingOnly]);
+    const q = search.trim().toLowerCase();
+    return enriched
+      .filter((r) => {
+        const isPending = r.status === "pending" || r.pendingReview;
+        if (statusTab === "approved") return !isPending && r.status !== "rejected";
+        if (statusTab === "pending") return isPending;
+        return r.status !== "rejected";
+      })
+      .filter((r) => (filters.freeShippingOnly ? !!r.offersFreeShipping : true))
+      .filter((r) => (filters.discountsOnly ? !!r.hasDiscountCoupons : true))
+      .filter((r) => r.rating >= filters.minRating)
+      .filter((r) => r.reviewCount >= filters.minReviews)
+      .filter((r) => (!activeCoords || r.distanceKm == null ? true : r.distanceKm <= filters.maxDistanceKm))
+      .filter((r) => requiredAmenities.every((k) => r.amenities[k]))
+      .filter((r) =>
+        !q ||
+        r.name.toLowerCase().includes(q) ||
+        (r.address ?? "").toLowerCase().includes(q) ||
+        (r.country ?? "").toLowerCase().includes(q) ||
+        r.description.toLowerCase().includes(q),
+      )
+      .sort((a, b) => {
+        switch (sort) {
+          case "rating": return b.rating - a.rating;
+          case "reviews": return b.reviewCount - a.reviewCount;
+          case "name": return a.name.localeCompare(b.name);
+          case "new": return a.id < b.id ? 1 : -1;
+          case "distance":
+          default:
+            if (!activeCoords) return b.rating - a.rating;
+            return (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity);
+        }
+      });
+  }, [enriched, filters, search, sort, requiredAmenities, statusTab, activeCoords]);
+
+  const activeFilterCount =
+    (filters.maxDistanceKm !== DEFAULT_ROASTER_FILTERS.maxDistanceKm ? 1 : 0) +
+    (filters.minRating !== DEFAULT_ROASTER_FILTERS.minRating ? 1 : 0) +
+    (filters.minReviews !== DEFAULT_ROASTER_FILTERS.minReviews ? 1 : 0) +
+    (filters.freeShippingOnly ? 1 : 0) +
+    (filters.discountsOnly ? 1 : 0) +
+    requiredAmenities.length;
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Coffee Roasters</h1>
-            <p className="text-muted-foreground">Explore premium coffee roasters and their offerings</p>
+    <div className="min-h-screen bg-background pb-24">
+      <div className="sticky top-0 z-10 border-b bg-background/95 px-4 pt-4 pb-3 backdrop-blur md:px-6">
+        <div className="mx-auto max-w-5xl space-y-3">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <h1 className="text-2xl font-bold md:text-3xl">Coffee Roasters</h1>
+              <p className="text-xs text-muted-foreground md:text-sm">
+                {activeCoords
+                  ? `${filtered.length} near you`
+                  : `${filtered.length} roaster${filtered.length === 1 ? "" : "s"} · enable location to sort by distance`}
+              </p>
+            </div>
+            <RoasterCreateSheet />
           </div>
-          <Button onClick={() => setMapOpen(true)} className="gap-2">
-            <Map className="w-4 h-4" /> View Map
-          </Button>
-        </div>
 
-        <div className="flex flex-col md:flex-row gap-3">
-          <Input placeholder="Search roasters, country..." value={q} onChange={(e) => setQ(e.target.value)} className="flex-1" />
-          <Select value={specialty} onValueChange={setSpecialty}>
-            <SelectTrigger className="md:w-56"><SelectValue placeholder="Specialty" /></SelectTrigger>
-            <SelectContent>
-              {SPECIALTIES.map((s) => <SelectItem key={s} value={s}>{s === "all" ? "All specialties" : s}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Button variant={shippingOnly ? "default" : "outline"} onClick={() => setShippingOnly((v) => !v)}>
-            Free shipping
-          </Button>
-        </div>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="Search by name, country…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+          </div>
 
-        <p className="text-sm text-muted-foreground">{filtered.length} roaster{filtered.length === 1 ? "" : "s"}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <RoasterFilters value={filters} onChange={setFilters} activeCount={activeFilterCount} />
+            <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
+              <SelectTrigger className="h-9 w-[140px] text-sm"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="distance" disabled={!activeCoords}>Nearest{!activeCoords ? " (enable locator)" : ""}</SelectItem>
+                <SelectItem value="new">Newest</SelectItem>
+                <SelectItem value="rating">Top rated</SelectItem>
+                <SelectItem value="reviews">Most reviewed</SelectItem>
+                <SelectItem value="name">Name A–Z</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              variant={locatorActive ? "default" : "ghost"} size="sm"
+              onClick={toggleLocator} disabled={geoLoading} className="gap-1"
+              aria-pressed={locatorActive}
+              title={locatorActive ? "Locator on — sorting by nearest" : "Use my location"}
+            >
+              <LocateFixed className="h-4 w-4" />
+            </Button>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((roaster) => <RoasterCard key={roaster.id} roaster={roaster} />)}
+          <Tabs value={statusTab} onValueChange={(v) => setStatusTab(v as StatusTab)}>
+            <TabsList className="h-8">
+              <TabsTrigger value="approved" className="h-7 text-xs">Approved</TabsTrigger>
+              <TabsTrigger value="pending" className="h-7 text-xs">Under review</TabsTrigger>
+              {isAdmin && <TabsTrigger value="all" className="h-7 text-xs">All</TabsTrigger>}
+            </TabsList>
+          </Tabs>
         </div>
       </div>
 
-      <RoasterMapModal open={mapOpen} onOpenChange={setMapOpen} />
+      <div className="mx-auto max-w-5xl px-4 py-4 md:px-6">
+        <Tabs value={view} onValueChange={(v) => setView(v as "list" | "map")}>
+          <TabsList className="grid w-full grid-cols-2 md:w-64">
+            <TabsTrigger value="list" className="gap-2"><List className="h-4 w-4" />List</TabsTrigger>
+            <TabsTrigger value="map" className="gap-2"><MapIcon className="h-4 w-4" />Map</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="list" className="mt-4">
+            {filtered.length === 0 ? (
+              <p className="py-10 text-center text-sm text-muted-foreground">No roasters yet. Add one above to get started.</p>
+            ) : (
+              <ul className="space-y-3">
+                {filtered.map((r) => {
+                  const open = isShopOpen(r.opening_hours);
+                  const activeAmenities = AMENITIES.filter((a) => r.amenities[a.key]);
+                  return (
+                    <li key={r.id}>
+                      <Link to={`/roaster/${r.id}`}>
+                        <Card className="transition-shadow hover:shadow-md active:scale-[0.99]">
+                          <CardContent className="p-3">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: ROASTER_COLOR }} />
+                                  <h3 className="truncate font-semibold">{r.name}</h3>
+                                </div>
+                                <p className="mt-0.5 text-xs text-muted-foreground">
+                                  Roaster{r.country ? ` · ${r.country}` : ""}
+                                </p>
+                                <div className="mt-1 flex items-center gap-2 text-xs">
+                                  {r.pendingReview ? (
+                                    <Badge variant="outline" className="h-5 border-amber-500/40 bg-amber-500/10 px-1.5 text-amber-700 dark:text-amber-400">Under review</Badge>
+                                  ) : (
+                                    <Badge variant={open ? "default" : "secondary"} className="h-5 px-1.5">{open ? "Open" : "Closed"}</Badge>
+                                  )}
+                                  <span className="flex items-center gap-1 text-muted-foreground">
+                                    <MapPin className="h-3 w-3" />{r.distanceKm.toFixed(1)} km
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-1 shrink-0">
+                                <div className="flex items-center gap-1 text-sm font-semibold">
+                                  <Star className="h-3.5 w-3.5 fill-primary text-primary" />{r.rating.toFixed(1)}
+                                </div>
+                                <span className="text-[11px] text-muted-foreground">{r.reviewCount} reviews</span>
+                              </div>
+                            </div>
+                            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                              {r.offersFreeShipping && (
+                                <Badge variant="outline" className="h-5 gap-1 px-1.5 text-[11px]"><Truck className="h-3 w-3" /> Free ship</Badge>
+                              )}
+                              {r.hasDiscountCoupons && (
+                                <Badge variant="outline" className="h-5 gap-1 px-1.5 text-[11px]"><Tag className="h-3 w-3" /> Discounts</Badge>
+                              )}
+                              {activeAmenities.slice(0, 4).map((a) => {
+                                const Icon = a.icon;
+                                return (
+                                  <Badge key={a.key} variant="outline" className="h-5 gap-1 px-1.5 text-[11px]">
+                                    <Icon className="h-3 w-3" /> {a.short}
+                                  </Badge>
+                                );
+                              })}
+                              {activeAmenities.length > 4 && (
+                                <span className="text-[11px] text-muted-foreground">+{activeAmenities.length - 4}</span>
+                              )}
+                              <Button size="sm" variant="ghost" className="ml-auto h-6 px-2 text-[11px]"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  window.open(`https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lng}`, "_blank");
+                                }}>
+                                <Navigation className="mr-1 h-3 w-3" />Directions
+                              </Button>
+                            </div>
+                            {isAdmin && (r.status === "pending" || r.pendingReview) && (
+                              <div className="mt-2 flex gap-2 border-t pt-2">
+                                <Button size="sm" variant="default" className="h-7 flex-1 gap-1 text-xs"
+                                  onClick={(e) => { e.preventDefault(); setRoasterStatus(r.id, "approved"); }}>
+                                  <Check className="h-3 w-3" /> Approve
+                                </Button>
+                                <Button size="sm" variant="outline" className="h-7 flex-1 gap-1 text-xs"
+                                  onClick={(e) => { e.preventDefault(); setRoasterStatus(r.id, "rejected"); }}>
+                                  <X className="h-3 w-3" /> Reject
+                                </Button>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </TabsContent>
+
+          <TabsContent value="map" className="mt-4">
+            <RoastersMapView roasters={filtered} center={activeCoords ?? DEFAULT_CENTER} userLocation={activeCoords} />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };
