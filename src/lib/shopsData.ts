@@ -1,6 +1,7 @@
 import type { OpeningHours } from "@/lib/shopUtils";
 import type { AmenityKey } from "@/lib/shopAmenities";
 import { assertValidShop } from "@/lib/shopValidation";
+import { supabase } from "@/integrations/supabase/client";
 
 export type ShopType = "veggie" | "bakery" | "coffee_shop" | "roaster_shop";
 
@@ -288,7 +289,104 @@ export const addShop = (shop: Omit<Shop, "id" | "reviewableId">): Shop => {
   };
   SHOPS.unshift(created);
   listeners.forEach((l) => l());
+
+  // Best-effort: persist to the `shops` DB table so admins can audit it and
+  // it survives page reloads. Local list still updates immediately.
+  void (async () => {
+    try {
+      const payload = {
+        name: created.name,
+        type: created.type,
+        bio: created.bio ?? null,
+        description: created.description ?? null,
+        lat: created.lat,
+        lng: created.lng,
+        address: created.address ?? null,
+        country: created.country ?? null,
+        price_level: created.priceLevel,
+        base_rating: created.baseRating ?? 0,
+        base_review_count: created.baseReviewCount ?? 0,
+        amenities: created.amenities ?? {},
+        phone: created.phone ?? null,
+        whatsapp: created.whatsapp ?? null,
+        website: created.website ?? null,
+        email: created.email ?? null,
+        facebook: created.facebook ?? null,
+        instagram: created.instagram ?? null,
+        twitter: created.twitter ?? null,
+        opening_hours: created.opening_hours ?? null,
+        banner: created.banner ?? null,
+        avatar: created.avatar ?? null,
+        status: created.status ?? "pending",
+        created_by: created.createdBy ?? null,
+        created_by_role: created.createdByRole ?? null,
+      };
+      const { error } = await supabase.from("shops").insert(payload);
+      if (error) console.error("[addShop] DB insert failed:", error.message);
+      else console.info("[addShop] persisted to DB:", created.name);
+    } catch (e) {
+      console.error("[addShop] DB insert threw:", e);
+    }
+  })();
+
   return created;
+};
+
+/** Pulls shops from the DB and merges any rows not already present in the
+ * in-memory list. Dedupe key: case-insensitive name + address. Safe to call
+ * more than once; called on app boot. */
+export const loadShopsFromDb = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("shops")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(500);
+    if (error || !data) return;
+    const key = (n?: string | null, a?: string | null) =>
+      `${(n ?? "").toLowerCase().trim()}|${(a ?? "").toLowerCase().trim()}`;
+    const existing = new Set(SHOPS.map((s) => key(s.name, s.address)));
+    let added = 0;
+    for (const r of data as any[]) {
+      if (existing.has(key(r.name, r.address))) continue;
+      const nextId = SHOPS.reduce((m, s) => Math.max(m, s.id), 0) + 1;
+      SHOPS.unshift({
+        id: nextId,
+        reviewableId: r.id ?? uuid(nextId),
+        name: r.name,
+        description: r.description ?? "",
+        bio: r.bio ?? undefined,
+        type: (r.type ?? "coffee_shop") as ShopType,
+        lat: Number(r.lat) || 0,
+        lng: Number(r.lng) || 0,
+        address: r.address ?? "",
+        country: r.country ?? undefined,
+        priceLevel: ((r.price_level ?? 2) as 1 | 2 | 3 | 4),
+        baseRating: Number(r.base_rating) || 0,
+        baseReviewCount: Number(r.base_review_count) || 0,
+        amenities: (r.amenities ?? {}) as Amenities,
+        phone: r.phone ?? undefined,
+        whatsapp: r.whatsapp ?? undefined,
+        website: r.website ?? undefined,
+        email: r.email ?? undefined,
+        facebook: r.facebook ?? undefined,
+        instagram: r.instagram ?? undefined,
+        twitter: r.twitter ?? undefined,
+        opening_hours: (r.opening_hours ?? stdHours) as OpeningHours,
+        banner: r.banner ?? undefined,
+        avatar: r.avatar ?? undefined,
+        status: (r.status ?? "approved") as Shop["status"],
+        pendingReview: r.status === "pending",
+        createdBy: r.created_by ?? undefined,
+        createdByRole: r.created_by_role ?? undefined,
+      });
+      existing.add(key(r.name, r.address));
+      added++;
+    }
+    if (added > 0) listeners.forEach((l) => l());
+  } catch (e) {
+    console.error("[loadShopsFromDb] failed:", e);
+  }
 };
 
 export const setShopStatus = (
