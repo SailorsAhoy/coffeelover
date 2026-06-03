@@ -20,7 +20,25 @@ import { supabase } from "@/integrations/supabase/client";
 const Navigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, profile, hasRole, signOut } = useCurrentUser();
+  const { isAuthenticated, profile, hasRole, signOut, user } = useCurrentUser();
+  const [msgUnread, setMsgUnread] = useState(0);
+
+  useEffect(() => {
+    if (!user) { setMsgUnread(0); return; }
+    let cancelled = false;
+    const refresh = async () => {
+      const chats = await listMyChats();
+      if (!cancelled) setMsgUnread(chats.reduce((s, c) => s + c.unread, 0));
+    };
+    void refresh();
+    const ch = supabase
+      .channel(`msg-unread:${user.id}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages" }, () => { void refresh(); })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "chat_participants", filter: `user_id=eq.${user.id}` }, () => { void refresh(); })
+      .subscribe();
+    return () => { cancelled = true; supabase.removeChannel(ch); };
+  }, [user?.id]);
+
 
   const handleLogout = async () => {
     await signOut();
