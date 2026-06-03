@@ -4,6 +4,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { KpiRow } from "@/components/dashboard/KpiRow";
 import { DateRangeFilter, rangeStart, type RangeKey } from "@/components/dashboard/DateRangeFilter";
 import { ActivityLog } from "@/components/dashboard/ActivityLog";
+import ClaimsAdminPanel from "@/components/listings/ClaimsAdminPanel";
 import { Users, Store, Package, Coffee, GraduationCap, Briefcase, MessageSquare, Star, Upload } from "lucide-react";
 
 const AdminDashboard = () => {
