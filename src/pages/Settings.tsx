@@ -1,7 +1,7 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Store, Users, FileText, Cog, Tag, ShieldCheck } from "lucide-react";
+import { Store, Users, FileText, Cog, Tag, ShieldCheck, Upload } from "lucide-react";
 
 const Settings = () => {
   const location = useLocation();
@@ -10,6 +10,7 @@ const Settings = () => {
     { title: "Shop Types", icon: Tag, url: "/settings/shop-types" },
     { title: "Shop Management", icon: Store, url: "/settings/shop-management" },
     { title: "Field Permissions", icon: ShieldCheck, url: "/settings/field-permissions" },
+    { title: "Bulk Imports", icon: Upload, url: "/settings/imports" },
     { title: "User Management", icon: Users, url: "/settings/user-management" },
     { title: "Content Management", icon: FileText, url: "/settings/content-management" },
     { title: "System Settings", icon: Cog, url: "/settings/system-settings" },

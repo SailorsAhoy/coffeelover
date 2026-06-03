@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      academies: {
+        Row: {
+          country: string | null
+          created_at: string
+          description: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          slug: string | null
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          slug?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          slug?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       accessories: {
         Row: {
           category: string | null
@@ -21,9 +57,11 @@ export type Database = {
           description: string | null
           id: string
           image_url: string | null
+          manufacturer_id: string | null
           name: string
           price: number | null
           seller_url: string | null
+          service_company_id: string | null
           updated_at: string
         }
         Insert: {
@@ -32,9 +70,11 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          manufacturer_id?: string | null
           name: string
           price?: number | null
           seller_url?: string | null
+          service_company_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -43,12 +83,29 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          manufacturer_id?: string | null
           name?: string
           price?: number | null
           seller_url?: string | null
+          service_company_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "accessories_manufacturer_id_fkey"
+            columns: ["manufacturer_id"]
+            isOneToOne: false
+            referencedRelation: "manufacturers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "accessories_service_company_id_fkey"
+            columns: ["service_company_id"]
+            isOneToOne: false
+            referencedRelation: "service_companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       activity_log: {
         Row: {
@@ -335,7 +392,8 @@ export type Database = {
           origin_country: string | null
           price_per_kg: number | null
           roast_level: Database["public"]["Enums"]["roast_level"] | null
-          roaster_id: string
+          roaster_id: string | null
+          shop_id: string | null
           updated_at: string
         }
         Insert: {
@@ -350,7 +408,8 @@ export type Database = {
           origin_country?: string | null
           price_per_kg?: number | null
           roast_level?: Database["public"]["Enums"]["roast_level"] | null
-          roaster_id: string
+          roaster_id?: string | null
+          shop_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -365,7 +424,8 @@ export type Database = {
           origin_country?: string | null
           price_per_kg?: number | null
           roast_level?: Database["public"]["Enums"]["roast_level"] | null
-          roaster_id?: string
+          roaster_id?: string | null
+          shop_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -374,6 +434,13 @@ export type Database = {
             columns: ["roaster_id"]
             isOneToOne: false
             referencedRelation: "roaster_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coffee_brands_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
             referencedColumns: ["id"]
           },
         ]
@@ -567,6 +634,63 @@ export type Database = {
         }
         Relationships: []
       }
+      courses: {
+        Row: {
+          academy_id: string | null
+          created_at: string
+          description: string | null
+          duration_min: number | null
+          id: string
+          image_url: string | null
+          instructor_id: string | null
+          level: string | null
+          slug: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          academy_id?: string | null
+          created_at?: string
+          description?: string | null
+          duration_min?: number | null
+          id?: string
+          image_url?: string | null
+          instructor_id?: string | null
+          level?: string | null
+          slug?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          academy_id?: string | null
+          created_at?: string
+          description?: string | null
+          duration_min?: number | null
+          id?: string
+          image_url?: string | null
+          instructor_id?: string | null
+          level?: string | null
+          slug?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "courses_academy_id_fkey"
+            columns: ["academy_id"]
+            isOneToOne: false
+            referencedRelation: "academies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courses_instructor_id_fkey"
+            columns: ["instructor_id"]
+            isOneToOne: false
+            referencedRelation: "instructors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       field_permissions: {
         Row: {
           can_edit: boolean
@@ -747,6 +871,50 @@ export type Database = {
           },
         ]
       }
+      instructors: {
+        Row: {
+          academy_id: string | null
+          bio: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          photo_url: string | null
+          slug: string | null
+          updated_at: string
+        }
+        Insert: {
+          academy_id?: string | null
+          bio?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          photo_url?: string | null
+          slug?: string | null
+          updated_at?: string
+        }
+        Update: {
+          academy_id?: string | null
+          bio?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          photo_url?: string | null
+          slug?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "instructors_academy_id_fkey"
+            columns: ["academy_id"]
+            isOneToOne: false
+            referencedRelation: "academies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       machine_brands: {
         Row: {
           created_at: string
@@ -770,39 +938,45 @@ export type Database = {
       }
       machines: {
         Row: {
-          brand_id: string
+          brand_id: string | null
           created_at: string
           description: string | null
           id: string
           image_url: string | null
           machine_type: Database["public"]["Enums"]["machine_type"]
+          manufacturer_id: string | null
           name: string
           price: number | null
           seller_url: string | null
+          service_company_id: string | null
           updated_at: string
         }
         Insert: {
-          brand_id: string
+          brand_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
           image_url?: string | null
           machine_type: Database["public"]["Enums"]["machine_type"]
+          manufacturer_id?: string | null
           name: string
           price?: number | null
           seller_url?: string | null
+          service_company_id?: string | null
           updated_at?: string
         }
         Update: {
-          brand_id?: string
+          brand_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
           image_url?: string | null
           machine_type?: Database["public"]["Enums"]["machine_type"]
+          manufacturer_id?: string | null
           name?: string
           price?: number | null
           seller_url?: string | null
+          service_company_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -811,6 +985,20 @@ export type Database = {
             columns: ["brand_id"]
             isOneToOne: false
             referencedRelation: "machine_brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "machines_manufacturer_id_fkey"
+            columns: ["manufacturer_id"]
+            isOneToOne: false
+            referencedRelation: "manufacturers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "machines_service_company_id_fkey"
+            columns: ["service_company_id"]
+            isOneToOne: false
+            referencedRelation: "service_companies"
             referencedColumns: ["id"]
           },
         ]
@@ -854,6 +1042,51 @@ export type Database = {
           manufacturer_user_id?: string
           name?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      manufacturers: {
+        Row: {
+          business_name: string
+          country: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          email: string | null
+          id: string
+          logo_url: string | null
+          phone: string | null
+          slug: string | null
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          business_name: string
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          phone?: string | null
+          slug?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          business_name?: string
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          phone?: string | null
+          slug?: string | null
+          updated_at?: string
+          website_url?: string | null
         }
         Relationships: []
       }
@@ -1128,6 +1361,132 @@ export type Database = {
           },
         ]
       }
+      roasters: {
+        Row: {
+          address: string | null
+          banner_url: string | null
+          country: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          email: string | null
+          facebook: string | null
+          has_discount_coupons: boolean | null
+          id: string
+          instagram: string | null
+          lat: number | null
+          lng: number | null
+          logo_url: string | null
+          name: string
+          offers_free_shipping: boolean | null
+          phone: string | null
+          slug: string | null
+          status: string | null
+          twitter: string | null
+          updated_at: string
+          website: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          banner_url?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          email?: string | null
+          facebook?: string | null
+          has_discount_coupons?: boolean | null
+          id?: string
+          instagram?: string | null
+          lat?: number | null
+          lng?: number | null
+          logo_url?: string | null
+          name: string
+          offers_free_shipping?: boolean | null
+          phone?: string | null
+          slug?: string | null
+          status?: string | null
+          twitter?: string | null
+          updated_at?: string
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          banner_url?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          email?: string | null
+          facebook?: string | null
+          has_discount_coupons?: boolean | null
+          id?: string
+          instagram?: string | null
+          lat?: number | null
+          lng?: number | null
+          logo_url?: string | null
+          name?: string
+          offers_free_shipping?: boolean | null
+          phone?: string | null
+          slug?: string | null
+          status?: string | null
+          twitter?: string | null
+          updated_at?: string
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      service_companies: {
+        Row: {
+          business_name: string
+          category: string
+          country: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          email: string | null
+          id: string
+          logo_url: string | null
+          phone: string | null
+          slug: string | null
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          business_name: string
+          category: string
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          phone?: string | null
+          slug?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          business_name?: string
+          category?: string
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          phone?: string | null
+          slug?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       shop_branding: {
         Row: {
           avatar_path: string | null
@@ -1196,8 +1555,9 @@ export type Database = {
           managed_by: string | null
           name: string
           photo_path: string | null
+          roaster_id: string | null
           role: string
-          shop_id: string
+          shop_id: string | null
           staff_user_id: string | null
           updated_at: string
         }
@@ -1208,8 +1568,9 @@ export type Database = {
           managed_by?: string | null
           name: string
           photo_path?: string | null
+          roaster_id?: string | null
           role: string
-          shop_id: string
+          shop_id?: string | null
           staff_user_id?: string | null
           updated_at?: string
         }
@@ -1220,12 +1581,21 @@ export type Database = {
           managed_by?: string | null
           name?: string
           photo_path?: string | null
+          roaster_id?: string | null
           role?: string
-          shop_id?: string
+          shop_id?: string | null
           staff_user_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "shop_staff_roaster_id_fkey"
+            columns: ["roaster_id"]
+            isOneToOne: false
+            referencedRelation: "roasters"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shop_types: {
         Row: {
@@ -1251,6 +1621,102 @@ export type Database = {
           id?: string
           name?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      shops: {
+        Row: {
+          address: string | null
+          amenities: Json | null
+          avatar: string | null
+          banner: string | null
+          base_rating: number | null
+          base_review_count: number | null
+          bio: string | null
+          country: string | null
+          created_at: string
+          created_by: string | null
+          created_by_role: string | null
+          description: string | null
+          email: string | null
+          facebook: string | null
+          id: string
+          instagram: string | null
+          lat: number | null
+          lng: number | null
+          name: string
+          opening_hours: Json | null
+          phone: string | null
+          price_level: number | null
+          slug: string | null
+          status: string | null
+          twitter: string | null
+          type: string | null
+          updated_at: string
+          website: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          amenities?: Json | null
+          avatar?: string | null
+          banner?: string | null
+          base_rating?: number | null
+          base_review_count?: number | null
+          bio?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          created_by_role?: string | null
+          description?: string | null
+          email?: string | null
+          facebook?: string | null
+          id?: string
+          instagram?: string | null
+          lat?: number | null
+          lng?: number | null
+          name: string
+          opening_hours?: Json | null
+          phone?: string | null
+          price_level?: number | null
+          slug?: string | null
+          status?: string | null
+          twitter?: string | null
+          type?: string | null
+          updated_at?: string
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          amenities?: Json | null
+          avatar?: string | null
+          banner?: string | null
+          base_rating?: number | null
+          base_review_count?: number | null
+          bio?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          created_by_role?: string | null
+          description?: string | null
+          email?: string | null
+          facebook?: string | null
+          id?: string
+          instagram?: string | null
+          lat?: number | null
+          lng?: number | null
+          name?: string
+          opening_hours?: Json | null
+          phone?: string | null
+          price_level?: number | null
+          slug?: string | null
+          status?: string | null
+          twitter?: string | null
+          type?: string | null
+          updated_at?: string
+          website?: string | null
+          whatsapp?: string | null
         }
         Relationships: []
       }

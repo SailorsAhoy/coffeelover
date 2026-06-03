@@ -4,7 +4,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { KpiRow } from "@/components/dashboard/KpiRow";
 import { DateRangeFilter, rangeStart, type RangeKey } from "@/components/dashboard/DateRangeFilter";
 import { ActivityLog } from "@/components/dashboard/ActivityLog";
-import { Users, Store, Package, Coffee, GraduationCap, Briefcase, MessageSquare, Star } from "lucide-react";
+import { Users, Store, Package, Coffee, GraduationCap, Briefcase, MessageSquare, Star, Upload } from "lucide-react";
 
 const AdminDashboard = () => {
   const [range, setRange] = useState<RangeKey>("30d");
@@ -52,6 +52,7 @@ const AdminDashboard = () => {
           { label: "Reviews", value: c.reviews, icon: Star, hint: `Avg ${c.ratingAvg.toFixed(2)}` },
           { label: "Academy", value: "—", icon: GraduationCap, to: "/academy" },
           { label: "Jobs", value: "—", icon: Briefcase, to: "/jobs" },
+          { label: "Bulk Imports", value: "CSV", icon: Upload, to: "/settings/imports" },
         ]}
       />
       <ActivityLog sinceISO={since} />
