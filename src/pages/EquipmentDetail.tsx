@@ -251,6 +251,21 @@ const EquipmentDetail = ({ kind }: { kind: "brand" | "machine" | "accessory" }) 
     const relAccessories = relatedAccessoriesForMachine(m);
     return (
       <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
+        <Helmet>
+          <title>{m.name} | CoffeeMart</title>
+          <script type="application/ld+json">{JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: m.name,
+            description: m.description,
+            category: m.type,
+            brand: brand ? { "@type": "Brand", name: brand.name } : undefined,
+            offers: { "@type": "Offer", price: m.price, priceCurrency: "USD" },
+            aggregateRating: m.reviews.length > 0 ? {
+              "@type": "AggregateRating", ratingValue: m.rating, reviewCount: m.reviews.length,
+            } : undefined,
+          })}</script>
+        </Helmet>
         <div className="max-w-5xl mx-auto space-y-6">
           <Header title={m.name} subtitle={m.type} rating={m.rating} price={m.price} />
           <Card>
@@ -290,6 +305,20 @@ const EquipmentDetail = ({ kind }: { kind: "brand" | "machine" | "accessory" }) 
   const relMachines = relatedMachinesForAccessory(a);
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
+      <Helmet>
+        <title>{a.name} | CoffeeMart</title>
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: a.name,
+          description: a.description,
+          category: a.category,
+          offers: { "@type": "Offer", price: a.price, priceCurrency: "USD" },
+          aggregateRating: a.reviews.length > 0 ? {
+            "@type": "AggregateRating", ratingValue: a.rating, reviewCount: a.reviews.length,
+          } : undefined,
+        })}</script>
+      </Helmet>
       <div className="max-w-5xl mx-auto space-y-6">
         <Header title={a.name} subtitle={a.category} rating={a.rating} price={a.price} />
         <Card>

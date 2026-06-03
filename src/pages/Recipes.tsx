@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { Clock, Users, ChefHat } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
