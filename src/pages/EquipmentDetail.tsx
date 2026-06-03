@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, useParams, Navigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Star, ExternalLink, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
