@@ -146,6 +146,8 @@ const Profile = () => {
 
         <RolesCard />
         <SubscriptionsCard />
+        <MyClaimsPanel />
+
 
         <Card>
           <CardHeader>
