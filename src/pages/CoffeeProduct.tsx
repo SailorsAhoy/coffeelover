@@ -43,6 +43,9 @@ const CoffeeProduct = () => {
   const [currencyCode, setCurrencyCode] = useState<string>("EUR");
   const [imageUrl, setImageUrl] = useState<string>("/placeholder.svg");
   const [affiliate, setAffiliate] = useState<string | null>(null);
+  const [productUrl, setProductUrl] = useState<string | null>(null);
+  const [isAvailable, setIsAvailable] = useState<boolean>(true);
+  const [servicedCountries, setServicedCountries] = useState<string[] | null>(null);
   const [loading, setLoading] = useState(isUuid);
   const [notFound, setNotFound] = useState(false);
 
@@ -51,7 +54,7 @@ const CoffeeProduct = () => {
     (async () => {
       const { data, error } = await supabase
         .from("coffee_brands")
-        .select("id, name, description, origin_country, price_per_kg, currency, image_url, affiliate_link, coffee_type, roast_level, roaster_id, roasters(name)")
+        .select("id, name, description, origin_country, price_per_kg, currency, image_url, affiliate_link, product_url, is_available, variety, process, serviced_countries, coffee_type, roast_level, roaster_id, roasters(name)")
         .eq("id", id)
         .maybeSingle();
       if (error || !data) { setNotFound(true); setLoading(false); return; }
@@ -64,6 +67,9 @@ const CoffeeProduct = () => {
       setCurrencyCode(((data as any).currency || "EUR").toUpperCase());
       setImageUrl(data.image_url || "/placeholder.svg");
       setAffiliate(data.affiliate_link);
+      setProductUrl((data as any).product_url ?? null);
+      setIsAvailable(data.is_available !== false);
+      setServicedCountries(((data as any).serviced_countries as string[] | null) ?? null);
       setDbProduct({
         id: 0,
         slug: data.id,
@@ -72,6 +78,8 @@ const CoffeeProduct = () => {
         type,
         roast,
         origin: data.origin_country || "—",
+        process: ((data as any).process as any) ?? undefined,
+        variety: ((data as any).variety as any) ?? undefined,
         price: Number(data.price_per_kg ?? 0),
         rating: 0,
         tastingNotes: [],
