@@ -433,6 +433,7 @@ const Shops = () => {
         </Tabs>
       </div>
     </div>
+    </>
   );
 };
 
