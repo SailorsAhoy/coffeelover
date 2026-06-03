@@ -70,6 +70,14 @@ const ShopProfile = () => {
       <ShopBanner shop={shop} />
 
       <div className="mx-auto max-w-3xl space-y-4 px-4 py-4 md:px-6">
+        {meta && (
+          <div className="flex flex-wrap items-center gap-2">
+            <ClaimButton type="shop" listingId={meta.id} requiredModule="shop_listing" />
+            {meta.linked_roaster_id && <LinkedListingButton kind="roaster" id={meta.linked_roaster_id} />}
+            <CloneAcrossTypeButton source="shop" sourceId={meta.id} ownerUserId={meta.owner_user_id} alreadyLinkedId={meta.linked_roaster_id} />
+          </div>
+        )}
+
         {(shop.status === "pending" || shop.pendingReview) && (
           <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm">
             <div className="flex items-center justify-between gap-2">
