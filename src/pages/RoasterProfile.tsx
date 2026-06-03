@@ -239,13 +239,16 @@ const RoasterProfile = () => {
                 ) : (
                   <ul className="grid gap-3 sm:grid-cols-2">
                     {coffees.map((c) => {
+                      const displayName = stripRoasterPrefix(c.name, roaster.name);
                       const inner = (
-                        <div className="overflow-hidden rounded-lg border">
-                          {c.image_url && <img src={c.image_url} alt={c.name} className="h-32 w-full object-cover" />}
+                        <div className="overflow-hidden rounded-lg border h-full transition-colors hover:bg-accent">
+                          {c.image_url && <img src={c.image_url} alt={displayName} className="h-32 w-full object-cover" />}
                           <div className="p-3">
                             <div className="flex items-center justify-between gap-2">
-                              <p className="font-medium truncate">{c.name}</p>
-                              {c.price_per_kg && <Badge variant="outline">{c.price_per_kg}/kg</Badge>}
+                              <p className="font-medium truncate">{displayName}</p>
+                              {c.price_per_kg != null && (
+                                <Badge variant="outline">{formatPrice(Number(c.price_per_kg), c.currency)}</Badge>
+                              )}
                             </div>
                             {c.origin_country && <p className="text-xs text-muted-foreground">{c.origin_country}</p>}
                             {c.description && <p className="text-xs mt-1 line-clamp-2">{c.description}</p>}
@@ -254,9 +257,7 @@ const RoasterProfile = () => {
                       );
                       return (
                         <li key={c.id}>
-                          {c.affiliate_link ? (
-                            <a href={c.affiliate_link} target="_blank" rel="noopener noreferrer sponsored">{inner}</a>
-                          ) : inner}
+                          <Link to={`/coffee/${c.id}`}>{inner}</Link>
                         </li>
                       );
                     })}
