@@ -436,7 +436,7 @@ export type Database = {
             foreignKeyName: "coffee_brands_roaster_id_fkey"
             columns: ["roaster_id"]
             isOneToOne: false
-            referencedRelation: "roaster_profiles"
+            referencedRelation: "roasters"
             referencedColumns: ["id"]
           },
           {
