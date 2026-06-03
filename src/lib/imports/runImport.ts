@@ -61,6 +61,7 @@ const resolveParent = async (
 export const runImport = async (
   schema: CategorySchema,
   rows: Record<string, string>[],
+  meta?: { fileName?: string },
 ): Promise<ImportResult> => {
   const result: ImportResult = { inserted: 0, skipped: 0, errors: [] };
   const toInsert: Record<string, unknown>[] = [];
