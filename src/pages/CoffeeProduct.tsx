@@ -1,10 +1,27 @@
+import { useEffect, useState } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
 import { Star, ShoppingCart, Truck, Shield, Coffee, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { findCoffee, relatedCoffees } from "@/lib/coffeeData";
+import { findCoffee, relatedCoffees, type CoffeeItem } from "@/lib/coffeeData";
+import { supabase } from "@/integrations/supabase/client";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const CURRENCY_SYMBOLS: Record<string, string> = { EUR: "€", USD: "$", GBP: "£", JPY: "¥" };
+const currencySymbol = (code: string | null) => {
+  const c = (code || "EUR").toUpperCase();
+  return CURRENCY_SYMBOLS[c] ?? c + " ";
+};
+const stripRoasterPrefix = (name: string, roasterName: string) => {
+  for (const s of [" — ", " - ", " – "]) {
+    const p = roasterName + s;
+    if (name.startsWith(p)) return name.slice(p.length);
+  }
+  return name;
+};
+
 
 const StarRow = ({ value, size = 4 }: { value: number; size?: number }) => (
   <div className="flex items-center gap-1">
@@ -19,9 +36,67 @@ const StarRow = ({ value, size = 4 }: { value: number; size?: number }) => (
 
 const CoffeeProduct = () => {
   const { id = "" } = useParams();
-  const product = findCoffee(id);
-  if (!product) return <Navigate to="/coffee" replace />;
-  const related = relatedCoffees(product);
+  const isUuid = UUID_RE.test(id);
+  const mockProduct = !isUuid ? findCoffee(id) : null;
+
+  const [dbProduct, setDbProduct] = useState<CoffeeItem | null>(null);
+  const [currencyCode, setCurrencyCode] = useState<string>("EUR");
+  const [imageUrl, setImageUrl] = useState<string>("/placeholder.svg");
+  const [affiliate, setAffiliate] = useState<string | null>(null);
+  const [loading, setLoading] = useState(isUuid);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    if (!isUuid) return;
+    (async () => {
+      const { data, error } = await supabase
+        .from("coffee_brands")
+        .select("id, name, description, origin_country, price_per_kg, currency, image_url, affiliate_link, coffee_type, roast_level, roaster_id, roasters(name)")
+        .eq("id", id)
+        .maybeSingle();
+      if (error || !data) { setNotFound(true); setLoading(false); return; }
+      const roasterName = (data as any).roasters?.name ?? "";
+      const displayName = stripRoasterPrefix(data.name, roasterName);
+      const roastMap: Record<string, CoffeeItem["roast"]> = { light: "Light", medium: "Medium", dark: "Dark", "medium-dark": "Dark", "medium-light": "Medium" };
+      const typeMap: Record<string, CoffeeItem["type"]> = { arabica: "Arabica", robusta: "Robusta", blend: "Blend" };
+      const roast = roastMap[(data.roast_level as string)?.toLowerCase?.()] ?? "Medium";
+      const type = typeMap[(data.coffee_type as string)?.toLowerCase?.()] ?? "Arabica";
+      setCurrencyCode(((data as any).currency || "EUR").toUpperCase());
+      setImageUrl(data.image_url || "/placeholder.svg");
+      setAffiliate(data.affiliate_link);
+      setDbProduct({
+        id: 0,
+        slug: data.id,
+        name: displayName,
+        roaster: roasterName,
+        type,
+        roast,
+        origin: data.origin_country || "—",
+        price: Number(data.price_per_kg ?? 0),
+        rating: 0,
+        tastingNotes: [],
+        description: data.description || `${displayName} from ${roasterName}.`,
+        brewRecommendation:
+          roast === "Light"
+            ? "Best as pour-over or AeroPress. Use 200°F water, 1:16 ratio, medium-fine grind."
+            : roast === "Medium"
+              ? "Versatile for drip and pour-over. 196°F water, 1:16 ratio, medium grind."
+              : "Excellent for espresso and moka pot. 9 bar, 1:2 ratio, fine grind.",
+        guides: [],
+        reviews: [],
+      });
+      setLoading(false);
+    })();
+  }, [id, isUuid]);
+
+  if (loading) return <div className="p-8 text-center text-muted-foreground">Loading…</div>;
+  if (isUuid && notFound) return <Navigate to="/coffee" replace />;
+  if (!isUuid && !mockProduct) return <Navigate to="/coffee" replace />;
+  const product = (mockProduct ?? dbProduct)!;
+  const related = mockProduct ? relatedCoffees(mockProduct) : [];
+  const priceUnit = isUuid ? "per kg" : "per 12oz bag";
+  const sym = currencySymbol(currencyCode);
+
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
@@ -34,7 +109,7 @@ const CoffeeProduct = () => {
           <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <img src="/placeholder.svg" alt={product.name} className="w-full h-96 object-cover rounded-lg" />
+                <img src={isUuid ? imageUrl : "/placeholder.svg"} alt={product.name} className="w-full h-96 object-cover rounded-lg" />
               </div>
               <div className="space-y-6">
                 <div>
@@ -79,12 +154,21 @@ const CoffeeProduct = () => {
 
                 <div className="pt-4 border-t">
                   <div className="flex items-baseline gap-2 mb-4">
-                    <span className="text-4xl font-bold text-primary">${product.price}</span>
-                    <span className="text-sm text-muted-foreground">per 12oz bag</span>
+                    <span className="text-4xl font-bold text-primary">{sym}{product.price.toFixed(2)}</span>
+                    <span className="text-sm text-muted-foreground">{priceUnit}</span>
                   </div>
-                  <Button size="lg" className="w-full mb-3">
-                    <ShoppingCart className="w-4 h-4 mr-2" /> Add to Cart
-                  </Button>
+                  {affiliate ? (
+                    <a href={affiliate} target="_blank" rel="noopener noreferrer sponsored">
+                      <Button size="lg" className="w-full mb-3">
+                        <ShoppingCart className="w-4 h-4 mr-2" /> Buy from roaster
+                      </Button>
+                    </a>
+                  ) : (
+                    <Button size="lg" className="w-full mb-3">
+                      <ShoppingCart className="w-4 h-4 mr-2" /> Add to Cart
+                    </Button>
+                  )}
+
                   <div className="flex flex-col gap-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2"><Truck className="w-4 h-4" /> Free shipping on orders over $50</div>
                     <div className="flex items-center gap-2"><Shield className="w-4 h-4" /> Satisfaction guaranteed</div>

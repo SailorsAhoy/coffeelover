@@ -25,9 +25,27 @@ interface Coffee {
   description: string | null;
   origin_country: string | null;
   price_per_kg: number | null;
+  currency: string | null;
   image_url: string | null;
   affiliate_link: string | null;
 }
+
+const CURRENCY_SYMBOLS: Record<string, string> = { EUR: "€", USD: "$", GBP: "£", JPY: "¥" };
+const formatPrice = (price: number, currency: string | null) => {
+  const code = (currency || "EUR").toUpperCase();
+  const sym = CURRENCY_SYMBOLS[code] ?? code + " ";
+  return `${sym}${price.toFixed(2)} / kg`;
+};
+
+const stripRoasterPrefix = (name: string, roasterName: string) => {
+  const seps = [" — ", " - ", " – "];
+  for (const s of seps) {
+    const prefix = roasterName + s;
+    if (name.startsWith(prefix)) return name.slice(prefix.length);
+  }
+  return name;
+};
+
 
 const RoasterProfile = () => {
   const { id } = useParams();
@@ -56,7 +74,7 @@ const RoasterProfile = () => {
     (async () => {
       const { data } = await supabase
         .from("coffee_brands")
-        .select("id, name, description, origin_country, price_per_kg, image_url, affiliate_link")
+        .select("id, name, description, origin_country, price_per_kg, currency, image_url, affiliate_link")
         .eq("roaster_id", id);
       setCoffees(((data ?? []) as unknown) as Coffee[]);
       setMyClaim(await getMyClaim("roaster", id));
@@ -221,13 +239,16 @@ const RoasterProfile = () => {
                 ) : (
                   <ul className="grid gap-3 sm:grid-cols-2">
                     {coffees.map((c) => {
+                      const displayName = stripRoasterPrefix(c.name, roaster.name);
                       const inner = (
-                        <div className="overflow-hidden rounded-lg border">
-                          {c.image_url && <img src={c.image_url} alt={c.name} className="h-32 w-full object-cover" />}
+                        <div className="overflow-hidden rounded-lg border h-full transition-colors hover:bg-accent">
+                          {c.image_url && <img src={c.image_url} alt={displayName} className="h-32 w-full object-cover" />}
                           <div className="p-3">
                             <div className="flex items-center justify-between gap-2">
-                              <p className="font-medium truncate">{c.name}</p>
-                              {c.price_per_kg && <Badge variant="outline">{c.price_per_kg}/kg</Badge>}
+                              <p className="font-medium truncate">{displayName}</p>
+                              {c.price_per_kg != null && (
+                                <Badge variant="outline">{formatPrice(Number(c.price_per_kg), c.currency)}</Badge>
+                              )}
                             </div>
                             {c.origin_country && <p className="text-xs text-muted-foreground">{c.origin_country}</p>}
                             {c.description && <p className="text-xs mt-1 line-clamp-2">{c.description}</p>}
@@ -236,9 +257,7 @@ const RoasterProfile = () => {
                       );
                       return (
                         <li key={c.id}>
-                          {c.affiliate_link ? (
-                            <a href={c.affiliate_link} target="_blank" rel="noopener noreferrer sponsored">{inner}</a>
-                          ) : inner}
+                          <Link to={`/coffee/${c.id}`}>{inner}</Link>
                         </li>
                       );
                     })}
