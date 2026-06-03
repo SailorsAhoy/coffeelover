@@ -65,6 +65,7 @@ const Shops = () => {
   const [tick, force] = useState(0);
 
   useEffect(() => subscribeShopOverrides(() => force((n) => n + 1)), []);
+  useEffect(() => { loadShopsFromDb(); }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
