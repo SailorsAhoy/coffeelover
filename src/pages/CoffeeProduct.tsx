@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
-import { Star, ShoppingCart, Truck, Shield, Coffee, ArrowLeft } from "lucide-react";
+import { Star, ShoppingCart, Truck, Shield, Coffee, ArrowLeft, ExternalLink, CheckCircle2, XCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,9 @@ const CoffeeProduct = () => {
   const [currencyCode, setCurrencyCode] = useState<string>("EUR");
   const [imageUrl, setImageUrl] = useState<string>("/placeholder.svg");
   const [affiliate, setAffiliate] = useState<string | null>(null);
+  const [productUrl, setProductUrl] = useState<string | null>(null);
+  const [isAvailable, setIsAvailable] = useState<boolean>(true);
+  const [servicedCountries, setServicedCountries] = useState<string[] | null>(null);
   const [loading, setLoading] = useState(isUuid);
   const [notFound, setNotFound] = useState(false);
 
@@ -51,7 +54,7 @@ const CoffeeProduct = () => {
     (async () => {
       const { data, error } = await supabase
         .from("coffee_brands")
-        .select("id, name, description, origin_country, price_per_kg, currency, image_url, affiliate_link, coffee_type, roast_level, roaster_id, roasters(name)")
+        .select("id, name, description, origin_country, price_per_kg, currency, image_url, affiliate_link, product_url, is_available, variety, process, serviced_countries, coffee_type, roast_level, roaster_id, roasters(name)")
         .eq("id", id)
         .maybeSingle();
       if (error || !data) { setNotFound(true); setLoading(false); return; }
@@ -64,6 +67,9 @@ const CoffeeProduct = () => {
       setCurrencyCode(((data as any).currency || "EUR").toUpperCase());
       setImageUrl(data.image_url || "/placeholder.svg");
       setAffiliate(data.affiliate_link);
+      setProductUrl((data as any).product_url ?? null);
+      setIsAvailable(data.is_available !== false);
+      setServicedCountries(((data as any).serviced_countries as string[] | null) ?? null);
       setDbProduct({
         id: 0,
         slug: data.id,
@@ -72,6 +78,8 @@ const CoffeeProduct = () => {
         type,
         roast,
         origin: data.origin_country || "—",
+        process: ((data as any).process as any) ?? undefined,
+        variety: ((data as any).variety as any) ?? undefined,
         price: Number(data.price_per_kg ?? 0),
         rating: 0,
         tastingNotes: [],
@@ -157,16 +165,33 @@ const CoffeeProduct = () => {
                     <span className="text-4xl font-bold text-primary">{sym}{product.price.toFixed(2)}</span>
                     <span className="text-sm text-muted-foreground">{priceUnit}</span>
                   </div>
+                  <div className="mb-3">
+                    {isAvailable ? (
+                      <Badge className="bg-green-600 hover:bg-green-600 text-white"><CheckCircle2 className="w-3 h-3 mr-1" />In stock</Badge>
+                    ) : (
+                      <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" />Out of stock</Badge>
+                    )}
+                    {isUuid && servicedCountries && servicedCountries.length > 0 && (
+                      <span className="ml-2 text-xs text-muted-foreground">Ships to: {servicedCountries.join(", ")}</span>
+                    )}
+                  </div>
                   {affiliate ? (
                     <a href={affiliate} target="_blank" rel="noopener noreferrer sponsored">
-                      <Button size="lg" className="w-full mb-3">
+                      <Button size="lg" className="w-full mb-2" disabled={!isAvailable}>
                         <ShoppingCart className="w-4 h-4 mr-2" /> Buy from roaster
                       </Button>
                     </a>
                   ) : (
-                    <Button size="lg" className="w-full mb-3">
+                    <Button size="lg" className="w-full mb-2" disabled={!isAvailable}>
                       <ShoppingCart className="w-4 h-4 mr-2" /> Add to Cart
                     </Button>
+                  )}
+                  {productUrl && (
+                    <a href={productUrl} target="_blank" rel="noopener noreferrer" className="block mb-3">
+                      <Button size="sm" variant="outline" className="w-full">
+                        <ExternalLink className="w-4 h-4 mr-2" /> View product page
+                      </Button>
+                    </a>
                   )}
 
                   <div className="flex flex-col gap-2 text-sm text-muted-foreground">
@@ -199,15 +224,39 @@ const CoffeeProduct = () => {
               <CardContent><p className="text-muted-foreground leading-relaxed">{product.brewRecommendation}</p></CardContent>
             </Card>
             <Card>
-              <CardHeader><CardTitle className="text-lg">Related Guides</CardTitle></CardHeader>
-              <CardContent className="flex flex-wrap gap-2">
-                {product.guides.map((g) => (
-                  <Link key={g.id} to={g.url}>
-                    <Badge variant="outline" className="cursor-pointer hover:bg-accent">{g.title}</Badge>
-                  </Link>
-                ))}
+              <CardHeader><CardTitle className="text-lg">Brewing recipes</CardTitle><CardDescription>Popular ways to brew this coffee</CardDescription></CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {[
+                    { title: "V60 Pour Over", time: "4 min", ratio: "1:16" },
+                    { title: "AeroPress", time: "2 min", ratio: "1:15" },
+                    { title: "French Press", time: "5 min", ratio: "1:15" },
+                    { title: "Espresso", time: "30 s", ratio: "1:2" },
+                    { title: "Moka Pot", time: "5 min", ratio: "1:10" },
+                    { title: "Cold Brew", time: "12 h", ratio: "1:8" },
+                  ].map((r) => (
+                    <Link key={r.title} to="/recipes" className="block">
+                      <div className="rounded-md border p-3 hover:bg-accent transition-colors">
+                        <p className="font-semibold text-sm">{r.title}</p>
+                        <p className="text-xs text-muted-foreground">{r.time} · ratio {r.ratio}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               </CardContent>
             </Card>
+            {product.guides.length > 0 && (
+              <Card>
+                <CardHeader><CardTitle className="text-lg">Related Guides</CardTitle></CardHeader>
+                <CardContent className="flex flex-wrap gap-2">
+                  {product.guides.map((g) => (
+                    <Link key={g.id} to={g.url}>
+                      <Badge variant="outline" className="cursor-pointer hover:bg-accent">{g.title}</Badge>
+                    </Link>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="reviews" className="mt-6">
