@@ -22,6 +22,7 @@ import CloneAcrossTypeButton from "@/components/listings/CloneAcrossTypeButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { toast } from "sonner";
+import { getMyClaim, type ListingClaim } from "@/lib/claims";
 
 
 const ShopProfile = () => {
@@ -32,6 +33,7 @@ const ShopProfile = () => {
     getShopWithOverrides(id ?? "1"),
   );
   const [meta, setMeta] = useState<{ id: string; owner_user_id: string | null; linked_roaster_id: string | null } | null>(null);
+  const [myClaim, setMyClaim] = useState<ListingClaim | null>(null);
 
   useEffect(() => {
     setShop(getShopWithOverrides(id ?? "1"));
@@ -47,6 +49,7 @@ const ShopProfile = () => {
         .eq("id", shop.reviewableId)
         .maybeSingle();
       setMeta((data as any) ?? null);
+      setMyClaim(await getMyClaim("shop", shop.reviewableId));
     })();
   }, [shop?.reviewableId]);
 
@@ -73,6 +76,20 @@ const ShopProfile = () => {
         {meta && (
           <div className="flex flex-wrap items-center gap-2">
             <ClaimButton type="shop" listingId={meta.id} requiredModule="shop_listing" />
+            {myClaim && (
+              <Badge
+                variant="outline"
+                className={
+                  myClaim.status === "pending"
+                    ? "border-amber-500/50 bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                    : myClaim.status === "approved"
+                      ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                      : "border-destructive/50 bg-destructive/15 text-destructive"
+                }
+              >
+                Claim {myClaim.status}
+              </Badge>
+            )}
             {meta.linked_roaster_id && <LinkedListingButton kind="roaster" id={meta.linked_roaster_id} />}
             <CloneAcrossTypeButton source="shop" sourceId={meta.id} ownerUserId={meta.owner_user_id} alreadyLinkedId={meta.linked_roaster_id} />
           </div>

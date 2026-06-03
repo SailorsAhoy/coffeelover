@@ -9,6 +9,7 @@ import ShopReviews from "@/components/shops/ShopReviews";
 import ClaimButton from "@/components/listings/ClaimButton";
 import LinkedListingButton from "@/components/listings/LinkedListingButton";
 import CloneAcrossTypeButton from "@/components/listings/CloneAcrossTypeButton";
+import { getMyClaim, type ListingClaim } from "@/lib/claims";
 
 interface Roaster {
   id: string;
@@ -45,6 +46,7 @@ const RoasterProfile = () => {
   const [roaster, setRoaster] = useState<Roaster | null>(null);
   const [coffees, setCoffees] = useState<Coffee[]>([]);
   const [loading, setLoading] = useState(true);
+  const [myClaim, setMyClaim] = useState<ListingClaim | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -54,6 +56,7 @@ const RoasterProfile = () => {
       setRoaster((data as unknown) as Roaster | null);
       const { data: cs } = await supabase.from("coffee_brands").select("id, name, description, origin_country, price_per_kg, image_url").eq("roaster_id", id);
       setCoffees(((cs ?? []) as unknown) as Coffee[]);
+      setMyClaim(await getMyClaim("roaster", id));
       setLoading(false);
     })();
   }, [id]);
@@ -84,6 +87,20 @@ const RoasterProfile = () => {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <ClaimButton type="roaster" listingId={roaster.id} requiredModule="roaster_listing" />
+            {myClaim && (
+              <Badge
+                variant="outline"
+                className={
+                  myClaim.status === "pending"
+                    ? "border-amber-500/50 bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                    : myClaim.status === "approved"
+                      ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                      : "border-destructive/50 bg-destructive/15 text-destructive"
+                }
+              >
+                Claim {myClaim.status}
+              </Badge>
+            )}
             {roaster.linked_shop_id && <LinkedListingButton kind="shop" id={roaster.linked_shop_id} />}
             <CloneAcrossTypeButton source="roaster" sourceId={roaster.id} ownerUserId={roaster.owner_user_id} alreadyLinkedId={roaster.linked_shop_id} />
           </div>

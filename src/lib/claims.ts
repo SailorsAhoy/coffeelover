@@ -35,6 +35,21 @@ export async function getActiveClaim(type: ListingType, listingId: string) {
   return ((data as unknown) as ListingClaim | null) ?? null;
 }
 
+export async function getMyClaim(type: ListingType, listingId: string) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data } = await supabase
+    .from("listing_claims" as any)
+    .select("*")
+    .eq("listing_type", type)
+    .eq("listing_id", listingId)
+    .eq("claimant_user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return ((data as unknown) as ListingClaim | null) ?? null;
+}
+
 export async function getOwner(type: ListingType, listingId: string): Promise<string | null> {
   const { data } = await (supabase as any)
     .from(TABLE_BY_TYPE[type])
