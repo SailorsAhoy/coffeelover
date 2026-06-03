@@ -335,6 +335,21 @@ export const addShop = (shop: Omit<Shop, "id" | "reviewableId">): Shop => {
 /** Pulls shops from the DB and merges any rows not already present in the
  * in-memory list. Dedupe key: case-insensitive name + address. Safe to call
  * more than once; called on app boot. */
+/**
+ * Deterministic merge of DB shops into the in-memory list.
+ *
+ * Dedupe priority (first match wins; we never insert a duplicate):
+ *   1. reviewableId === DB row id (the canonical UUID)
+ *   2. case-insensitive (name + address) composite key
+ *
+ * Status handling: the DB row is the source of truth for `status` and
+ * `pendingReview`. If a shop already exists in memory (e.g. seeded mock or
+ * just-added optimistic row), we reconcile its status/createdBy fields from
+ * the DB row without clobbering local edits stored in `overrides`.
+ *
+ * Idempotent: safe to call repeatedly; only emits a listener notification
+ * when something actually changed.
+ */
 export const loadShopsFromDb = async () => {
   try {
     const { data, error } = await supabase
@@ -343,14 +358,59 @@ export const loadShopsFromDb = async () => {
       .order("created_at", { ascending: false })
       .limit(500);
     if (error || !data) return;
-    const key = (n?: string | null, a?: string | null) =>
-      `${(n ?? "").toLowerCase().trim()}|${(a ?? "").toLowerCase().trim()}`;
-    const existing = new Set(SHOPS.map((s) => key(s.name, s.address)));
-    let added = 0;
+
+    const norm = (s?: string | null) => (s ?? "").toLowerCase().trim();
+    const composite = (n?: string | null, a?: string | null) =>
+      `${norm(n)}|${norm(a)}`;
+
+    const byReviewable = new Map<string, Shop>();
+    const byComposite = new Map<string, Shop>();
+    for (const s of SHOPS) {
+      if (s.reviewableId) byReviewable.set(s.reviewableId, s);
+      byComposite.set(composite(s.name, s.address), s);
+    }
+
+    let changed = false;
     for (const r of data as any[]) {
-      if (existing.has(key(r.name, r.address))) continue;
+      const cKey = composite(r.name, r.address);
+      const existing =
+        (r.id && byReviewable.get(r.id)) || byComposite.get(cKey);
+
+      const dbStatus = (r.status ?? "approved") as Shop["status"];
+      const dbPending = dbStatus === "pending";
+
+      if (existing) {
+        // Reconcile authoritative fields from DB without duplicating the row.
+        let patched = false;
+        if (r.id && existing.reviewableId !== r.id) {
+          existing.reviewableId = r.id;
+          patched = true;
+        }
+        if (existing.status !== dbStatus) {
+          existing.status = dbStatus;
+          patched = true;
+        }
+        if (existing.pendingReview !== dbPending) {
+          existing.pendingReview = dbPending;
+          patched = true;
+        }
+        if (!existing.createdBy && r.created_by) {
+          existing.createdBy = r.created_by;
+          patched = true;
+        }
+        if (!existing.createdByRole && r.created_by_role) {
+          existing.createdByRole = r.created_by_role;
+          patched = true;
+        }
+        if (patched) {
+          byReviewable.set(existing.reviewableId, existing);
+          changed = true;
+        }
+        continue;
+      }
+
       const nextId = SHOPS.reduce((m, s) => Math.max(m, s.id), 0) + 1;
-      SHOPS.unshift({
+      const created: Shop = {
         id: nextId,
         reviewableId: r.id ?? uuid(nextId),
         name: r.name,
@@ -375,15 +435,18 @@ export const loadShopsFromDb = async () => {
         opening_hours: (r.opening_hours ?? stdHours) as OpeningHours,
         banner: r.banner ?? undefined,
         avatar: r.avatar ?? undefined,
-        status: (r.status ?? "approved") as Shop["status"],
-        pendingReview: r.status === "pending",
+        status: dbStatus,
+        pendingReview: dbPending,
         createdBy: r.created_by ?? undefined,
         createdByRole: r.created_by_role ?? undefined,
-      });
-      existing.add(key(r.name, r.address));
-      added++;
+      };
+      SHOPS.unshift(created);
+      byReviewable.set(created.reviewableId, created);
+      byComposite.set(cKey, created);
+      changed = true;
     }
-    if (added > 0) listeners.forEach((l) => l());
+
+    if (changed) listeners.forEach((l) => l());
   } catch (e) {
     console.error("[loadShopsFromDb] failed:", e);
   }
