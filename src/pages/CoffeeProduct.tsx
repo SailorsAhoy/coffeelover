@@ -109,7 +109,7 @@ const CoffeeProduct = () => {
           <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <img src="/placeholder.svg" alt={product.name} className="w-full h-96 object-cover rounded-lg" />
+                <img src={isUuid ? imageUrl : "/placeholder.svg"} alt={product.name} className="w-full h-96 object-cover rounded-lg" />
               </div>
               <div className="space-y-6">
                 <div>
