@@ -9,6 +9,7 @@ import ShopReviews from "@/components/shops/ShopReviews";
 import ClaimButton from "@/components/listings/ClaimButton";
 import LinkedListingButton from "@/components/listings/LinkedListingButton";
 import CloneAcrossTypeButton from "@/components/listings/CloneAcrossTypeButton";
+import { getMyClaim, type ListingClaim } from "@/lib/claims";
 
 interface Roaster {
   id: string;
