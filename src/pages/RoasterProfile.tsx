@@ -74,7 +74,7 @@ const RoasterProfile = () => {
     (async () => {
       const { data } = await supabase
         .from("coffee_brands")
-        .select("id, name, description, origin_country, price_per_kg, image_url, affiliate_link")
+        .select("id, name, description, origin_country, price_per_kg, currency, image_url, affiliate_link")
         .eq("roaster_id", id);
       setCoffees(((data ?? []) as unknown) as Coffee[]);
       setMyClaim(await getMyClaim("roaster", id));
