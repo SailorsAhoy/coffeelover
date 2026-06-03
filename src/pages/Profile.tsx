@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Phone, MapPin } from "lucide-react";
 import { RolesCard } from "@/components/profile/RolesCard";
 import { SubscriptionsCard } from "@/components/profile/SubscriptionsCard";
+import MyClaimsPanel from "@/components/listings/MyClaimsPanel";
 
 const Profile = () => {
   const [user, setUser] = useState<any>(null);
@@ -145,6 +146,8 @@ const Profile = () => {
 
         <RolesCard />
         <SubscriptionsCard />
+        <MyClaimsPanel />
+
 
         <Card>
           <CardHeader>

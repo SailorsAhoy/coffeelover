@@ -16,8 +16,13 @@ import ShopReviews from "@/components/shops/ShopReviews";
 import ShopBanner from "@/components/shops/ShopBanner";
 import ShopGallery from "@/components/shops/ShopGallery";
 import ShopStaff from "@/components/shops/ShopStaff";
+import ClaimButton from "@/components/listings/ClaimButton";
+import LinkedListingButton from "@/components/listings/LinkedListingButton";
+import CloneAcrossTypeButton from "@/components/listings/CloneAcrossTypeButton";
+import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { toast } from "sonner";
+
 
 const ShopProfile = () => {
   const { id } = useParams();
@@ -26,11 +31,26 @@ const ShopProfile = () => {
   const [shop, setShop] = useState<Shop | undefined>(() =>
     getShopWithOverrides(id ?? "1"),
   );
+  const [meta, setMeta] = useState<{ id: string; owner_user_id: string | null; linked_roaster_id: string | null } | null>(null);
 
   useEffect(() => {
     setShop(getShopWithOverrides(id ?? "1"));
     return subscribeShopOverrides(() => setShop(getShopWithOverrides(id ?? "1")));
   }, [id]);
+
+  useEffect(() => {
+    if (!shop?.reviewableId) return;
+    (async () => {
+      const { data } = await supabase
+        .from("shops")
+        .select("id, owner_user_id, linked_roaster_id")
+        .eq("id", shop.reviewableId)
+        .maybeSingle();
+      setMeta((data as any) ?? null);
+    })();
+  }, [shop?.reviewableId]);
+
+
 
   if (!shop) {
     return (
@@ -50,6 +70,14 @@ const ShopProfile = () => {
       <ShopBanner shop={shop} />
 
       <div className="mx-auto max-w-3xl space-y-4 px-4 py-4 md:px-6">
+        {meta && (
+          <div className="flex flex-wrap items-center gap-2">
+            <ClaimButton type="shop" listingId={meta.id} requiredModule="shop_listing" />
+            {meta.linked_roaster_id && <LinkedListingButton kind="roaster" id={meta.linked_roaster_id} />}
+            <CloneAcrossTypeButton source="shop" sourceId={meta.id} ownerUserId={meta.owner_user_id} alreadyLinkedId={meta.linked_roaster_id} />
+          </div>
+        )}
+
         {(shop.status === "pending" || shop.pendingReview) && (
           <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm">
             <div className="flex items-center justify-between gap-2">
