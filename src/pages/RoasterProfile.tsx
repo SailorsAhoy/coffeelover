@@ -56,6 +56,7 @@ const RoasterProfile = () => {
       setRoaster((data as unknown) as Roaster | null);
       const { data: cs } = await supabase.from("coffee_brands").select("id, name, description, origin_country, price_per_kg, image_url").eq("roaster_id", id);
       setCoffees(((cs ?? []) as unknown) as Coffee[]);
+      setMyClaim(await getMyClaim("roaster", id));
       setLoading(false);
     })();
   }, [id]);
