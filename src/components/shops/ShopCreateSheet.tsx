@@ -35,6 +35,7 @@ import {
   type ShopType,
 } from "@/lib/shopsData";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useFieldPermissions } from "@/hooks/useFieldPermissions";
 import type { OpeningHours } from "@/lib/shopUtils";
 import {
   affiliateLinkSchema,
@@ -100,8 +101,13 @@ const defaultHours: OpeningHours = {
 };
 
 export const ShopCreateSheet = ({ trigger }: Props) => {
-  const { user, profile, can, isAuthenticated } = useCurrentUser();
+  const { user, profile, can, isAuthenticated, hasRole } = useCurrentUser();
   const isOwner = can("list_shop");
+  const { canField } = useFieldPermissions("shop");
+  const showMedia = canField("banner") || canField("avatar");
+  const showContact =
+    canField("phone") || canField("whatsapp") || canField("email") || canField("website");
+  const showSocial = canField("instagram") || canField("facebook") || canField("twitter");
 
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
