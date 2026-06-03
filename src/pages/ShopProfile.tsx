@@ -33,6 +33,7 @@ const ShopProfile = () => {
     getShopWithOverrides(id ?? "1"),
   );
   const [meta, setMeta] = useState<{ id: string; owner_user_id: string | null; linked_roaster_id: string | null } | null>(null);
+  const [myClaim, setMyClaim] = useState<ListingClaim | null>(null);
 
   useEffect(() => {
     setShop(getShopWithOverrides(id ?? "1"));
