@@ -487,109 +487,78 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
             </section>
           )}
 
-          {isOwner && (
-            <>
-              <section className="space-y-3">
-                <Label className="text-sm font-semibold">Contact</Label>
-                <Input
-                  placeholder="Phone"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  inputMode="tel"
-                  maxLength={30}
-                />
-                <Input
-                  placeholder="WhatsApp number"
-                  value={whatsapp}
-                  onChange={(e) => setWhatsapp(e.target.value)}
-                  inputMode="tel"
-                  maxLength={30}
-                />
-                <Input
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  inputMode="email"
-                  maxLength={120}
-                />
-                <Input
-                  placeholder="Website https://…"
-                  value={website}
-                  onChange={(e) => setWebsite(e.target.value)}
-                  inputMode="url"
-                  maxLength={500}
-                />
-                <Input
-                  placeholder="Instagram URL"
-                  value={instagram}
-                  onChange={(e) => setInstagram(e.target.value)}
-                  inputMode="url"
-                  maxLength={500}
-                />
-                <Input
-                  placeholder="Facebook URL"
-                  value={facebook}
-                  onChange={(e) => setFacebook(e.target.value)}
-                  inputMode="url"
-                  maxLength={500}
-                />
-                <Input
-                  placeholder="Twitter/X URL"
-                  value={twitter}
-                  onChange={(e) => setTwitter(e.target.value)}
-                  inputMode="url"
-                  maxLength={500}
-                />
-              </section>
-
-              <section className="space-y-3">
-                <Label className="text-sm font-semibold">Amenities</Label>
-                <div className="grid grid-cols-1 gap-2">
-                  {AMENITIES.map((a) => {
-                    const Icon = a.icon;
-                    return (
-                      <label
-                        key={a.key}
-                        className="flex items-center justify-between rounded-lg border p-2.5"
-                      >
-                        <span className="flex items-center gap-2 text-sm">
-                          <Icon className="h-4 w-4 text-muted-foreground" />
-                          {a.label}
-                        </span>
-                        <Switch
-                          checked={!!amenities[a.key]}
-                          onCheckedChange={(v) => toggle(a.key, v)}
-                        />
-                      </label>
-                    );
-                  })}
-                </div>
-              </section>
-
-              <section className="space-y-2">
-                <Label className="text-sm font-semibold">Opening hours</Label>
-                <OpeningHoursEditor value={hours} onChange={setHours} />
-              </section>
-
-              <section className="space-y-2">
-                <Label className="text-sm font-semibold">Affiliate links</Label>
-                <AffiliateLinksEditor
-                  value={affiliateLinks}
-                  onChange={setAffiliateLinks}
-                />
-              </section>
-
-
-
-              <p className="rounded-md border bg-muted/40 p-2 text-[11px] text-muted-foreground">
-                Submitting as{" "}
-                <span className="font-medium text-foreground">
-                  {profile?.name ?? user?.email}
-                </span>
-                . You'll be credited as the author on the shop profile.
-              </p>
-            </>
+          {showContact && (
+            <section className="space-y-3">
+              <Label className="text-sm font-semibold">Contact</Label>
+              {canField("phone") && (
+                <Input placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} inputMode="tel" maxLength={30} />
+              )}
+              {canField("whatsapp") && (
+                <Input placeholder="WhatsApp number" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} inputMode="tel" maxLength={30} />
+              )}
+              {canField("email") && (
+                <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} inputMode="email" maxLength={120} />
+              )}
+              {canField("website") && (
+                <Input placeholder="Website https://…" value={website} onChange={(e) => setWebsite(e.target.value)} inputMode="url" maxLength={500} />
+              )}
+            </section>
           )}
+
+          {showSocial && (
+            <section className="space-y-3">
+              <Label className="text-sm font-semibold">Social</Label>
+              {canField("instagram") && (
+                <Input placeholder="Instagram URL" value={instagram} onChange={(e) => setInstagram(e.target.value)} inputMode="url" maxLength={500} />
+              )}
+              {canField("facebook") && (
+                <Input placeholder="Facebook URL" value={facebook} onChange={(e) => setFacebook(e.target.value)} inputMode="url" maxLength={500} />
+              )}
+              {canField("twitter") && (
+                <Input placeholder="Twitter/X URL" value={twitter} onChange={(e) => setTwitter(e.target.value)} inputMode="url" maxLength={500} />
+              )}
+            </section>
+          )}
+
+          {canField("amenities") && (
+            <section className="space-y-3">
+              <Label className="text-sm font-semibold">Amenities</Label>
+              <div className="grid grid-cols-1 gap-2">
+                {AMENITIES.map((a) => {
+                  const Icon = a.icon;
+                  return (
+                    <label key={a.key} className="flex items-center justify-between rounded-lg border p-2.5">
+                      <span className="flex items-center gap-2 text-sm">
+                        <Icon className="h-4 w-4 text-muted-foreground" />
+                        {a.label}
+                      </span>
+                      <Switch checked={!!amenities[a.key]} onCheckedChange={(v) => toggle(a.key, v)} />
+                    </label>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {canField("opening_hours") && (
+            <section className="space-y-2">
+              <Label className="text-sm font-semibold">Opening hours</Label>
+              <OpeningHoursEditor value={hours} onChange={setHours} />
+            </section>
+          )}
+
+          {canField("affiliateLinks") && (
+            <section className="space-y-2">
+              <Label className="text-sm font-semibold">Affiliate links</Label>
+              <AffiliateLinksEditor value={affiliateLinks} onChange={setAffiliateLinks} />
+            </section>
+          )}
+
+          <p className="rounded-md border bg-muted/40 p-2 text-[11px] text-muted-foreground">
+            Submitting as{" "}
+            <span className="font-medium text-foreground">{profile?.name ?? user?.email}</span>
+            . You'll be credited as the author on the shop profile.
+          </p>
         </div>
 
         <SheetFooter>
