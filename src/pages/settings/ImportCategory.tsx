@@ -22,6 +22,7 @@ const ImportCategory = () => {
   const schema = useMemo(() => (category ? getCategory(category) : undefined), [category]);
   const fileRef = useRef<HTMLInputElement>(null);
   const [rows, setRows] = useState<Record<string, string>[] | null>(null);
+  const [fileName, setFileName] = useState<string | undefined>();
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
 
@@ -38,6 +39,7 @@ const ImportCategory = () => {
     const text = await file.text();
     const parsed = parseCsv(text);
     setRows(parsed);
+    setFileName(file.name);
     setResult(null);
   };
 
@@ -45,7 +47,7 @@ const ImportCategory = () => {
     if (!rows) return;
     setBusy(true);
     try {
-      const res = await runImport(schema, rows);
+      const res = await runImport(schema, rows, { fileName });
       setResult(res);
       toast.success(`Imported ${res.inserted}, skipped ${res.skipped}`);
       if (res.errors.length) {
