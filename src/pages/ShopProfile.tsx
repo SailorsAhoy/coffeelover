@@ -22,6 +22,7 @@ import CloneAcrossTypeButton from "@/components/listings/CloneAcrossTypeButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { toast } from "sonner";
+import { getMyClaim, type ListingClaim } from "@/lib/claims";
 
 
 const ShopProfile = () => {
