@@ -29,7 +29,7 @@ export const useFieldPermissions = (category: FieldCategory) => {
         .select("category, role, field_key, can_edit")
         .eq("category", category);
       if (!active) return;
-      setRows((data as Row[]) ?? []);
+      setRows(((data as unknown) as Row[]) ?? []);
       setLoading(false);
     })();
     return () => {
