@@ -112,13 +112,11 @@ export async function markChatRead(chatId: string) {
 }
 
 export function subscribeChat(chatId: string, onChange: () => void) {
-  const ch = supabase
-    .channel(`chat:${chatId}`)
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "chat_messages", filter: `chat_id=eq.${chatId}` },
-      () => onChange(),
-    )
-    .subscribe();
+  const ch = supabase.channel(`chat:${chatId}:${Math.random().toString(36).slice(2)}`);
+  ch.on(
+    "postgres_changes" as any,
+    { event: "*", schema: "public", table: "chat_messages", filter: `chat_id=eq.${chatId}` },
+    () => onChange(),
+  ).subscribe();
   return () => { supabase.removeChannel(ch); };
 }

@@ -31,10 +31,9 @@ const Navigation = () => {
       if (!cancelled) setMsgUnread(chats.reduce((s, c) => s + c.unread, 0));
     };
     void refresh();
-    const ch = supabase
-      .channel(`msg-unread:${user.id}`)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages" }, () => { void refresh(); })
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "chat_participants", filter: `user_id=eq.${user.id}` }, () => { void refresh(); })
+    const ch = supabase.channel(`msg-unread:${user.id}:${Math.random().toString(36).slice(2)}`);
+    ch.on("postgres_changes" as any, { event: "INSERT", schema: "public", table: "chat_messages" }, () => { void refresh(); })
+      .on("postgres_changes" as any, { event: "UPDATE", schema: "public", table: "chat_participants", filter: `user_id=eq.${user.id}` }, () => { void refresh(); })
       .subscribe();
     return () => { cancelled = true; supabase.removeChannel(ch); };
   }, [user?.id]);
