@@ -36,9 +36,67 @@ const StarRow = ({ value, size = 4 }: { value: number; size?: number }) => (
 
 const CoffeeProduct = () => {
   const { id = "" } = useParams();
-  const product = findCoffee(id);
-  if (!product) return <Navigate to="/coffee" replace />;
-  const related = relatedCoffees(product);
+  const isUuid = UUID_RE.test(id);
+  const mockProduct = !isUuid ? findCoffee(id) : null;
+
+  const [dbProduct, setDbProduct] = useState<CoffeeItem | null>(null);
+  const [currencyCode, setCurrencyCode] = useState<string>("EUR");
+  const [imageUrl, setImageUrl] = useState<string>("/placeholder.svg");
+  const [affiliate, setAffiliate] = useState<string | null>(null);
+  const [loading, setLoading] = useState(isUuid);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    if (!isUuid) return;
+    (async () => {
+      const { data, error } = await supabase
+        .from("coffee_brands")
+        .select("id, name, description, origin_country, price_per_kg, currency, image_url, affiliate_link, coffee_type, roast_level, roaster_id, roasters(name)")
+        .eq("id", id)
+        .maybeSingle();
+      if (error || !data) { setNotFound(true); setLoading(false); return; }
+      const roasterName = (data as any).roasters?.name ?? "";
+      const displayName = stripRoasterPrefix(data.name, roasterName);
+      const roastMap: Record<string, CoffeeItem["roast"]> = { light: "Light", medium: "Medium", dark: "Dark", "medium-dark": "Dark", "medium-light": "Medium" };
+      const typeMap: Record<string, CoffeeItem["type"]> = { arabica: "Arabica", robusta: "Robusta", blend: "Blend" };
+      const roast = roastMap[(data.roast_level as string)?.toLowerCase?.()] ?? "Medium";
+      const type = typeMap[(data.coffee_type as string)?.toLowerCase?.()] ?? "Arabica";
+      setCurrencyCode(((data as any).currency || "EUR").toUpperCase());
+      setImageUrl(data.image_url || "/placeholder.svg");
+      setAffiliate(data.affiliate_link);
+      setDbProduct({
+        id: 0,
+        slug: data.id,
+        name: displayName,
+        roaster: roasterName,
+        type,
+        roast,
+        origin: data.origin_country || "—",
+        price: Number(data.price_per_kg ?? 0),
+        rating: 0,
+        tastingNotes: [],
+        description: data.description || `${displayName} from ${roasterName}.`,
+        brewRecommendation:
+          roast === "Light"
+            ? "Best as pour-over or AeroPress. Use 200°F water, 1:16 ratio, medium-fine grind."
+            : roast === "Medium"
+              ? "Versatile for drip and pour-over. 196°F water, 1:16 ratio, medium grind."
+              : "Excellent for espresso and moka pot. 9 bar, 1:2 ratio, fine grind.",
+        guides: [],
+        reviews: [],
+      });
+      setLoading(false);
+    })();
+  }, [id, isUuid]);
+
+  if (loading) return <div className="p-8 text-center text-muted-foreground">Loading…</div>;
+  if (isUuid && notFound) return <Navigate to="/coffee" replace />;
+  if (!isUuid && !mockProduct) return <Navigate to="/coffee" replace />;
+  const product = (mockProduct ?? dbProduct)!;
+  const related = mockProduct ? relatedCoffees(mockProduct) : [];
+  const priceUnit = isUuid ? "per kg" : "per 12oz bag";
+  const sym = currencySymbol(currencyCode);
+
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
