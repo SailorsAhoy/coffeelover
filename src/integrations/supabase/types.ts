@@ -1180,6 +1180,42 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          data: Json
+          id: string
+          link: string | null
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       preparation_guides: {
         Row: {
           brew_time_seconds: number | null
@@ -1974,6 +2010,30 @@ export type Database = {
           },
         ]
       }
+      user_blocks: {
+        Row: {
+          blocked_user_id: string
+          blocker_user_id: string
+          created_at: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          blocked_user_id: string
+          blocker_user_id: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          blocked_user_id?: string
+          blocker_user_id?: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
       user_coffee_products: {
         Row: {
           altitude_meters: number | null
@@ -2116,6 +2176,48 @@ export type Database = {
           },
         ]
       }
+      user_reports: {
+        Row: {
+          context_id: string | null
+          context_type: string | null
+          created_at: string
+          handled_by: string | null
+          id: string
+          reason: string
+          reported_user_id: string
+          reporter_user_id: string
+          resolution_note: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          context_id?: string | null
+          context_type?: string | null
+          created_at?: string
+          handled_by?: string | null
+          id?: string
+          reason: string
+          reported_user_id: string
+          reporter_user_id: string
+          resolution_note?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          context_id?: string | null
+          context_type?: string | null
+          created_at?: string
+          handled_by?: string | null
+          id?: string
+          reason?: string
+          reported_user_id?: string
+          reporter_user_id?: string
+          resolution_note?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -2183,6 +2285,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_or_create_dm: { Args: { other_user: string }; Returns: string }
       has_active_subscription: {
         Args: { _module: string; _user_id: string }
         Returns: boolean
@@ -2194,10 +2297,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_blocked_between: { Args: { _a: string; _b: string }; Returns: boolean }
       is_chat_participant: {
         Args: { _chat_id: string; _user_id: string }
         Returns: boolean
       }
+      mark_chat_read: { Args: { _chat_id: string }; Returns: undefined }
+      unread_notifications_count: { Args: never; Returns: number }
     }
     Enums: {
       app_role:

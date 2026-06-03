@@ -34,6 +34,7 @@ import CoffeeProduct from "./pages/CoffeeProduct";
 import NotFound from "./pages/NotFound";
 import SocialConnect from "./pages/SocialConnect";
 import MessagingBoard from "./pages/MessagingBoard";
+import Messages from "./pages/Messages";
 import Settings from "./pages/Settings";
 import ShopTypesManagement from "./pages/settings/ShopTypesManagement";
 import ShopManagement from "./pages/settings/ShopManagement";
@@ -94,6 +95,8 @@ const App = () => (
           <Route path="/library" element={<Library />} />
           <Route path="/social" element={<RequireAuth><SocialConnect /></RequireAuth>} />
           <Route path="/messaging" element={<RequireAuth><MessagingBoard /></RequireAuth>} />
+          <Route path="/messages" element={<RequireAuth><Messages /></RequireAuth>} />
+          <Route path="/messages/:chatId" element={<RequireAuth><Messages /></RequireAuth>} />
           <Route path="/settings" element={<RequireAuth roles={["admin"]}><Settings /></RequireAuth>}>
             <Route path="shop-types" element={<ShopTypesManagement />} />
             <Route path="shop-management" element={<ShopManagement />} />

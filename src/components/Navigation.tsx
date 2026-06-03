@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Coffee, Home, ShoppingBag, Store, BookOpen, Package, User, PenLine, GraduationCap, LogOut, LogIn, Settings, Briefcase, BookMarked, MessageSquare, Library, Bell, Users } from "lucide-react";
+import { Coffee, Home, ShoppingBag, Store, BookOpen, Package, User, PenLine, GraduationCap, LogOut, LogIn, Settings, Briefcase, BookMarked, MessageSquare, Library, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,11 +13,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import NotificationBell from "@/components/notifications/NotificationBell";
+import { listMyChats } from "@/lib/messaging";
+import { supabase } from "@/integrations/supabase/client";
 
 const Navigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, profile, hasRole, signOut } = useCurrentUser();
+  const { isAuthenticated, profile, hasRole, signOut, user } = useCurrentUser();
+  const [msgUnread, setMsgUnread] = useState(0);
+
+  useEffect(() => {
+    if (!user) { setMsgUnread(0); return; }
+    let cancelled = false;
+    const refresh = async () => {
+      const chats = await listMyChats();
+      if (!cancelled) setMsgUnread(chats.reduce((s, c) => s + c.unread, 0));
+    };
+    void refresh();
+    const ch = supabase
+      .channel(`msg-unread:${user.id}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages" }, () => { void refresh(); })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "chat_participants", filter: `user_id=eq.${user.id}` }, () => { void refresh(); })
+      .subscribe();
+    return () => { cancelled = true; supabase.removeChannel(ch); };
+  }, [user?.id]);
+
 
   const handleLogout = async () => {
     await signOut();
@@ -35,6 +57,7 @@ const Navigation = () => {
     { path: "/shops", icon: Store, label: "Shops" },
     { path: "/roasters", icon: Package, label: "Roasters" },
     { path: "/coffee", icon: Coffee, label: "Coffee" },
+    { path: "/messages", icon: MessageSquare, label: "Messages" },
     { path: "/guides", icon: BookOpen, label: "Guides" },
     { path: "/recipes", icon: BookOpen, label: "Recipes" },
     { path: "/equipment", icon: ShoppingBag, label: "Equipment" },
@@ -60,15 +83,16 @@ const Navigation = () => {
           </Link>
           
           <div className="flex items-center gap-4">
-            <Link to="/messaging" className="relative p-2 hover:bg-accent rounded-lg transition-colors">
+            <Link to="/messages" className="relative p-2 hover:bg-accent rounded-lg transition-colors">
               <MessageSquare className="w-5 h-5 text-foreground" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">3</Badge>
+              {msgUnread > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 min-w-5 px-1 flex items-center justify-center text-xs">
+                  {msgUnread > 99 ? "99+" : msgUnread}
+                </Badge>
+              )}
             </Link>
-            
-            <button className="relative p-2 hover:bg-accent rounded-lg transition-colors">
-              <Bell className="w-5 h-5 text-foreground" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">5</Badge>
-            </button>
+
+            <NotificationBell />
             
             {isAuthenticated ? (
               <DropdownMenu>
@@ -123,6 +147,19 @@ const Navigation = () => {
             <span className="text-lg font-bold">CoffeeLovers</span>
           </Link>
           
+          {isAuthenticated && (
+            <div className="flex items-center gap-1 ml-auto mr-2">
+              <Link to="/messages" className="relative p-1.5 hover:bg-accent rounded-lg">
+                <MessageSquare className="w-5 h-5" />
+                {msgUnread > 0 && (
+                  <Badge className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 text-[10px]">
+                    {msgUnread > 9 ? "9+" : msgUnread}
+                  </Badge>
+                )}
+              </Link>
+              <NotificationBell />
+            </div>
+          )}
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="outline-none">
