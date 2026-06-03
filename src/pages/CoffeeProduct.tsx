@@ -154,12 +154,21 @@ const CoffeeProduct = () => {
 
                 <div className="pt-4 border-t">
                   <div className="flex items-baseline gap-2 mb-4">
-                    <span className="text-4xl font-bold text-primary">${product.price}</span>
-                    <span className="text-sm text-muted-foreground">per 12oz bag</span>
+                    <span className="text-4xl font-bold text-primary">{sym}{product.price.toFixed(2)}</span>
+                    <span className="text-sm text-muted-foreground">{priceUnit}</span>
                   </div>
-                  <Button size="lg" className="w-full mb-3">
-                    <ShoppingCart className="w-4 h-4 mr-2" /> Add to Cart
-                  </Button>
+                  {affiliate ? (
+                    <a href={affiliate} target="_blank" rel="noopener noreferrer sponsored">
+                      <Button size="lg" className="w-full mb-3">
+                        <ShoppingCart className="w-4 h-4 mr-2" /> Buy from roaster
+                      </Button>
+                    </a>
+                  ) : (
+                    <Button size="lg" className="w-full mb-3">
+                      <ShoppingCart className="w-4 h-4 mr-2" /> Add to Cart
+                    </Button>
+                  )}
+
                   <div className="flex flex-col gap-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2"><Truck className="w-4 h-4" /> Free shipping on orders over $50</div>
                     <div className="flex items-center gap-2"><Shield className="w-4 h-4" /> Satisfaction guaranteed</div>
