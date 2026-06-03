@@ -165,16 +165,33 @@ const CoffeeProduct = () => {
                     <span className="text-4xl font-bold text-primary">{sym}{product.price.toFixed(2)}</span>
                     <span className="text-sm text-muted-foreground">{priceUnit}</span>
                   </div>
+                  <div className="mb-3">
+                    {isAvailable ? (
+                      <Badge className="bg-green-600 hover:bg-green-600 text-white"><CheckCircle2 className="w-3 h-3 mr-1" />In stock</Badge>
+                    ) : (
+                      <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" />Out of stock</Badge>
+                    )}
+                    {isUuid && servicedCountries && servicedCountries.length > 0 && (
+                      <span className="ml-2 text-xs text-muted-foreground">Ships to: {servicedCountries.join(", ")}</span>
+                    )}
+                  </div>
                   {affiliate ? (
                     <a href={affiliate} target="_blank" rel="noopener noreferrer sponsored">
-                      <Button size="lg" className="w-full mb-3">
+                      <Button size="lg" className="w-full mb-2" disabled={!isAvailable}>
                         <ShoppingCart className="w-4 h-4 mr-2" /> Buy from roaster
                       </Button>
                     </a>
                   ) : (
-                    <Button size="lg" className="w-full mb-3">
+                    <Button size="lg" className="w-full mb-2" disabled={!isAvailable}>
                       <ShoppingCart className="w-4 h-4 mr-2" /> Add to Cart
                     </Button>
+                  )}
+                  {productUrl && (
+                    <a href={productUrl} target="_blank" rel="noopener noreferrer" className="block mb-3">
+                      <Button size="sm" variant="outline" className="w-full">
+                        <ExternalLink className="w-4 h-4 mr-2" /> View product page
+                      </Button>
+                    </a>
                   )}
 
                   <div className="flex flex-col gap-2 text-sm text-muted-foreground">
