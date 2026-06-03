@@ -37,6 +37,7 @@ import MessagingBoard from "./pages/MessagingBoard";
 import Settings from "./pages/Settings";
 import ShopTypesManagement from "./pages/settings/ShopTypesManagement";
 import ShopManagement from "./pages/settings/ShopManagement";
+import FieldPermissions from "./pages/settings/FieldPermissions";
 import UserManagement from "./pages/settings/UserManagement";
 import ContentManagement from "./pages/settings/ContentManagement";
 import SystemSettings from "./pages/settings/SystemSettings";
@@ -94,6 +95,7 @@ const App = () => (
           <Route path="/settings" element={<RequireAuth roles={["admin"]}><Settings /></RequireAuth>}>
             <Route path="shop-types" element={<ShopTypesManagement />} />
             <Route path="shop-management" element={<ShopManagement />} />
+            <Route path="field-permissions" element={<FieldPermissions />} />
             <Route path="user-management" element={<UserManagement />} />
             <Route path="content-management" element={<ContentManagement />} />
             <Route path="system-settings" element={<SystemSettings />} />
