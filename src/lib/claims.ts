@@ -32,7 +32,7 @@ export async function getActiveClaim(type: ListingType, listingId: string) {
     .eq("listing_id", listingId)
     .in("status", ["pending", "approved"])
     .maybeSingle();
-  return (data as ListingClaim | null) ?? null;
+  return ((data as unknown) as ListingClaim | null) ?? null;
 }
 
 export async function getOwner(type: ListingType, listingId: string): Promise<string | null> {
