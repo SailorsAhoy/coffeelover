@@ -871,6 +871,48 @@ export type Database = {
           },
         ]
       }
+      import_audit_log: {
+        Row: {
+          actor_email: string | null
+          actor_user_id: string
+          category: string
+          created_at: string
+          error_preview: Json | null
+          file_name: string | null
+          id: string
+          inserted_count: number
+          skipped_count: number
+          table_name: string
+          total_rows: number
+        }
+        Insert: {
+          actor_email?: string | null
+          actor_user_id: string
+          category: string
+          created_at?: string
+          error_preview?: Json | null
+          file_name?: string | null
+          id?: string
+          inserted_count?: number
+          skipped_count?: number
+          table_name: string
+          total_rows?: number
+        }
+        Update: {
+          actor_email?: string | null
+          actor_user_id?: string
+          category?: string
+          created_at?: string
+          error_preview?: Json | null
+          file_name?: string | null
+          id?: string
+          inserted_count?: number
+          skipped_count?: number
+          table_name?: string
+          total_rows?: number
+        }
+        Relationships: []
+      }
       instructors: {
         Row: {
           academy_id: string | null
