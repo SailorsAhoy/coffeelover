@@ -31,11 +31,26 @@ const ShopProfile = () => {
   const [shop, setShop] = useState<Shop | undefined>(() =>
     getShopWithOverrides(id ?? "1"),
   );
+  const [meta, setMeta] = useState<{ id: string; owner_user_id: string | null; linked_roaster_id: string | null } | null>(null);
 
   useEffect(() => {
     setShop(getShopWithOverrides(id ?? "1"));
     return subscribeShopOverrides(() => setShop(getShopWithOverrides(id ?? "1")));
   }, [id]);
+
+  useEffect(() => {
+    if (!shop?.reviewableId) return;
+    (async () => {
+      const { data } = await supabase
+        .from("shops")
+        .select("id, owner_user_id, linked_roaster_id")
+        .eq("id", shop.reviewableId)
+        .maybeSingle();
+      setMeta((data as any) ?? null);
+    })();
+  }, [shop?.reviewableId]);
+
+
 
   if (!shop) {
     return (
