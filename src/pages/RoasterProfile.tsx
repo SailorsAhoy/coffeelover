@@ -87,6 +87,20 @@ const RoasterProfile = () => {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <ClaimButton type="roaster" listingId={roaster.id} requiredModule="roaster_listing" />
+            {myClaim && (
+              <Badge
+                variant="outline"
+                className={
+                  myClaim.status === "pending"
+                    ? "border-amber-500/50 bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                    : myClaim.status === "approved"
+                      ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                      : "border-destructive/50 bg-destructive/15 text-destructive"
+                }
+              >
+                Claim {myClaim.status}
+              </Badge>
+            )}
             {roaster.linked_shop_id && <LinkedListingButton kind="shop" id={roaster.linked_shop_id} />}
             <CloneAcrossTypeButton source="roaster" sourceId={roaster.id} ownerUserId={roaster.owner_user_id} alreadyLinkedId={roaster.linked_shop_id} />
           </div>
