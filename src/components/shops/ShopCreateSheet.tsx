@@ -416,7 +416,7 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
             )}
           </section>
 
-          {isOwner && (
+          {showMedia && (
             <section className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label className="text-sm font-semibold">Banner</Label>
