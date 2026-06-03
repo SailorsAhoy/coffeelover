@@ -49,8 +49,9 @@ export default function ClaimButton({ type, listingId, requiredModule }: Props) 
     );
   }
 
-  const allowed = hasRole("admin") || !requiredModule || hasModule(requiredModule);
-  if (!allowed) return null;
+  // Any signed-in user can request a claim; admins review and approve.
+  void requiredModule;
+  void hasModule;
 
   const onSubmit = async () => {
     setBusy(true);
