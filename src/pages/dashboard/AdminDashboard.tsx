@@ -56,6 +56,7 @@ const AdminDashboard = () => {
           { label: "Bulk Imports", value: "CSV", icon: Upload, to: "/settings/imports" },
         ]}
       />
+      <ClaimsAdminPanel />
       <ActivityLog sinceISO={since} />
     </DashboardLayout>
   );
