@@ -41,6 +41,8 @@ import FieldPermissions from "./pages/settings/FieldPermissions";
 import UserManagement from "./pages/settings/UserManagement";
 import ContentManagement from "./pages/settings/ContentManagement";
 import SystemSettings from "./pages/settings/SystemSettings";
+import Imports from "./pages/settings/Imports";
+import ImportCategory from "./pages/settings/ImportCategory";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import UserDashboard from "./pages/dashboard/UserDashboard";
@@ -99,6 +101,8 @@ const App = () => (
             <Route path="user-management" element={<UserManagement />} />
             <Route path="content-management" element={<ContentManagement />} />
             <Route path="system-settings" element={<SystemSettings />} />
+            <Route path="imports" element={<Imports />} />
+            <Route path="imports/:category" element={<ImportCategory />} />
           </Route>
           <Route path="/shop/:id" element={<ShopProfile />} />
           <Route path="/roaster/:id" element={<RoasterProfile />} />
