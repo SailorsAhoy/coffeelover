@@ -54,13 +54,21 @@ export const AddressAutocomplete = ({
         );
         const data = await res.json();
         setItems(
-          (data as any[]).map((d) => ({
-            display: d.display_name as string,
-            lat: parseFloat(d.lat),
-            lng: parseFloat(d.lon),
-            country: d.address?.country,
-            countryCode: d.address?.country_code?.toUpperCase(),
-          })),
+          (data as any[]).map((d) => {
+            const a = d.address ?? {};
+            const street = [a.road, a.house_number].filter(Boolean).join(" ");
+            const city = a.city || a.town || a.village || a.municipality || a.county || "";
+            const cityLine = [a.postcode, city].filter(Boolean).join(" ");
+            const cc = a.country_code?.toUpperCase();
+            const compact = [street, cityLine, cc].filter(Boolean).join(", ");
+            return {
+              display: compact || (d.display_name as string),
+              lat: parseFloat(d.lat),
+              lng: parseFloat(d.lon),
+              country: a.country,
+              countryCode: cc,
+            };
+          }),
         );
         setOpen(true);
       } catch (e) {
