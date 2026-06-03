@@ -46,6 +46,7 @@ const RoasterProfile = () => {
   const [roaster, setRoaster] = useState<Roaster | null>(null);
   const [coffees, setCoffees] = useState<Coffee[]>([]);
   const [loading, setLoading] = useState(true);
+  const [myClaim, setMyClaim] = useState<ListingClaim | null>(null);
 
   useEffect(() => {
     if (!id) return;
