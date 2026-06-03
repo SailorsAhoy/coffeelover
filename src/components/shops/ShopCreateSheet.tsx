@@ -182,24 +182,19 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
   };
 
   const submit = () => {
-    const schema = isOwner ? ownerSchema : baseSchema;
-    const parsed = schema.safeParse(
-      isOwner
-        ? {
-            name,
-            description,
-            bio,
-            address,
-            phone,
-            whatsapp,
-            email,
-            website,
-            instagram,
-            facebook,
-            twitter,
-          }
-        : { name, description, bio, address },
-    );
+    const parsed = ownerSchema.safeParse({
+      name,
+      description,
+      bio,
+      address,
+      phone,
+      whatsapp,
+      email,
+      website,
+      instagram,
+      facebook,
+      twitter,
+    });
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
       return;
@@ -212,9 +207,8 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
       toast.error("Address is missing country or coordinates — re-pick a suggestion");
       return;
     }
-    // Validate affiliate links (owner-only)
     const cleanLinks: AffiliateLink[] = [];
-    if (isOwner) {
+    if (canField("affiliateLinks")) {
       for (const l of affiliateLinks) {
         if (!l.label && !l.url) continue;
         const r = affiliateLinkSchema.safeParse(l);
@@ -245,20 +239,16 @@ export const ShopCreateSheet = ({ trigger }: Props) => {
         pendingReview: true,
         createdBy: user?.id,
         createdByName: profile?.name ?? user?.email ?? undefined,
-        createdByRole: isOwner ? "owner" : "user",
-        banner: isOwner ? banner : undefined,
-        avatar: isOwner ? avatar : undefined,
-        ...(isOwner
-          ? {
-              phone: phone.trim() || undefined,
-              whatsapp: whatsapp.trim() || undefined,
-              email: email.trim() || undefined,
-              website: website.trim() || undefined,
-              instagram: instagram.trim() || undefined,
-              facebook: facebook.trim() || undefined,
-              twitter: twitter.trim() || undefined,
-            }
-          : {}),
+        createdByRole: hasRole("admin") ? "admin" : isOwner ? "owner" : "user",
+        banner: canField("banner") ? banner : undefined,
+        avatar: canField("avatar") ? avatar : undefined,
+        phone: canField("phone") ? phone.trim() || undefined : undefined,
+        whatsapp: canField("whatsapp") ? whatsapp.trim() || undefined : undefined,
+        email: canField("email") ? email.trim() || undefined : undefined,
+        website: canField("website") ? website.trim() || undefined : undefined,
+        instagram: canField("instagram") ? instagram.trim() || undefined : undefined,
+        facebook: canField("facebook") ? facebook.trim() || undefined : undefined,
+        twitter: canField("twitter") ? twitter.trim() || undefined : undefined,
       });
     } catch (err) {
       toast.error((err as Error).message || "Could not save shop");
