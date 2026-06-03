@@ -387,6 +387,7 @@ export type Database = {
           affiliate_link: string | null
           coffee_type: Database["public"]["Enums"]["coffee_type"] | null
           created_at: string
+          currency: string
           description: string | null
           id: string
           image_url: string | null
@@ -403,6 +404,7 @@ export type Database = {
           affiliate_link?: string | null
           coffee_type?: Database["public"]["Enums"]["coffee_type"] | null
           created_at?: string
+          currency?: string
           description?: string | null
           id?: string
           image_url?: string | null
@@ -419,6 +421,7 @@ export type Database = {
           affiliate_link?: string | null
           coffee_type?: Database["public"]["Enums"]["coffee_type"] | null
           created_at?: string
+          currency?: string
           description?: string | null
           id?: string
           image_url?: string | null
