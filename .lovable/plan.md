@@ -1,66 +1,83 @@
-# Plan: Ownership claims, Roaster parity, and Shop↔Roaster linking
+## Goal
+Add private messaging, social-graph actions (follow/friend/block/report) and a notification bell, gated to registered users, with realtime updates.
 
-This plan covers three related pieces: a generic listing-claim workflow, bringing Roaster UX up to parity with Shops, and a bidirectional link/clone between Shops and Roasters.
+## What already exists
+- `chats`, `chat_participants`, `chat_messages` with RLS + `is_chat_participant()` helper
+- `follows`, `friendships` (status: pending/accepted/blocked) with RLS
+- `has_role()` for admin checks
 
-## 1. Generic listing-claim workflow
+## New database objects
 
-Add a single table that handles claims across all listing types (shops, roasters, manufacturers, academies, service_companies).
+### Tables
+- `user_blocks` (blocker_user_id, blocked_user_id, reason?) — dedicated, simpler than abusing `friendships.status='blocked'`. Trigger prevents blocking any user with the `admin` role.
+- `user_reports` (reporter_user_id, reported_user_id, context_type, context_id, reason, status: open/reviewing/resolved/dismissed, handled_by, resolution_note) — admins see all; shop/roaster owners see reports tied to their own chats.
+- `notifications` (user_id, type, title, body, link, data jsonb, read_at, created_at) — single inbox for: `message`, `follow`, `friend_request`, `friend_accepted`, `claim_update`, `report_update`, `system`.
 
-**Table `listing_claims`**
-- `listing_type` (text): one of `shop | roaster | manufacturer | academy | service_company`
-- `listing_id` (uuid)
-- `claimant_user_id` (uuid, references auth users)
-- `status` (text): `pending | approved | rejected`
-- `requested_role` (text): `admin | user` — the author classification the claimant wants assigned
-- `reviewed_by`, `reviewed_at`, `note`
-- Unique partial index: only one `pending` or `approved` claim per (listing_type, listing_id)
+### Functions / triggers
+- `get_or_create_dm(other_user uuid)` SECURITY DEFINER → returns chat_id; refuses if either side blocked the other; reuses existing 1:1 chat.
+- `mark_chat_read(chat_id uuid)` updates `chat_participants.last_read_at` and clears related `notifications`.
+- `notify_on_message` trigger on `chat_messages` → inserts a `notifications` row for every other participant (skipping blockers).
+- `notify_on_follow`, `notify_on_friend_request`, `notify_on_friend_accept` triggers.
+- `prevent_block_admin` trigger on `user_blocks`.
+- `prevent_messaging_blocked` trigger on `chat_messages` — blocks send if any participant pair is blocked in a DM.
 
-**Rules**
-- Any authed user with the matching subscription module (`shop_listing`, `roaster_listing`, etc.) or `admin` role can submit a claim.
-- Admin gets a notification (row in `activity_log` with `entity_type='listing_claim'`) and a new "Claims" section in `AdminDashboard`.
-- On approve: set the listing's `owner_user_id` (new column on `shops`, `roasters`, `manufacturers`, `academies`, `service_companies`) to the claimant; close any other pending claims; refuse new claims while owner is set.
-- On reject: free the listing for future claims.
+### RLS
+- `user_blocks`: owner only (SELECT/INSERT/DELETE where `auth.uid() = blocker_user_id`).
+- `user_reports`: reporter sees own; admins see all; shop/roaster owners can see reports tied to chats they participate in (via `is_chat_participant`); only admins update status.
+- `notifications`: recipient SELECT/UPDATE/DELETE; system inserts via triggers (security-definer functions).
 
-**UI**
-- Profile dashboard ("My listings" card): user picks listing type + searches by name → submits claim with desired author role.
-- Admin dashboard: pending claims list with Approve / Reject buttons.
+### Realtime
+- Add `chat_messages`, `chats`, `chat_participants`, `notifications` to `supabase_realtime` publication.
 
-## 2. Roaster parity with Shops
+## Frontend
 
-Mirror the Shop UI/data model for Roasters.
+### Library
+- `src/lib/messaging.ts` — `openDmWith(userId)`, `listMyChats()`, `sendMessage()`, `markRead()`, realtime subscribe helpers.
+- `src/lib/social.ts` — `follow/unfollow`, `requestFriend/accept/reject`, `block/unblock`, `reportUser()`.
+- `src/lib/notifications.ts` — `listMyNotifications()`, `unreadCount()`, `markRead()`, realtime channel.
 
-- **Page `/roasters/:id`** (RoasterProfile): two tabs
-  1. **Overview** — banner, address, hours, amenities, gallery, reviews, affiliate links (same components as `ShopProfile`)
-  2. **Coffees (beans)** — replaces the Shop "Staff" tab; lists `coffee_brands` for that roaster
-- Reuse `AddressAutocomplete`, `OpeningHoursEditor`, `AffiliateLinksEditor`, `ShopGallery`, `ShopReviews`, `ShopBanner`, `MapPreview` — extracted to be entity-agnostic where they aren't already.
-- Add a `RoasterCreateSheet` / `RoasterEditSheet` mirroring the Shop versions, minus staff.
-- `roasters` table already has 23 columns; add any missing parity columns (`opening_hours jsonb`, `amenities text[]`, `affiliate_links jsonb`) via migration.
+### Components
+- `NotificationBell` in the top bar → popover with unread list, per-item link; auto-clears on read.
+- `MessageThread`, `ChatList`, `NewDmButton` in a new `/messages` route.
+- `UserActions` (Follow / Friend / Message / Block / Report buttons) — used on user profiles, social map, messaging board.
+- Profile dashboard gets new tabs (added to existing `DashboardLayout` for every role):
+  - **Friends** (accepted + pending sent/received with accept/reject)
+  - **Followers** & **Following**
+  - **Blocked**
+  - **Messages** (inbox preview, deep-links to `/messages/:chatId`)
+- Admin dashboard: `ReportsPanel` to triage `user_reports`.
+- Shop/roaster owner dashboards: scoped reports list for their own threads.
 
-## 3. Shop ↔ Roaster linking + cloning
+### Routing / nav
+- New `/messages` and `/messages/:chatId` (auth-gated via `RequireAuth`).
+- Bell badge + Messages icon in `Navigation` / `AppSidebar`.
+- Anonymous users see "Sign in to message" instead of action buttons.
 
-- Add `linked_roaster_id uuid` to `shops` and `linked_shop_id uuid` to `roasters` (each references the other; nullable; unique).
-- "Visit roaster"/"Visit shop" button shown on the profile page when a link exists.
-- Admin or verified owner can "Clone as roaster" (from a Shop) / "Clone as shop" (from a Roaster):
-  - Copies common fields (name, address, lat/lng, hours, amenities, gallery refs, banner) into a new row in the opposite table.
-  - When cloning Roaster → Shop, sets `shops.shop_type = 'roaster'`.
-  - Sets the `linked_*` columns on both sides.
-  - The new entry inherits ownership (`owner_user_id`) from the source.
+## Technical details
 
-## Technical notes
+```text
+notifications
+├─ trigger on chat_messages (after insert)
+├─ trigger on follows (after insert)
+├─ trigger on friendships (after insert / status=accepted)
+└─ inserted from claims approve/reject (extend existing claims.ts)
 
-- One migration for: `listing_claims` table + grants + RLS, `owner_user_id` on the five listing tables, `linked_roaster_id` / `linked_shop_id`, plus the missing roaster parity columns.
-- RLS: claim INSERT requires `auth.uid() = claimant_user_id` and no existing pending/approved claim; UPDATE restricted to `has_role(auth.uid(),'admin')`.
-- New `useListingClaim(listingType, listingId)` hook returns `{ status, claim, submitClaim, isOwner }` and powers the Claim button on each profile page.
-- Frontend file additions:
-  - `src/lib/claims.ts` — claim helpers
-  - `src/components/listings/ClaimButton.tsx`
-  - `src/components/listings/CloneAcrossTypeButton.tsx`
-  - `src/pages/RoasterProfile.tsx` — extend with tabs + edit/create
-  - `src/components/roasters/RoasterCreateSheet.tsx`, `RoasterEditSheet.tsx`
-  - Admin claims panel: extend `AdminDashboard.tsx`
-  - Profile claims panel: extend `Profile.tsx` (or `UserDashboard.tsx`)
+realtime
+└─ channels: notifications:user_id=eq.<uid>, chat:<chatId>
+```
 
-## Out of scope
+- `get_or_create_dm` uses a CTE: find chat where `is_group=false` and both users are sole participants → reuse; else create chat + 2 participants in one txn.
+- Unread badge per chat = `count(chat_messages) where created_at > last_read_at and sender ≠ me`.
+- Blocking is symmetric for messaging: trigger checks `EXISTS user_blocks where (blocker, blocked) in either direction among DM participants`.
+- Admins are exempt from block via `prevent_block_admin` trigger that raises if target has admin role.
+- Notification cleanup: `mark_chat_read(chat_id)` sets `read_at = now()` on all `notifications` with `type='message' and data->>'chat_id' = chat_id`.
 
-- Email notifications for claim status (in-app `activity_log` only).
-- Manufacturer / Academy / Service-company UI parity — claims data model supports them, but only Shop + Roaster get full UI in this pass.
+## Rollout
+1. Migration: new tables, triggers, functions, realtime publication, GRANTs.
+2. Lib + hooks.
+3. Bell + Messages page + dashboard tabs.
+4. Wire user-action buttons on profile pages, social map, messaging board.
+5. Admin/owner report panels.
+6. Manual smoke test.
+
+Approve and I'll execute step by step.
