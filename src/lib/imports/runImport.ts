@@ -61,6 +61,7 @@ const resolveParent = async (
 export const runImport = async (
   schema: CategorySchema,
   rows: Record<string, string>[],
+  meta?: { fileName?: string },
 ): Promise<ImportResult> => {
   const result: ImportResult = { inserted: 0, skipped: 0, errors: [] };
   const toInsert: Record<string, unknown>[] = [];
@@ -124,14 +125,50 @@ export const runImport = async (
     }
   }
 
+  // Audit log
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("import_audit_log" as any).insert({
+        actor_user_id: user.id,
+        actor_email: user.email ?? null,
+        category: schema.key,
+        table_name: schema.table,
+        file_name: meta?.fileName ?? null,
+        total_rows: rows.length,
+        inserted_count: result.inserted,
+        skipped_count: result.skipped,
+        error_preview: result.errors.slice(0, 10),
+      });
+    }
+  } catch {
+    // non-fatal
+  }
+
   return result;
 };
 
-/** Build a CSV template from schema. */
+/** Build a CSV template from schema (headers + one example row). */
 export const buildTemplate = (schema: CategorySchema): string => {
   const headers = schema.fields.map((f) => f.key);
   const example = schema.fields.map((f) => f.example ?? "");
   return Papa.unparse([headers, example]);
+};
+
+/** Build a small sample CSV (3 example rows) demonstrating valid data. */
+export const buildSample = (schema: CategorySchema): string => {
+  const headers = schema.fields.map((f) => f.key);
+  const rows = [0, 1, 2].map((i) =>
+    schema.fields.map((f) => {
+      const ex = f.example ?? "";
+      if (!ex) return "";
+      if (f.required && (f.type === undefined || f.type === "string") && !f.parent) {
+        return `${ex} ${i + 1}`;
+      }
+      return ex;
+    }),
+  );
+  return Papa.unparse([headers, ...rows]);
 };
 
 export const buildErrorsCsv = (errors: ImportResult["errors"]): string => {
