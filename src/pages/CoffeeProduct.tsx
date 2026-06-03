@@ -224,15 +224,39 @@ const CoffeeProduct = () => {
               <CardContent><p className="text-muted-foreground leading-relaxed">{product.brewRecommendation}</p></CardContent>
             </Card>
             <Card>
-              <CardHeader><CardTitle className="text-lg">Related Guides</CardTitle></CardHeader>
-              <CardContent className="flex flex-wrap gap-2">
-                {product.guides.map((g) => (
-                  <Link key={g.id} to={g.url}>
-                    <Badge variant="outline" className="cursor-pointer hover:bg-accent">{g.title}</Badge>
-                  </Link>
-                ))}
+              <CardHeader><CardTitle className="text-lg">Brewing recipes</CardTitle><CardDescription>Popular ways to brew this coffee</CardDescription></CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {[
+                    { title: "V60 Pour Over", time: "4 min", ratio: "1:16" },
+                    { title: "AeroPress", time: "2 min", ratio: "1:15" },
+                    { title: "French Press", time: "5 min", ratio: "1:15" },
+                    { title: "Espresso", time: "30 s", ratio: "1:2" },
+                    { title: "Moka Pot", time: "5 min", ratio: "1:10" },
+                    { title: "Cold Brew", time: "12 h", ratio: "1:8" },
+                  ].map((r) => (
+                    <Link key={r.title} to="/recipes" className="block">
+                      <div className="rounded-md border p-3 hover:bg-accent transition-colors">
+                        <p className="font-semibold text-sm">{r.title}</p>
+                        <p className="text-xs text-muted-foreground">{r.time} · ratio {r.ratio}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               </CardContent>
             </Card>
+            {product.guides.length > 0 && (
+              <Card>
+                <CardHeader><CardTitle className="text-lg">Related Guides</CardTitle></CardHeader>
+                <CardContent className="flex flex-wrap gap-2">
+                  {product.guides.map((g) => (
+                    <Link key={g.id} to={g.url}>
+                      <Badge variant="outline" className="cursor-pointer hover:bg-accent">{g.title}</Badge>
+                    </Link>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="reviews" className="mt-6">
