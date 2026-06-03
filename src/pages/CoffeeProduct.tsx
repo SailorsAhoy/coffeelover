@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
-import { Star, ShoppingCart, Truck, Shield, Coffee, ArrowLeft } from "lucide-react";
+import { Star, ShoppingCart, Truck, Shield, Coffee, ArrowLeft, ExternalLink, CheckCircle2, XCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
