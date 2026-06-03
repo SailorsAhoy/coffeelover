@@ -191,10 +191,12 @@ const RoasterProfile = () => {
           <TabsContent value="reviews" className="mt-3">
             <ShopReviews
               reviewableId={roaster.id}
-              shopId={roaster.id as unknown as number}
+              reviewableType="roaster"
+              shopId={roaster.id}
               fallbackRating={roaster.base_rating ?? 0}
               fallbackCount={roaster.base_review_count ?? 0}
             />
+
           </TabsContent>
         </Tabs>
       </div>
