@@ -10,6 +10,7 @@ import { User, Mail, Phone, MapPin } from "lucide-react";
 import { RolesCard } from "@/components/profile/RolesCard";
 import { SubscriptionsCard } from "@/components/profile/SubscriptionsCard";
 import MyClaimsPanel from "@/components/listings/MyClaimsPanel";
+import SocialTabs from "@/components/profile/SocialTabs";
 
 const Profile = () => {
   const [user, setUser] = useState<any>(null);
@@ -146,6 +147,7 @@ const Profile = () => {
 
         <RolesCard />
         <SubscriptionsCard />
+        <SocialTabs />
         <MyClaimsPanel />
 
 

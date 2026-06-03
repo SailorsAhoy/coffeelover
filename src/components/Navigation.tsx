@@ -57,6 +57,7 @@ const Navigation = () => {
     { path: "/shops", icon: Store, label: "Shops" },
     { path: "/roasters", icon: Package, label: "Roasters" },
     { path: "/coffee", icon: Coffee, label: "Coffee" },
+    { path: "/messages", icon: MessageSquare, label: "Messages" },
     { path: "/guides", icon: BookOpen, label: "Guides" },
     { path: "/recipes", icon: BookOpen, label: "Recipes" },
     { path: "/equipment", icon: ShoppingBag, label: "Equipment" },
