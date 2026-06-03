@@ -395,10 +395,14 @@ export type Database = {
           name: string
           origin_country: string | null
           price_per_kg: number | null
+          process: string | null
+          product_url: string | null
           roast_level: Database["public"]["Enums"]["roast_level"] | null
           roaster_id: string | null
+          serviced_countries: string[] | null
           shop_id: string | null
           updated_at: string
+          variety: string | null
         }
         Insert: {
           affiliate_link?: string | null
@@ -412,10 +416,14 @@ export type Database = {
           name: string
           origin_country?: string | null
           price_per_kg?: number | null
+          process?: string | null
+          product_url?: string | null
           roast_level?: Database["public"]["Enums"]["roast_level"] | null
           roaster_id?: string | null
+          serviced_countries?: string[] | null
           shop_id?: string | null
           updated_at?: string
+          variety?: string | null
         }
         Update: {
           affiliate_link?: string | null
@@ -429,10 +437,14 @@ export type Database = {
           name?: string
           origin_country?: string | null
           price_per_kg?: number | null
+          process?: string | null
+          product_url?: string | null
           roast_level?: Database["public"]["Enums"]["roast_level"] | null
           roaster_id?: string | null
+          serviced_countries?: string[] | null
           shop_id?: string | null
           updated_at?: string
+          variety?: string | null
         }
         Relationships: [
           {
