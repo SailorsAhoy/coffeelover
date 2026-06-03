@@ -82,15 +82,16 @@ const Navigation = () => {
           </Link>
           
           <div className="flex items-center gap-4">
-            <Link to="/messaging" className="relative p-2 hover:bg-accent rounded-lg transition-colors">
+            <Link to="/messages" className="relative p-2 hover:bg-accent rounded-lg transition-colors">
               <MessageSquare className="w-5 h-5 text-foreground" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">3</Badge>
+              {msgUnread > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 min-w-5 px-1 flex items-center justify-center text-xs">
+                  {msgUnread > 99 ? "99+" : msgUnread}
+                </Badge>
+              )}
             </Link>
-            
-            <button className="relative p-2 hover:bg-accent rounded-lg transition-colors">
-              <Bell className="w-5 h-5 text-foreground" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">5</Badge>
-            </button>
+
+            <NotificationBell />
             
             {isAuthenticated ? (
               <DropdownMenu>
