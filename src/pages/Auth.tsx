@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,8 +13,14 @@ import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
 
 type SignupIntent = "user" | "pro_user" | "company" | "teacher";
 
+const isSafeInternalPath = (p: unknown): p is string =>
+  typeof p === "string" && p.startsWith("/") && !p.startsWith("//");
+
 const Auth = () => {
-  const [tab, setTab] = useState<"login" | "signup">("login");
+  const location = useLocation();
+  const state = (location.state ?? {}) as { from?: string; mode?: "login" | "signup" };
+  const redirectTo = isSafeInternalPath(state.from) ? state.from : "/";
+  const [tab, setTab] = useState<"login" | "signup">(state.mode === "signup" ? "signup" : "login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -25,9 +31,9 @@ const Auth = () => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) navigate("/");
+      if (session) navigate(redirectTo, { replace: true });
     });
-  }, [navigate]);
+  }, [navigate, redirectTo]);
 
   const assignExtraRole = async (userId: string, role: SignupIntent) => {
     if (role === "user") return;
@@ -42,7 +48,7 @@ const Auth = () => {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       toast({ title: "Welcome back!" });
-      navigate("/");
+      navigate(redirectTo, { replace: true });
     } catch (err: any) {
       toast({ title: "Sign in failed", description: err.message, variant: "destructive" });
     } finally {
@@ -58,7 +64,7 @@ const Auth = () => {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: `${window.location.origin}${redirectTo}`,
           data: { name },
         },
       });
@@ -66,6 +72,12 @@ const Auth = () => {
       if (data.user) {
         // Give RLS a moment to see the trigger-created row before adding extra role
         setTimeout(() => assignExtraRole(data.user!.id, intent), 500);
+      }
+      // If session is returned immediately (auto-confirm), route to intended page.
+      if (data.session) {
+        toast({ title: "Welcome!" });
+        navigate(redirectTo, { replace: true });
+        return;
       }
       toast({ title: "Account created", description: "Check your email to confirm, then sign in." });
       setTab("login");
@@ -185,7 +197,7 @@ const Auth = () => {
             </div>
           </div>
 
-          <SocialLoginButtons />
+          <SocialLoginButtons redirectTo={redirectTo} />
         </CardContent>
       </Card>
     </div>
