@@ -48,7 +48,7 @@ const Auth = () => {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       toast({ title: "Welcome back!" });
-      navigate("/");
+      navigate(redirectTo, { replace: true });
     } catch (err: any) {
       toast({ title: "Sign in failed", description: err.message, variant: "destructive" });
     } finally {
@@ -64,7 +64,7 @@ const Auth = () => {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: `${window.location.origin}${redirectTo}`,
           data: { name },
         },
       });
@@ -72,6 +72,12 @@ const Auth = () => {
       if (data.user) {
         // Give RLS a moment to see the trigger-created row before adding extra role
         setTimeout(() => assignExtraRole(data.user!.id, intent), 500);
+      }
+      // If session is returned immediately (auto-confirm), route to intended page.
+      if (data.session) {
+        toast({ title: "Welcome!" });
+        navigate(redirectTo, { replace: true });
+        return;
       }
       toast({ title: "Account created", description: "Check your email to confirm, then sign in." });
       setTab("login");
