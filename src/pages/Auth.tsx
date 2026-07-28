@@ -197,7 +197,7 @@ const Auth = () => {
             </div>
           </div>
 
-          <SocialLoginButtons />
+          <SocialLoginButtons redirectTo={redirectTo} />
         </CardContent>
       </Card>
     </div>
