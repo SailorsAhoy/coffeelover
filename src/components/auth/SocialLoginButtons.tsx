@@ -34,7 +34,7 @@ const ProviderIcon = ({ provider }: { provider: Provider }) => {
   );
 };
 
-export const SocialLoginButtons = () => {
+export const SocialLoginButtons = ({ redirectTo = "/" }: { redirectTo?: string }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState<Provider | null>(null);
@@ -50,7 +50,7 @@ export const SocialLoginButtons = () => {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}${redirectTo}`,
             data: { name },
           },
         });
@@ -62,7 +62,7 @@ export const SocialLoginButtons = () => {
         title: `Signed in with ${provider} (demo)`,
         description: "Real OAuth provider not yet configured — using a shared demo account.",
       });
-      navigate("/");
+      navigate(redirectTo, { replace: true });
     } catch (e: any) {
       toast({
         title: "Demo sign-in failed",
