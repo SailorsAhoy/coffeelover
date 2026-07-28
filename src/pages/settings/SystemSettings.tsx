@@ -4,8 +4,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { useAppSetting } from "@/hooks/useAppSetting";
+import { toast } from "@/hooks/use-toast";
 
 const SystemSettings = () => {
+  const { value: gatedPreview, loading: gatedLoading, update: updateGated } = useAppSetting<boolean>(
+    "gated_preview_enabled",
+    false,
+  );
+
+  const onToggleGated = async (next: boolean) => {
+    const { error } = await updateGated(next);
+    if (error) toast({ title: "Failed to update", description: error.message, variant: "destructive" });
+    else toast({ title: next ? "Gated preview enabled" : "Gated preview disabled" });
+  };
   return (
     <div className="space-y-6">
       <Card>
@@ -34,8 +46,21 @@ const SystemSettings = () => {
           </div>
 
           <div className="space-y-4 pt-6 border-t">
+            <h3 className="text-lg font-semibold">Access Control</h3>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Gated Preview Mode</Label>
+                <p className="text-sm text-muted-foreground">
+                  Redirect signed-out visitors from menu pages to a landing page explaining the feature.
+                </p>
+              </div>
+              <Switch checked={!!gatedPreview} disabled={gatedLoading} onCheckedChange={onToggleGated} />
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-6 border-t">
             <h3 className="text-lg font-semibold">Feature Toggles</h3>
-            
+
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label>User Registration</Label>
