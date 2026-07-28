@@ -52,6 +52,8 @@ import ShopOwnerDashboard from "./pages/dashboard/ShopOwnerDashboard";
 import RoasteryDashboard from "./pages/dashboard/RoasteryDashboard";
 import ManufacturerDashboard from "./pages/dashboard/ManufacturerDashboard";
 import SupplierDashboard from "./pages/dashboard/SupplierDashboard";
+import Welcome from "./pages/Welcome";
+import { GatedRoute } from "./components/GatedRoute";
 
 const queryClient = new QueryClient();
 
@@ -74,25 +76,26 @@ const App = () => (
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/shops" element={<Shops />} />
-                  <Route path="/roasters" element={<Roasters />} />
-                  <Route path="/coffee" element={<Coffee />} />
-                  <Route path="/guides" element={<Guides />} />
-                  <Route path="/recipes" element={<Recipes />} />
-                  <Route path="/equipment" element={<Equipment />} />
-                  <Route path="/equipment/brand/:slug" element={<EquipmentDetail kind="brand" />} />
-                  <Route path="/equipment/machine/:slug" element={<EquipmentDetail kind="machine" />} />
-                  <Route path="/equipment/accessory/:slug" element={<EquipmentDetail kind="accessory" />} />
+                  <Route path="/welcome/:slug" element={<Welcome />} />
+                  <Route path="/shops" element={<GatedRoute slug="shops"><Shops /></GatedRoute>} />
+                  <Route path="/roasters" element={<GatedRoute slug="roasters"><Roasters /></GatedRoute>} />
+                  <Route path="/coffee" element={<GatedRoute slug="coffee"><Coffee /></GatedRoute>} />
+                  <Route path="/guides" element={<GatedRoute slug="guides"><Guides /></GatedRoute>} />
+                  <Route path="/recipes" element={<GatedRoute slug="recipes"><Recipes /></GatedRoute>} />
+                  <Route path="/equipment" element={<GatedRoute slug="equipment"><Equipment /></GatedRoute>} />
+                  <Route path="/equipment/brand/:slug" element={<GatedRoute slug="equipment"><EquipmentDetail kind="brand" /></GatedRoute>} />
+                  <Route path="/equipment/machine/:slug" element={<GatedRoute slug="equipment"><EquipmentDetail kind="machine" /></GatedRoute>} />
+                  <Route path="/equipment/accessory/:slug" element={<GatedRoute slug="equipment"><EquipmentDetail kind="accessory" /></GatedRoute>} />
                   <Route path="/journal" element={<RequireAuth><Journal /></RequireAuth>} />
                   <Route path="/journal/products/new" element={<RequireAuth><JournalProductNew /></RequireAuth>} />
                   <Route path="/journal/brews/new" element={<RequireAuth><JournalBrewNew /></RequireAuth>} />
-                  <Route path="/academy" element={<Academy />} />
-                  <Route path="/academy/:id" element={<AcademyDetail />} />
+                  <Route path="/academy" element={<GatedRoute slug="academy"><Academy /></GatedRoute>} />
+                  <Route path="/academy/:id" element={<GatedRoute slug="academy"><AcademyDetail /></GatedRoute>} />
                   <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
-                  <Route path="/jobs" element={<Jobs />} />
-                  <Route path="/wiki" element={<Wiki />} />
-                  <Route path="/forum" element={<Forum />} />
-          <Route path="/library" element={<Library />} />
+                  <Route path="/jobs" element={<GatedRoute slug="jobs"><Jobs /></GatedRoute>} />
+                  <Route path="/wiki" element={<GatedRoute slug="wiki"><Wiki /></GatedRoute>} />
+                  <Route path="/forum" element={<GatedRoute slug="forum"><Forum /></GatedRoute>} />
+          <Route path="/library" element={<GatedRoute slug="library"><Library /></GatedRoute>} />
           <Route path="/social" element={<RequireAuth><SocialConnect /></RequireAuth>} />
           <Route path="/messaging" element={<RequireAuth><MessagingBoard /></RequireAuth>} />
           <Route path="/messages" element={<RequireAuth><Messages /></RequireAuth>} />
