@@ -110,9 +110,9 @@ const App = () => (
             <Route path="imports" element={<Imports />} />
             <Route path="imports/:category" element={<ImportCategory />} />
           </Route>
-          <Route path="/shop/:id" element={<ShopProfile />} />
-          <Route path="/roaster/:id" element={<RoasterProfile />} />
-          <Route path="/coffee/:id" element={<CoffeeProduct />} />
+          <Route path="/shop/:id" element={<GatedRoute slug="shops"><ShopProfile /></GatedRoute>} />
+          <Route path="/roaster/:id" element={<GatedRoute slug="roasters"><RoasterProfile /></GatedRoute>} />
+          <Route path="/coffee/:id" element={<GatedRoute slug="coffee"><CoffeeProduct /></GatedRoute>} />
           <Route path="/dashboard" element={<RequireAuth><DashboardHome /></RequireAuth>} />
           <Route path="/dashboard/admin" element={<RequireAuth roles={["admin"]}><AdminDashboard /></RequireAuth>} />
           <Route path="/dashboard/user" element={<RequireAuth><UserDashboard /></RequireAuth>} />
