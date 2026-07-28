@@ -2338,6 +2338,10 @@ export type Database = {
         Args: { _chat_id: string; _user_id: string }
         Returns: boolean
       }
+      is_group_member: {
+        Args: { _group_id: string; _user_id: string }
+        Returns: boolean
+      }
       mark_chat_read: { Args: { _chat_id: string }; Returns: undefined }
       unread_notifications_count: { Args: never; Returns: number }
     }
