@@ -102,10 +102,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "accessories_manufacturer_id_fkey"
+            columns: ["manufacturer_id"]
+            isOneToOne: false
+            referencedRelation: "manufacturers_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "accessories_service_company_id_fkey"
             columns: ["service_company_id"]
             isOneToOne: false
             referencedRelation: "service_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "accessories_service_company_id_fkey"
+            columns: ["service_company_id"]
+            isOneToOne: false
+            referencedRelation: "service_companies_public"
             referencedColumns: ["id"]
           },
         ]
@@ -728,6 +742,13 @@ export type Database = {
             referencedRelation: "instructors"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "courses_instructor_id_fkey"
+            columns: ["instructor_id"]
+            isOneToOne: false
+            referencedRelation: "instructors_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       field_permissions: {
@@ -1118,10 +1139,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "machines_manufacturer_id_fkey"
+            columns: ["manufacturer_id"]
+            isOneToOne: false
+            referencedRelation: "manufacturers_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "machines_service_company_id_fkey"
             columns: ["service_company_id"]
             isOneToOne: false
             referencedRelation: "service_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "machines_service_company_id_fkey"
+            columns: ["service_company_id"]
+            isOneToOne: false
+            referencedRelation: "service_companies_public"
             referencedColumns: ["id"]
           },
         ]
@@ -2336,7 +2371,322 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      coffee_shop_profiles_public: {
+        Row: {
+          address_id: string | null
+          business_name: string | null
+          created_at: string | null
+          description: string | null
+          facebook_url: string | null
+          has_bakery: boolean | null
+          has_outdoor_seating: boolean | null
+          has_wifi: boolean | null
+          id: string | null
+          instagram_url: string | null
+          logo_url: string | null
+          opening_hours: Json | null
+          shop_type_id: string | null
+          twitter_url: string | null
+          updated_at: string | null
+          user_id: string | null
+          website_url: string | null
+        }
+        Insert: {
+          address_id?: string | null
+          business_name?: string | null
+          created_at?: string | null
+          description?: string | null
+          facebook_url?: string | null
+          has_bakery?: boolean | null
+          has_outdoor_seating?: boolean | null
+          has_wifi?: boolean | null
+          id?: string | null
+          instagram_url?: string | null
+          logo_url?: string | null
+          opening_hours?: Json | null
+          shop_type_id?: string | null
+          twitter_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          address_id?: string | null
+          business_name?: string | null
+          created_at?: string | null
+          description?: string | null
+          facebook_url?: string | null
+          has_bakery?: boolean | null
+          has_outdoor_seating?: boolean | null
+          has_wifi?: boolean | null
+          id?: string | null
+          instagram_url?: string | null
+          logo_url?: string | null
+          opening_hours?: Json | null
+          shop_type_id?: string | null
+          twitter_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coffee_shop_profiles_address_id_fkey"
+            columns: ["address_id"]
+            isOneToOne: false
+            referencedRelation: "addresses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coffee_shop_profiles_shop_type_id_fkey"
+            columns: ["shop_type_id"]
+            isOneToOne: false
+            referencedRelation: "shop_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      instructors_public: {
+        Row: {
+          academy_id: string | null
+          bio: string | null
+          created_at: string | null
+          id: string | null
+          name: string | null
+          photo_url: string | null
+          slug: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          academy_id?: string | null
+          bio?: string | null
+          created_at?: string | null
+          id?: string | null
+          name?: string | null
+          photo_url?: string | null
+          slug?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          academy_id?: string | null
+          bio?: string | null
+          created_at?: string | null
+          id?: string | null
+          name?: string | null
+          photo_url?: string | null
+          slug?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "instructors_academy_id_fkey"
+            columns: ["academy_id"]
+            isOneToOne: false
+            referencedRelation: "academies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      manufacturers_public: {
+        Row: {
+          business_name: string | null
+          country: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          logo_url: string | null
+          owner_user_id: string | null
+          slug: string | null
+          updated_at: string | null
+          website_url: string | null
+        }
+        Insert: {
+          business_name?: string | null
+          country?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          logo_url?: string | null
+          owner_user_id?: string | null
+          slug?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          business_name?: string | null
+          country?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          logo_url?: string | null
+          owner_user_id?: string | null
+          slug?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      producer_profiles_public: {
+        Row: {
+          business_name: string | null
+          certifications: string[] | null
+          created_at: string | null
+          description: string | null
+          farm_size_hectares: number | null
+          id: string | null
+          logo_url: string | null
+          updated_at: string | null
+          user_id: string | null
+          website_url: string | null
+        }
+        Insert: {
+          business_name?: string | null
+          certifications?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          farm_size_hectares?: number | null
+          id?: string | null
+          logo_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          business_name?: string | null
+          certifications?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          farm_size_hectares?: number | null
+          id?: string | null
+          logo_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      profiles_public: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          id: string | null
+          name: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id?: string | null
+          name?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id?: string | null
+          name?: string | null
+        }
+        Relationships: []
+      }
+      roaster_profiles_public: {
+        Row: {
+          business_name: string | null
+          created_at: string | null
+          description: string | null
+          facebook_url: string | null
+          has_discount_coupons: boolean | null
+          id: string | null
+          instagram_url: string | null
+          logo_url: string | null
+          offers_free_shipping: boolean | null
+          shop_type_id: string | null
+          twitter_url: string | null
+          updated_at: string | null
+          user_id: string | null
+          website_url: string | null
+        }
+        Insert: {
+          business_name?: string | null
+          created_at?: string | null
+          description?: string | null
+          facebook_url?: string | null
+          has_discount_coupons?: boolean | null
+          id?: string | null
+          instagram_url?: string | null
+          logo_url?: string | null
+          offers_free_shipping?: boolean | null
+          shop_type_id?: string | null
+          twitter_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          business_name?: string | null
+          created_at?: string | null
+          description?: string | null
+          facebook_url?: string | null
+          has_discount_coupons?: boolean | null
+          id?: string | null
+          instagram_url?: string | null
+          logo_url?: string | null
+          offers_free_shipping?: boolean | null
+          shop_type_id?: string | null
+          twitter_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roaster_profiles_shop_type_id_fkey"
+            columns: ["shop_type_id"]
+            isOneToOne: false
+            referencedRelation: "shop_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_companies_public: {
+        Row: {
+          business_name: string | null
+          category: string | null
+          country: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          logo_url: string | null
+          owner_user_id: string | null
+          slug: string | null
+          updated_at: string | null
+          website_url: string | null
+        }
+        Insert: {
+          business_name?: string | null
+          category?: string | null
+          country?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          logo_url?: string | null
+          owner_user_id?: string | null
+          slug?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          business_name?: string | null
+          category?: string | null
+          country?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          logo_url?: string | null
+          owner_user_id?: string | null
+          slug?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_or_create_dm: { Args: { other_user: string }; Returns: string }
@@ -2364,6 +2714,13 @@ export type Database = {
       is_group_member: {
         Args: { _group_id: string; _user_id: string }
         Returns: boolean
+      }
+      lookup_profile: {
+        Args: { _q: string }
+        Returns: {
+          id: string
+          name: string
+        }[]
       }
       mark_chat_read: { Args: { _chat_id: string }; Returns: undefined }
       unread_notifications_count: { Args: never; Returns: number }

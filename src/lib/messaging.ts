@@ -50,7 +50,7 @@ export async function listMyChats(): Promise<ChatSummary[]> {
 
   const userIds = Array.from(new Set((allParts ?? []).map((p: any) => p.user_id)));
   const { data: profiles } = await (supabase as any)
-    .from("profiles")
+    .from("profiles_public" as any)
     .select("id, name, avatar_url")
     .in("id", userIds);
   const profMap = Object.fromEntries((profiles ?? []).map((p: any) => [p.id, p]));

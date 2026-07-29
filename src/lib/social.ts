@@ -35,14 +35,14 @@ export async function listFollowers(userId: string) {
   const { data: raw } = await (supabase as any).from("follows").select("follower_user_id").eq("followee_user_id", userId);
   const ids = (raw ?? []).map((r: any) => r.follower_user_id);
   if (!ids.length) return [];
-  const { data: profs } = await (supabase as any).from("profiles").select("id, name, avatar_url").in("id", ids);
+  const { data: profs } = await (supabase as any).from("profiles_public").select("id, name, avatar_url").in("id", ids);
   return (profs ?? []).map((p: any) => ({ follower_user_id: p.id, profiles: p }));
 }
 export async function listFollowing(userId: string) {
   const { data: raw } = await (supabase as any).from("follows").select("followee_user_id").eq("follower_user_id", userId);
   const ids = (raw ?? []).map((r: any) => r.followee_user_id);
   if (!ids.length) return [];
-  const { data: profs } = await (supabase as any).from("profiles").select("id, name, avatar_url").in("id", ids);
+  const { data: profs } = await (supabase as any).from("profiles_public").select("id, name, avatar_url").in("id", ids);
   return (profs ?? []).map((p: any) => ({ followee_user_id: p.id, profiles: p }));
 }
 
@@ -139,6 +139,6 @@ export async function updateReportStatus(id: string, status: "open" | "reviewing
 
 // ----- Profile lookup
 export async function getProfileLite(userId: string) {
-  const { data } = await (supabase as any).from("profiles").select("id, name, avatar_url, email").eq("id", userId).maybeSingle();
-  return data as { id: string; name: string | null; avatar_url: string | null; email: string | null } | null;
+  const { data } = await (supabase as any).from("profiles_public").select("id, name, avatar_url").eq("id", userId).maybeSingle();
+  return data as { id: string; name: string | null; avatar_url: string | null } | null;
 }
