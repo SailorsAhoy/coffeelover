@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Phone, MapPin } from "lucide-react";
 import { RolesCard } from "@/components/profile/RolesCard";
+import EmailPreferencesCard from "@/components/profile/EmailPreferencesCard";
 import { SubscriptionsCard } from "@/components/profile/SubscriptionsCard";
 import MyClaimsPanel from "@/components/listings/MyClaimsPanel";
 import SocialTabs from "@/components/profile/SocialTabs";
@@ -145,6 +146,7 @@ const Profile = () => {
           </CardContent>
         </Card>
 
+        <EmailPreferencesCard />
         <RolesCard />
         <SubscriptionsCard />
         <SocialTabs />

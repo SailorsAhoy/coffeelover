@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Coffee } from "lucide-react";
 import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
@@ -25,6 +26,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [intent, setIntent] = useState<SignupIntent>("user");
+  const [noPromo, setNoPromo] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -65,7 +67,7 @@ const Auth = () => {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}${redirectTo}`,
-          data: { name },
+          data: { name, marketing_opt_out: noPromo },
         },
       });
       if (error) throw error;
@@ -181,6 +183,20 @@ const Auth = () => {
                     ))}
                   </RadioGroup>
                 </div>
+                <Label
+                  htmlFor="signup-no-promo"
+                  className="flex items-start gap-2 border border-input rounded-md p-3 cursor-pointer hover:bg-accent"
+                >
+                  <Checkbox
+                    id="signup-no-promo"
+                    checked={noPromo}
+                    onCheckedChange={(v) => setNoPromo(v === true)}
+                    className="mt-0.5"
+                  />
+                  <span className="text-sm font-normal leading-snug">
+                    I do not want to receive promotional emails of any kind
+                  </span>
+                </Label>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "Loading..." : "Create account"}
                 </Button>
