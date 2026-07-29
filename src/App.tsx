@@ -16,6 +16,7 @@ import Roasters from "./pages/Roasters";
 import Coffee from "./pages/Coffee";
 import Guides from "./pages/Guides";
 import Recipes from "./pages/Recipes";
+import RecipeDetail from "./pages/RecipeDetail";
 import Equipment from "./pages/Equipment";
 import EquipmentDetail from "./pages/EquipmentDetail";
 import Journal from "./pages/Journal";
