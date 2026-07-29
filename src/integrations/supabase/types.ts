@@ -2340,6 +2340,7 @@ export type Database = {
     }
     Functions: {
       get_or_create_dm: { Args: { other_user: string }; Returns: string }
+      get_public_app_setting: { Args: { _key: string }; Returns: Json }
       has_active_subscription: {
         Args: { _module: string; _user_id: string }
         Returns: boolean
