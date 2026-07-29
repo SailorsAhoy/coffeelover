@@ -25,7 +25,8 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [intent, setIntent] = useState<SignupIntent>("user");
+  const [noPromo, setNoPromo] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
