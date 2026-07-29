@@ -181,6 +181,20 @@ const Auth = () => {
                     ))}
                   </RadioGroup>
                 </div>
+                <Label
+                  htmlFor="signup-no-promo"
+                  className="flex items-start gap-2 border border-input rounded-md p-3 cursor-pointer hover:bg-accent"
+                >
+                  <Checkbox
+                    id="signup-no-promo"
+                    checked={noPromo}
+                    onCheckedChange={(v) => setNoPromo(v === true)}
+                    className="mt-0.5"
+                  />
+                  <span className="text-sm font-normal leading-snug">
+                    I do not want to receive promotional emails of any kind
+                  </span>
+                </Label>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "Loading..." : "Create account"}
                 </Button>
