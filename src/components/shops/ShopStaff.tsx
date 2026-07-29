@@ -166,7 +166,7 @@ export const ShopStaff = ({ shopId }: Props) => {
 
     const payload = {
       shop_id: String(shopId),
-      name: profile.name || profile.email || "Staff member",
+      name: profile.name || "Staff member",
       role: parsed.data.role,
       bio: parsed.data.bio || null,
       photo_path,
