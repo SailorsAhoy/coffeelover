@@ -67,7 +67,7 @@ const Auth = () => {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}${redirectTo}`,
-          data: { name },
+          data: { name, marketing_opt_out: noPromo },
         },
       });
       if (error) throw error;
