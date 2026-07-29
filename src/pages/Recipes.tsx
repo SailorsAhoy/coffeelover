@@ -330,7 +330,7 @@ const Recipes = () => {
                     </div>
                     <div className="pt-2 border-t space-y-3">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Link to={`/profile/${recipe.created_by ?? ""}`} className="shrink-0">
+                        <Link to={`/social?user=${recipe.created_by ?? ""}`} className="shrink-0">
                           <Avatar className="w-6 h-6">
                             {recipe.author?.avatar_url && (
                               <AvatarImage src={recipe.author.avatar_url} alt={recipe.author?.name ?? "User"} />
@@ -342,7 +342,7 @@ const Recipes = () => {
                         </Link>
                         <span>
                           Added by{" "}
-                          <Link to={`/profile/${recipe.created_by ?? ""}`} className="font-medium hover:underline">
+                          <Link to={`/social?user=${recipe.created_by ?? ""}`} className="font-medium hover:underline">
                             {recipe.author?.name ?? "A coffee lover"}
                           </Link>{" "}
                           on {formatDate(recipe.created_at)}

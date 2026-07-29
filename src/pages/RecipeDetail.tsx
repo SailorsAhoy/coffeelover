@@ -102,7 +102,7 @@ const RecipeDetail = () => {
           {recipe.description && <p className="text-muted-foreground">{recipe.description}</p>}
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to={`/profile/${recipe.created_by ?? ""}`}>
+            <Link to={`/social?user=${recipe.created_by ?? ""}`}>
               <Avatar className="w-8 h-8">
                 {recipe.author?.avatar_url && (
                   <AvatarImage src={recipe.author.avatar_url} alt={recipe.author?.name ?? "User"} />
@@ -112,7 +112,7 @@ const RecipeDetail = () => {
             </Link>
             <span>
               Added by{" "}
-              <Link to={`/profile/${recipe.created_by ?? ""}`} className="font-medium hover:underline">
+              <Link to={`/social?user=${recipe.created_by ?? ""}`} className="font-medium hover:underline">
                 {recipe.author?.name ?? "A coffee lover"}
               </Link>{" "}
               on {formatDate(recipe.created_at)}
