@@ -83,6 +83,8 @@ const App = () => (
                   <Route path="/coffee" element={<GatedRoute slug="coffee"><Coffee /></GatedRoute>} />
                   <Route path="/guides" element={<GatedRoute slug="guides"><Guides /></GatedRoute>} />
                   <Route path="/recipes" element={<GatedRoute slug="recipes"><Recipes /></GatedRoute>} />
+                  <Route path="/recipes/:id" element={<GatedRoute slug="recipes"><RecipeDetail /></GatedRoute>} />
+
                   <Route path="/equipment" element={<GatedRoute slug="equipment"><Equipment /></GatedRoute>} />
                   <Route path="/equipment/brand/:slug" element={<GatedRoute slug="equipment"><EquipmentDetail kind="brand" /></GatedRoute>} />
                   <Route path="/equipment/machine/:slug" element={<GatedRoute slug="equipment"><EquipmentDetail kind="machine" /></GatedRoute>} />
