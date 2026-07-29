@@ -125,10 +125,7 @@ export const ShopStaff = ({ shopId }: Props) => {
 
     // Resolve identifier (email or uuid) to a registered profile
     const id = parsed.data.identifier;
-    const base = supabase.from("profiles").select("id, name, email");
-    const { data: matches, error: lookupErr } = UUID_RE.test(id)
-      ? await base.eq("id", id).limit(1)
-      : await base.ilike("email", id).limit(1);
+    const { data: matches, error: lookupErr } = await (supabase as any).rpc("lookup_profile", { _q: id });
     if (lookupErr) {
       toast.error("Could not verify user");
       setSaving(false);

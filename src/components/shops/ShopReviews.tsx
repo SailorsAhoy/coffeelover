@@ -112,7 +112,7 @@ export const ShopReviews = ({
     if (list.length) {
       const ids = Array.from(new Set(list.map((r) => r.user_id)));
       const { data: profs } = await supabase
-        .from("profiles")
+        .from("profiles_public" as any)
         .select("id, name, avatar_url")
         .in("id", ids);
       const map = new Map((profs ?? []).map((p: any) => [p.id, p]));

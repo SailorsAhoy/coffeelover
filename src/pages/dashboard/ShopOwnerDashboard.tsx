@@ -80,7 +80,8 @@ const ShopOwnerDashboard = () => {
     if (!v) return;
     let newId = v;
     if (!UUID_RE.test(v)) {
-      const { data: prof } = await supabase.from("profiles").select("id").eq("email", v).maybeSingle();
+      const { data: found } = await (supabase as any).rpc("lookup_profile", { _q: v });
+      const prof = found?.[0];
       if (!prof?.id) return toast({ title: "No user found for that email", variant: "destructive" });
       newId = prof.id;
     }
@@ -98,15 +99,10 @@ const ShopOwnerDashboard = () => {
     if (!newStaff.shop_id || !id) return;
     let userId: string | null = null;
     let name = "";
-    if (UUID_RE.test(id)) {
-      const { data: prof } = await supabase.from("profiles").select("id, name, email").eq("id", id).maybeSingle();
-      if (!prof) return toast({ title: "User not found", variant: "destructive" });
-      userId = prof.id; name = prof.name || prof.email || "";
-    } else {
-      const { data: prof } = await supabase.from("profiles").select("id, name, email").eq("email", id).maybeSingle();
-      if (!prof) return toast({ title: "User not found", variant: "destructive" });
-      userId = prof.id; name = prof.name || prof.email || "";
-    }
+    const { data: found } = await (supabase as any).rpc("lookup_profile", { _q: id });
+    const prof = found?.[0];
+    if (!prof) return toast({ title: "User not found", variant: "destructive" });
+    userId = prof.id; name = prof.name || "";
     const { error } = await supabase.from("shop_staff").insert({
       shop_id: newStaff.shop_id, staff_user_id: userId, name, role: newStaff.role, managed_by: user.id,
     });

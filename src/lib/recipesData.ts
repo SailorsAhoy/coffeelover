@@ -128,7 +128,7 @@ export const fetchRecipe = async (id: string): Promise<Recipe | null> => {
 const attachAuthors = async (recipes: Recipe[]) => {
   const ids = Array.from(new Set(recipes.map((r) => r.created_by).filter(Boolean))) as string[];
   if (!ids.length) return;
-  const { data } = await supabase.from("profiles").select("id, name, avatar_url").in("id", ids);
+  const { data } = await supabase.from("profiles_public" as any).select("id, name, avatar_url").in("id", ids);
   const byId = new Map((data ?? []).map((p: any) => [p.id, p as RecipeAuthor]));
   recipes.forEach((r) => {
     r.author = r.created_by ? byId.get(r.created_by) ?? null : null;
