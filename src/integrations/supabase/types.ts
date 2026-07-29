@@ -1371,46 +1371,64 @@ export type Database = {
       }
       recipes: {
         Row: {
+          beverage_type: string | null
+          brew_method: string | null
           coffee_brand_id: string | null
           created_at: string
           created_by: string | null
           description: string | null
+          difficulty: string | null
+          flavors: string[]
           id: string
           image_url: string | null
           ingredients: Json
           instructions: string
           prep_time_minutes: number | null
           servings: number | null
+          temperature: string | null
           title: string
           updated_at: string
+          views_count: number
         }
         Insert: {
+          beverage_type?: string | null
+          brew_method?: string | null
           coffee_brand_id?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
+          difficulty?: string | null
+          flavors?: string[]
           id?: string
           image_url?: string | null
           ingredients: Json
           instructions: string
           prep_time_minutes?: number | null
           servings?: number | null
+          temperature?: string | null
           title: string
           updated_at?: string
+          views_count?: number
         }
         Update: {
+          beverage_type?: string | null
+          brew_method?: string | null
           coffee_brand_id?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
+          difficulty?: string | null
+          flavors?: string[]
           id?: string
           image_url?: string | null
           ingredients?: Json
           instructions?: string
           prep_time_minutes?: number | null
           servings?: number | null
+          temperature?: string | null
           title?: string
           updated_at?: string
+          views_count?: number
         }
         Relationships: [
           {
@@ -2332,6 +2350,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_recipe_views: {
+        Args: { _recipe_id: string }
+        Returns: undefined
       }
       is_blocked_between: { Args: { _a: string; _b: string }; Returns: boolean }
       is_chat_participant: {

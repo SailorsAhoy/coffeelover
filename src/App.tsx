@@ -16,6 +16,7 @@ import Roasters from "./pages/Roasters";
 import Coffee from "./pages/Coffee";
 import Guides from "./pages/Guides";
 import Recipes from "./pages/Recipes";
+import RecipeDetail from "./pages/RecipeDetail";
 import Equipment from "./pages/Equipment";
 import EquipmentDetail from "./pages/EquipmentDetail";
 import Journal from "./pages/Journal";
@@ -82,6 +83,8 @@ const App = () => (
                   <Route path="/coffee" element={<GatedRoute slug="coffee"><Coffee /></GatedRoute>} />
                   <Route path="/guides" element={<GatedRoute slug="guides"><Guides /></GatedRoute>} />
                   <Route path="/recipes" element={<GatedRoute slug="recipes"><Recipes /></GatedRoute>} />
+                  <Route path="/recipes/:id" element={<GatedRoute slug="recipes"><RecipeDetail /></GatedRoute>} />
+
                   <Route path="/equipment" element={<GatedRoute slug="equipment"><Equipment /></GatedRoute>} />
                   <Route path="/equipment/brand/:slug" element={<GatedRoute slug="equipment"><EquipmentDetail kind="brand" /></GatedRoute>} />
                   <Route path="/equipment/machine/:slug" element={<GatedRoute slug="equipment"><EquipmentDetail kind="machine" /></GatedRoute>} />
