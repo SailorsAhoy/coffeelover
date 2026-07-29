@@ -1,0 +1,1 @@
+REVOKE SELECT ON public.producer_profiles FROM anon;
