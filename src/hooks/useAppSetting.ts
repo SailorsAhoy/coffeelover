@@ -7,16 +7,26 @@ export function useAppSetting<T = unknown>(key: string, defaultValue: T) {
 
   useEffect(() => {
     let alive = true;
+    // Reads go through a security-definer function that only exposes
+    // whitelisted public keys. Admin-only settings stay unreadable.
     (supabase as any)
-      .from("app_settings")
-      .select("value")
-      .eq("key", key)
-      .maybeSingle()
-      .then(({ data }: any) => {
+      .rpc("get_public_app_setting", { _key: key })
+      .then(async ({ data, error }: any) => {
+        let next = data;
+        if (error || next === null || next === undefined) {
+          // Admins (and only admins) can still read the row directly.
+          const { data: row } = await (supabase as any)
+            .from("app_settings")
+            .select("value")
+            .eq("key", key)
+            .maybeSingle();
+          next = row?.value;
+        }
         if (!alive) return;
-        if (data?.value !== undefined && data?.value !== null) setValue(data.value as T);
+        if (next !== undefined && next !== null) setValue(next as T);
         setLoading(false);
       });
+
 
     const channel = supabase
       .channel(`app_settings:${key}:${Math.random().toString(36).slice(2)}`)
