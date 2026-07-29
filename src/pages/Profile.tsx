@@ -145,6 +145,7 @@ const Profile = () => {
           </CardContent>
         </Card>
 
+        <EmailPreferencesCard />
         <RolesCard />
         <SubscriptionsCard />
         <SocialTabs />
