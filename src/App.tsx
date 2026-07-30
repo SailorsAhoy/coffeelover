@@ -55,6 +55,7 @@ import ManufacturerDashboard from "./pages/dashboard/ManufacturerDashboard";
 import SupplierDashboard from "./pages/dashboard/SupplierDashboard";
 import Welcome from "./pages/Welcome";
 import { GatedRoute } from "./components/GatedRoute";
+import SiteFooter from "./components/SiteFooter";
 
 const queryClient = new QueryClient();
 
@@ -127,6 +128,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
+              <SiteFooter />
             </div>
           </div>
         </SidebarProvider>

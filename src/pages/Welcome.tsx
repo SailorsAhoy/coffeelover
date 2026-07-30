@@ -1,5 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
 import { getWelcomeContent } from "@/lib/welcomeContent";
 
@@ -32,7 +34,40 @@ const Welcome = () => {
             </li>
           ))}
         </ul>
+
+        {/* Example listing preview */}
+        <div className="mt-7 max-w-sm mx-auto">
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2 text-center">
+            {content.example.kicker}
+          </p>
+          <Card className="relative overflow-hidden">
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-lg bg-primary/10 shrink-0">
+                  <Icon className="w-5 h-5 text-primary" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-base font-semibold text-foreground truncate">{content.example.name}</h2>
+                  <p className="text-xs text-muted-foreground">{content.example.meta}</p>
+                </div>
+              </div>
+              <p className="text-sm text-foreground/80 mt-3">{content.example.description}</p>
+              <div className="flex flex-wrap gap-1.5 mt-3">
+                {content.example.tags.map((t) => (
+                  <Badge key={t} variant="secondary" className="text-[11px] font-normal">{t}</Badge>
+                ))}
+              </div>
+              {content.example.highlight && (
+                <p className="text-sm font-semibold text-primary mt-3">{content.example.highlight}</p>
+              )}
+            </CardContent>
+          </Card>
+          <p className="text-xs text-muted-foreground text-center mt-2">
+            Sign up free to see every {content.title.toLowerCase()} listing.
+          </p>
+        </div>
       </div>
+
 
       {/* Sticky CTA — anchored to bottom on every viewport, with safe-area padding */}
       <div
