@@ -2,7 +2,8 @@ import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Check, Star, Lock, ArrowRight } from "lucide-react";
 import { getWelcomeContent } from "@/lib/welcomeContent";
 
 const Welcome = () => {
@@ -10,6 +11,7 @@ const Welcome = () => {
   const content = getWelcomeContent(slug);
   const Icon = content.icon;
   const from = `/${content.slug}`;
+  const ex = content.example;
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-br from-coffee-cream via-background to-coffee-light">
@@ -35,39 +37,116 @@ const Welcome = () => {
           ))}
         </ul>
 
-        {/* Example listing preview */}
-        <div className="mt-7 max-w-sm mx-auto">
-          <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-2 text-center">
-            {content.example.kicker}
+        {/* Full example listing */}
+        <div className="mt-9">
+          <p className="text-[11px] uppercase tracking-widest text-muted-foreground mb-2 text-center">
+            {ex.kicker}
           </p>
-          <Card className="relative overflow-hidden">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-primary/10 shrink-0">
-                  <Icon className="w-5 h-5 text-primary" />
+
+          <Card className="overflow-hidden">
+            {/* Banner */}
+            <div className="h-24 bg-gradient-to-r from-primary/80 via-primary/50 to-secondary" />
+
+            <CardContent className="p-5 -mt-10">
+              {/* Avatar + title */}
+              <div className="flex items-end gap-3">
+                <div className="p-3 rounded-2xl bg-card border border-border shadow-sm shrink-0">
+                  <Icon className="w-7 h-7 text-primary" />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <h2 className="text-base font-semibold text-foreground truncate">{content.example.name}</h2>
-                  <p className="text-xs text-muted-foreground">{content.example.meta}</p>
+                <div className="min-w-0 pb-1">
+                  <h2 className="text-lg font-bold text-foreground leading-tight truncate">{ex.name}</h2>
+                  <p className="text-xs text-muted-foreground">{ex.meta}</p>
                 </div>
               </div>
-              <p className="text-sm text-foreground/80 mt-3">{content.example.description}</p>
+
+              {ex.highlight && (
+                <p className="text-base font-semibold text-primary mt-4">{ex.highlight}</p>
+              )}
+
               <div className="flex flex-wrap gap-1.5 mt-3">
-                {content.example.tags.map((t) => (
+                {ex.tags.map((t) => (
                   <Badge key={t} variant="secondary" className="text-[11px] font-normal">{t}</Badge>
                 ))}
               </div>
-              {content.example.highlight && (
-                <p className="text-sm font-semibold text-primary mt-3">{content.example.highlight}</p>
-              )}
+
+              <Separator className="my-4" />
+
+              {/* About */}
+              <h3 className="text-sm font-semibold text-foreground mb-1.5">About</h3>
+              <p className="text-sm text-foreground/80">{ex.about}</p>
+
+              {/* Details */}
+              <Separator className="my-4" />
+              <h3 className="text-sm font-semibold text-foreground mb-2">Details</h3>
+              <dl className="space-y-1.5">
+                {ex.details.map((d) => (
+                  <div key={d.label} className="flex gap-3 text-sm">
+                    <dt className="w-32 shrink-0 text-muted-foreground">{d.label}</dt>
+                    <dd className="text-foreground/90">{d.value}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              {/* Section */}
+              <Separator className="my-4" />
+              <h3 className="text-sm font-semibold text-foreground mb-2">{ex.section.title}</h3>
+              <ul className="space-y-1.5">
+                {ex.section.items.map((i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-foreground/80">
+                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                    <span>{i}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Review */}
+              <Separator className="my-4" />
+              <h3 className="text-sm font-semibold text-foreground mb-2">Reviews</h3>
+              <div className="rounded-lg bg-muted/60 p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-medium text-foreground">{ex.review.author}</span>
+                  <span className="flex items-center gap-0.5">
+                    {Array.from({ length: ex.review.rating }).map((_, i) => (
+                      <Star key={i} className="w-3.5 h-3.5 fill-primary text-primary" />
+                    ))}
+                  </span>
+                </div>
+                <p className="text-sm text-foreground/80">{ex.review.text}</p>
+              </div>
+
+              {/* Locked teaser */}
+              <div className="mt-4 flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2.5 text-xs text-muted-foreground">
+                <Lock className="w-3.5 h-3.5 shrink-0" />
+                <span>Contact details, photos and the full directory unlock when you sign in.</span>
+              </div>
             </CardContent>
           </Card>
-          <p className="text-xs text-muted-foreground text-center mt-2">
-            Sign up free to see every {content.title.toLowerCase()} listing.
-          </p>
+        </div>
+
+        {/* Big CTA right under the example */}
+        <div className="mt-6 rounded-2xl bg-gradient-to-br from-primary to-secondary p-[2px] shadow-xl">
+          <div className="rounded-[calc(1rem-2px)] bg-card px-5 py-6 text-center">
+            <h3 className="text-xl font-bold text-foreground">
+              This is just one of hundreds
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1.5 mb-5">
+              Create a free account to browse every {content.title.toLowerCase()} listing, save favorites and message directly.
+            </p>
+            <Link to="/auth" state={{ from, mode: "signup" }} className="block">
+              <Button size="lg" className="w-full text-base font-semibold h-12 shadow-lg hover:shadow-xl transition-shadow">
+                Sign up free
+                <ArrowRight className="w-5 h-5 ml-1" />
+              </Button>
+            </Link>
+            <p className="text-xs text-muted-foreground mt-3">
+              Free forever · No credit card ·{" "}
+              <Link to="/auth" state={{ from }} className="underline hover:text-foreground">
+                I already have an account
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
-
 
       {/* Sticky CTA — anchored to bottom on every viewport, with safe-area padding */}
       <div
