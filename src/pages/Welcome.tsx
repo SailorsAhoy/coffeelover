@@ -45,19 +45,41 @@ const Welcome = () => {
 
           <Card className="overflow-hidden">
             {/* Banner */}
-            <div className="h-24 bg-gradient-to-r from-primary/80 via-primary/50 to-secondary" />
+            {ex.banner ? (
+              <div className="relative h-32 w-full overflow-hidden sm:h-40">
+                <img
+                  src={ex.banner}
+                  alt={`${ex.name} banner`}
+                  loading="lazy"
+                  className="h-full w-full object-cover"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-black/25" />
+              </div>
+            ) : (
+              <div className="h-24 bg-gradient-to-r from-primary/80 via-primary/50 to-secondary" />
+            )}
 
-            <CardContent className="p-5 -mt-10">
-              {/* Avatar + title */}
-              <div className="flex items-end gap-3">
-                <div className="p-3 rounded-2xl bg-card border border-border shadow-sm shrink-0">
-                  <Icon className="w-7 h-7 text-primary" />
-                </div>
-                <div className="min-w-0 pb-1">
+            <CardContent className="p-5">
+              {/* Avatar + title, starting 6px under the image */}
+              <div className="flex items-center gap-3" style={{ marginTop: 6 }}>
+                {ex.avatar ? (
+                  <img
+                    src={ex.avatar}
+                    alt={ex.name}
+                    loading="lazy"
+                    className="h-14 w-14 shrink-0 rounded-2xl border border-border object-cover shadow-sm"
+                  />
+                ) : (
+                  <div className="p-3 rounded-2xl bg-card border border-border shadow-sm shrink-0">
+                    <Icon className="w-7 h-7 text-primary" />
+                  </div>
+                )}
+                <div className="min-w-0">
                   <h2 className="text-lg font-bold text-foreground leading-tight truncate">{ex.name}</h2>
                   <p className="text-xs text-muted-foreground">{ex.meta}</p>
                 </div>
               </div>
+
 
               {ex.highlight && (
                 <p className="text-base font-semibold text-primary mt-4">{ex.highlight}</p>
