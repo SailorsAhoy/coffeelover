@@ -10,6 +10,10 @@ export interface WelcomeExample {
   /** Longer "about" copy shown in the full example listing */
   about: string;
   tags: string[];
+  /** Wide banner image for the listing header */
+  banner?: string;
+  /** Square avatar / logo / product image */
+  avatar?: string;
   /** Optional highlight, e.g. a price or rating */
   highlight?: string;
   /** Key/value spec rows */
@@ -40,31 +44,36 @@ export const WELCOME_CONTENT: Record<string, WelcomeContent> = {
     icon: Store,
     example: {
       kicker: "Example coffee shop",
-      name: "Rue Sainte Coffee",
-      meta: "Marseille, France · Open until 18:00",
-      description: "Third-wave café with a rotating single-origin filter bar and house-baked pastries.",
+      name: "Eira's Coffee",
+      meta: "Barcelona, Spain · Coffee shop · $$$",
+      banner:
+        "https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=1200&q=70&auto=format",
+      avatar:
+        "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=200&h=200&fit=crop&q=70&auto=format",
+      description:
+        "Neighbourhood specialty café in Gràcia with a small filter bar, outdoor tables and step-free access.",
       about:
-        "A twelve-seat café just off the Vieux-Port, pouring a rotating single-origin filter alongside a classic espresso bar. The team roasts nothing in-house — instead they rotate guest roasters from across Europe every three weeks, and every bag on the shelf is available by the cup.",
-      tags: ["Wi-Fi", "Outdoor seating", "V60", "Vegan milk", "Pet friendly"],
-      highlight: "★ 4.8 (126 reviews)",
+        "A compact café on Carrer de Badia in Barcelona, pouring espresso and a rotating filter alongside a short pastry list. Wi-Fi, dine-in seating, a handful of outdoor tables and full wheelchair access.",
+      tags: ["Wi-Fi", "Dine in", "Outdoor seating", "Wheelchair accessible"],
+      highlight: "Open today until 18:00",
       details: [
-        { label: "Address", value: "14 Rue Sainte, 13001 Marseille" },
-        { label: "Hours today", value: "07:30 – 18:00" },
-        { label: "Espresso machine", value: "La Marzocco Linea PB" },
-        { label: "Grinders", value: "Mythos One · EK43" },
+        { label: "Address", value: "Carrer de Badia 14, 08012 Barcelona" },
+        { label: "Country", value: "Spain" },
+        { label: "Price level", value: "$$$" },
+        { label: "Type", value: "Coffee shop" },
       ],
       section: {
         title: "On the bar this week",
         items: [
-          "Guest filter: Colombia El Paraíso, Gesha, natural",
-          "House espresso: Brazil / Ethiopia blend, 1:2 in 27 s",
+          "Guest filter: Ethiopia Yirgacheffe, washed",
+          "House espresso: Colombia Huila, 1:2 in 27 s",
           "Seasonal: iced cascara tonic",
         ],
       },
       review: {
         author: "Camille D.",
         rating: 5,
-        text: "Best filter in the city, and the staff will happily talk you through every bag on the shelf.",
+        text: "Best filter in the neighbourhood, and the staff will happily talk you through every bag on the shelf.",
       },
     },
   },
@@ -77,31 +86,35 @@ export const WELCOME_CONTENT: Record<string, WelcomeContent> = {
     icon: Package,
     example: {
       kicker: "Example roaster",
-      name: "Nordheim Roastery",
-      meta: "Oslo, Norway · Ships to EU & UK",
-      description: "Light-roast specialists working directly with producers in Ethiopia and Colombia.",
+      name: "Blue Bottle Roasters",
+      meta: "Oakland, USA · Free shipping",
+      banner:
+        "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=1200&q=70&auto=format",
+      avatar:
+        "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&q=70&auto=format",
+      description: "Pioneers of third-wave coffee from Oakland, California.",
       about:
-        "Founded in 2014 in a converted boat shed on the Oslo fjord, Nordheim roasts exclusively for filter on a 15 kg Loring. They buy directly from eleven producing partners, publish what they pay, and ship within 48 hours of the roast date.",
-      tags: ["Direct trade", "Light roast", "Subscriptions", "Loring S15"],
-      highlight: "24 coffees listed",
+        "Founded in 2002 and focused on freshness within 48 hours of roast. Blue Bottle lists its full range of single origins and blends here, with prices, origins and roast levels on every bag.",
+      tags: ["Free shipping", "Single origin", "Blends", "Since 2002"],
+      highlight: "★ 4.6 (1,280 reviews)",
       details: [
-        { label: "Founded", value: "2014" },
-        { label: "Roast profile", value: "Light / filter-forward" },
-        { label: "Ships to", value: "EU, UK, Norway, Switzerland" },
-        { label: "Lead time", value: "Roasted to order, 48h dispatch" },
+        { label: "Location", value: "300 Webster St, Oakland, CA" },
+        { label: "Country", value: "USA" },
+        { label: "Website", value: "bluebottlecoffee.com" },
+        { label: "Shipping", value: "Free shipping available" },
       ],
       section: {
         title: "Featured coffees",
         items: [
-          "Yirgacheffe Konga — washed heirloom — € 38.00 / kg",
-          "Kirinyaga AA — washed SL28 — € 44.00 / kg",
-          "El Paraíso Gesha — natural — € 96.00 / kg",
+          "Ethiopia Yirgacheffe — light roast — € 38.00 / kg",
+          "Kenya Nyeri AA — light roast — € 44.00 / kg",
+          "Colombia Huila — medium roast — € 32.00 / kg",
         ],
       },
       review: {
         author: "Jonas H.",
         rating: 5,
-        text: "Consistently the cleanest cups I get shipped. The Kirinyaga is a yearly ritual.",
+        text: "Consistently the cleanest cups I get shipped. The Nyeri AA is a yearly ritual.",
       },
     },
   },
@@ -114,18 +127,22 @@ export const WELCOME_CONTENT: Record<string, WelcomeContent> = {
     icon: Coffee,
     example: {
       kicker: "Example coffee",
-      name: "Yirgacheffe Konga",
-      meta: "Nordheim Roastery · Ethiopia · Washed",
-      description: "Jasmine, bergamot and stone fruit. Roasted for filter, shipped within 48h of roast.",
+      name: "Ethiopia Yirgacheffe",
+      meta: "Blue Bottle Roasters · Ethiopia · Light roast",
+      banner:
+        "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1200&q=70&auto=format",
+      avatar:
+        "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&q=70&auto=format",
+      description: "Floral, citrus, bergamot. Roasted light for filter.",
       about:
-        "Grown at 1,950–2,100 masl around the Konga washing station in Gedeo, this lot is fully washed and dried on raised beds for 14 days. Delicate and tea-like, it rewards a slightly coarser grind and a gentle pour.",
-      tags: ["Filter roast", "Floral", "Heirloom", "250 g / 1 kg", "In stock"],
+        "A delicate, tea-like Yirgacheffe from Blue Bottle Roasters, roasted light for filter brewing. Listed with its origin, roast level, availability and live price in the roaster's own currency.",
+      tags: ["Light roast", "Floral", "Filter", "In stock"],
       highlight: "€ 38.00 / kg",
       details: [
-        { label: "Origin", value: "Gedeo, Ethiopia · 1,950–2,100 masl" },
-        { label: "Variety / process", value: "Heirloom · Washed" },
+        { label: "Roaster", value: "Blue Bottle Roasters" },
+        { label: "Origin", value: "Ethiopia" },
         { label: "Roast level", value: "Light" },
-        { label: "Ships to", value: "EU, UK, US" },
+        { label: "Availability", value: "In stock" },
       ],
       section: {
         title: "Recommended brewing",
@@ -151,6 +168,10 @@ export const WELCOME_CONTENT: Record<string, WelcomeContent> = {
     icon: BookOpen,
     example: {
       kicker: "Example guide",
+      banner:
+        "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1200&q=70&auto=format",
+      avatar:
+        "https://images.unsplash.com/photo-1516224498413-84ecf3a1e7fd?w=200&h=200&fit=crop&q=70&auto=format",
       name: "The Perfect V60 Pour Over",
       meta: "6 steps · 3–4 minutes · Intermediate",
       description: "15 g coffee to 250 g water at 93 °C, bloom 45 s, then two even pours.",
@@ -189,32 +210,36 @@ export const WELCOME_CONTENT: Record<string, WelcomeContent> = {
     icon: BookOpen,
     example: {
       kicker: "Example recipe",
-      name: "Espresso Tonic",
-      meta: "Added by Martin · Cold · 5 minutes",
-      description: "Double espresso poured over iced tonic water with an orange twist.",
+      name: "Espresso Martini",
+      meta: "Cold · 6 minutes · 1 serving",
+      banner:
+        "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1200&q=70",
+      avatar:
+        "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=200&h=200&fit=crop&q=70",
+      description: "Coffee cocktail with a thick crema head.",
       about:
-        "The summer classic: bittersweet tonic, bright citrus and a fruity espresso. Use a light, fruity roast — chocolatey espresso tends to clash with the quinine.",
-      tags: ["Cold", "Cocktail style", "Citrus", "Easy", "1 serving"],
-      highlight: "★ 4.6 · 2.1k views",
+        "Shake all ingredients hard with ice for 15 s. Double strain into a chilled coupe. Garnish with three beans.",
+      tags: ["Cold", "Cocktail", "Boozy", "Chocolatey", "Medium"],
+      highlight: "730 views",
       details: [
-        { label: "Beverage type", value: "Cocktail style · non-alcoholic" },
-        { label: "Temperature", value: "Cold" },
-        { label: "Prep time", value: "5 minutes" },
+        { label: "Brew method", value: "Espresso" },
+        { label: "Beverage type", value: "Cocktail" },
+        { label: "Prep time", value: "6 minutes" },
         { label: "Servings", value: "1" },
       ],
       section: {
-        title: "Ingredients & method",
+        title: "Ingredients",
         items: [
-          "150 ml tonic water, 1 double espresso (36 g)",
-          "Fill a tall glass with large ice cubes",
-          "Pour tonic first, then espresso slowly over a spoon",
-          "Finish with an orange twist",
+          "1 shot espresso",
+          "50 ml vodka",
+          "20 ml coffee liqueur",
+          "10 ml simple syrup",
         ],
       },
       review: {
         author: "Ana P.",
         rating: 5,
-        text: "Pouring the espresso last keeps the layers — looks amazing and tastes even better.",
+        text: "Shaking hard is the whole trick — that crema head is unbeatable.",
       },
     },
   },
@@ -227,6 +252,10 @@ export const WELCOME_CONTENT: Record<string, WelcomeContent> = {
     icon: ShoppingBag,
     example: {
       kicker: "Example equipment",
+      banner:
+        "https://images.unsplash.com/photo-1521302080334-4bebac2763a6?w=1200&q=70&auto=format",
+      avatar:
+        "https://images.unsplash.com/photo-1516224498413-84ecf3a1e7fd?w=200&h=200&fit=crop&q=70&auto=format",
       name: "Comandante C40 Grinder",
       meta: "Comandante · Hand grinder · Stainless burrs",
       description: "Reference-grade manual grinder with repeatable click adjustment for filter and espresso.",
@@ -260,6 +289,10 @@ export const WELCOME_CONTENT: Record<string, WelcomeContent> = {
     icon: PenLine,
     example: {
       kicker: "Example brew log",
+      banner:
+        "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=1200&q=70&auto=format",
+      avatar:
+        "https://images.unsplash.com/photo-1507133750040-4a8f57021571?w=200&h=200&fit=crop&q=70&auto=format",
       name: "Kenya Kirinyaga · Espresso",
       meta: "Logged today · Session #48",
       description: "18.0 g in → 39.5 g out in 28 s. Blackcurrant and brown sugar, slightly tight.",
@@ -293,6 +326,10 @@ export const WELCOME_CONTENT: Record<string, WelcomeContent> = {
     icon: GraduationCap,
     example: {
       kicker: "Example course",
+      banner:
+        "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=1200&q=70&auto=format",
+      avatar:
+        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200&h=200&fit=crop&q=70&auto=format",
       name: "Latte Art Foundations",
       meta: "8 lessons · 2h 40m · Beginner",
       description: "Milk texturing, pouring position and the three core patterns: heart, rosetta, tulip.",
@@ -326,6 +363,10 @@ export const WELCOME_CONTENT: Record<string, WelcomeContent> = {
     icon: Briefcase,
     example: {
       kicker: "Example job",
+      banner:
+        "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1200&q=70&auto=format",
+      avatar:
+        "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=200&h=200&fit=crop&q=70&auto=format",
       name: "Head Barista — Full time",
       meta: "Copo Café · Lisbon, Portugal · On site",
       description: "Lead a team of four, run the bar programme and manage espresso calibration.",
@@ -359,6 +400,10 @@ export const WELCOME_CONTENT: Record<string, WelcomeContent> = {
     icon: BookMarked,
     example: {
       kicker: "Example article",
+      banner:
+        "https://images.unsplash.com/photo-1524350876685-274059332603?w=1200&q=70&auto=format",
+      avatar:
+        "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=200&h=200&fit=crop&q=70&auto=format",
       name: "Natural (Dry) Processing",
       meta: "Processing · 6 min read · Community edited",
       description: "Whole cherries dried in the sun, producing fruity, wine-like and full-bodied cups.",
@@ -392,6 +437,10 @@ export const WELCOME_CONTENT: Record<string, WelcomeContent> = {
     icon: MessageSquare,
     example: {
       kicker: "Example thread",
+      banner:
+        "https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=1200&q=70&auto=format",
+      avatar:
+        "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=200&h=200&fit=crop&q=70&auto=format",
       name: "Why does my espresso channel?",
       meta: "Espresso · 34 replies · Last reply 2h ago",
       description: "Distribution, puck prep and basket condition — the community troubleshoots step by step.",
@@ -429,6 +478,10 @@ export const WELCOME_CONTENT: Record<string, WelcomeContent> = {
     icon: Library,
     example: {
       kicker: "Example book",
+      banner:
+        "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1200&q=70&auto=format",
+      avatar:
+        "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&h=200&fit=crop&q=70&auto=format",
       name: "The World Atlas of Coffee",
       meta: "James Hoffmann · English · 2018",
       description: "Origins, varieties and brewing, mapped country by country — the modern reference.",
@@ -462,15 +515,19 @@ export const WELCOME_CONTENT: Record<string, WelcomeContent> = {
     icon: MessageSquare,
     example: {
       kicker: "Example conversation",
-      name: "Nordheim Roastery",
+      name: "Blue Bottle Roasters",
       meta: "Roaster · Online now · 2 unread",
-      description: "“Your Kirinyaga bag ships tomorrow — grind for V60 or keep it whole bean?”",
+      banner:
+        "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=1200&q=70&auto=format",
+      avatar:
+        "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&q=70&auto=format",
+      description: "“Your Yirgacheffe bag ships tomorrow — grind for V60 or keep it whole bean?”",
       about:
         "Message any shop, roaster or member directly. Threads are realtime, unread counts appear on the navbar bell, and they clear the moment you open the conversation.",
       tags: ["Direct message", "Realtime", "Read receipts", "Verified roaster"],
       highlight: "2 unread",
       details: [
-        { label: "Thread with", value: "Nordheim Roastery" },
+        { label: "Thread with", value: "Blue Bottle Roasters" },
         { label: "Status", value: "Online now" },
         { label: "Started", value: "3 days ago" },
         { label: "Messages", value: "12" },
@@ -478,13 +535,13 @@ export const WELCOME_CONTENT: Record<string, WelcomeContent> = {
       section: {
         title: "Recent messages",
         items: [
-          "You: Any Kirinyaga left from the last roast?",
-          "Nordheim: Two bags — reserved one for you.",
-          "Nordheim: Ships tomorrow. Whole bean or ground?",
+          "You: Any Yirgacheffe left from the last roast?",
+          "Blue Bottle: Two bags — reserved one for you.",
+          "Blue Bottle: Ships tomorrow. Whole bean or ground?",
         ],
       },
       review: {
-        author: "Nordheim Roastery",
+        author: "Blue Bottle Roasters",
         rating: 5,
         text: "Typically replies within an hour on weekdays.",
       },
@@ -503,18 +560,22 @@ export const getWelcomeContent = (slug: string | undefined): WelcomeContent => {
     icon: Coffee,
     example: {
       kicker: "Example listing",
-      name: "Nordheim Roastery",
-      meta: "Oslo, Norway · Ships to EU & UK",
+      name: "Blue Bottle Roasters",
+      meta: "Oakland, USA · Free shipping",
+      banner:
+        "https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=1200&q=70&auto=format",
+      avatar:
+        "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&q=70&auto=format",
       description: "One of hundreds of roasters, shops and coffees waiting inside.",
       about:
         "Every listing includes the full story: photos, contact, opening hours, products, brewing guidance and community reviews.",
       tags: ["Roasters", "Shops", "Coffees", "Guides"],
-      highlight: "★ 4.8",
+      highlight: "★ 4.6",
       details: [
         { label: "Type", value: "Roastery" },
-        { label: "Location", value: "Oslo, Norway" },
-        { label: "Ships to", value: "EU & UK" },
-        { label: "Listings", value: "24 coffees" },
+        { label: "Location", value: "Oakland, USA" },
+        { label: "Shipping", value: "Free shipping available" },
+        { label: "Listings", value: "6 coffees" },
       ],
       section: {
         title: "Inside CoffeeMart",
