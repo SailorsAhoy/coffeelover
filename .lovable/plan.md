@@ -1,52 +1,30 @@
 ## Goal
 
-Add an admin-toggleable "Gated preview mode". When ON, unauthenticated visitors hitting any main menu page (Shops, Roasters, Coffee, Guides, Recipes, Equipment, Academy, Jobs, Wiki, Forum, Library, Journal) are redirected to a per-item **landing page** that explains what that section does and prompts them to sign in / sign up. When OFF (default), the app behaves exactly as today.
+On each signed-out landing page (`/welcome/:slug`), the example listing should look like a real listing from the app: a banner image, an avatar/product image, and the example title starting 6px below the image. Nothing else on the page changes.
 
-Impact on existing code is minimal: one new wrapper component, one new landing route with per-slug content, one admin toggle, and route wiring in `App.tsx`. No existing page logic changes.
+## What changes
 
-## Feasibility
+### 1. Example content becomes a real-listing snapshot
+`src/lib/welcomeContent.ts`
 
-Yes — low effort, no touching of page internals. Everything hinges on a single `<GatedRoute>` wrapper that checks the flag + auth state and either renders the page or `<Navigate>`s to `/welcome/:slug`.
+- Extend `WelcomeExample` with two optional fields: `banner` (wide image URL) and `avatar` (square logo/product image URL).
+- Replace the invented example names with real records currently in the database, keeping the existing rich structure (about, details, section, review):
+  - shops → the real coffee shop record ("Eira's Coffee")
+  - roasters → a real roaster (e.g. "Blue Bottle Roasters", "Square Mile Coffee", "La Cabra")
+  - coffee → a real coffee product from that roaster, with its real price/currency
+  - recipes → a real recipe, including its stored image
+  - remaining slugs (guides, equipment, journal, academy, jobs, wiki, forum, library, messages) keep their curated copy and get banner/avatar images
+- Where the database row has no stored image (shops/roasters have none), use the same Unsplash fallback style already used in `ShopBanner.tsx`, so the preview matches the real profile page.
 
-## Steps
+### 2. Example card gains banner + avatar and the 6px title offset
+`src/pages/Welcome.tsx`
 
-1. **Storage for the toggle**
-   - Add an `app_settings` table (`key text primary key, value jsonb, updated_at, updated_by`) with RLS: `SELECT` for `anon` + `authenticated` (public read of settings), `INSERT/UPDATE` for admins only via `has_role`.
-   - Seed one row: `gated_preview_enabled = false`.
-   - Grants: `SELECT` to anon+authenticated, `ALL` to service_role, `INSERT/UPDATE` to authenticated (RLS restricts to admin).
-
-2. **Hook `useAppSetting(key)`**
-   - Reads once, subscribes to realtime `UPDATE`s so toggling propagates instantly.
-
-3. **`<GatedRoute slug="shops">` wrapper** (new, `src/components/GatedRoute.tsx`)
-   - If loading → spinner.
-   - If `gated_preview_enabled` AND not authenticated → `<Navigate to="/welcome/shops" replace />`.
-   - Otherwise render `children`.
-
-4. **Landing page `/welcome/:slug`** (new, `src/pages/Welcome.tsx`)
-   - Content map keyed by slug: title, description, feature bullets, hero icon (reuse Lucide icons already used on `Index.tsx`), and two CTAs → `/auth` (Sign in) and `/auth?mode=signup`.
-   - Uses existing design tokens; no new styling system.
-   - Falls back to a generic message if slug unknown.
-
-5. **Wire routes in `App.tsx`**
-   - Wrap the 12 public menu routes with `<GatedRoute slug="...">`. Auth/reset/welcome/`/` stay open. `RequireAuth` routes remain unchanged (they already redirect to `/auth`, which is fine).
-   - Add `<Route path="/welcome/:slug" element={<Welcome />} />`.
-
-6. **Admin toggle UI**
-   - Add a "Preview access" card in `src/pages/settings/SystemSettings.tsx` with a `<Switch>` bound to the setting. Writes go through the RLS-protected update.
-
-7. **Menu behavior when signed out + gated**
-   - Existing sidebar/bottom-nav links keep pointing to `/shops` etc.; the wrapper handles the redirect, so no nav changes needed.
+- Replace the flat gradient strip with a real banner image (`ex.banner`), keeping the existing overlay/fade treatment used on shop profiles, with the category icon gradient as fallback if no banner.
+- Show the avatar as a rounded image (`ex.avatar`) with the existing card-border ring; fall back to the current icon tile when absent.
+- Change the title block so it is no longer pulled up over the banner: the name/meta start exactly `6px` below the banner image, matching the requested spacing.
 
 ## Technical notes
 
-- Setting is public-readable so the redirect decision doesn't require an auth round-trip for anonymous visitors.
-- Realtime channel uses a unique name per mount and unsubscribes on unmount (same pattern already established in `notifications.ts` / `messaging.ts`).
-- Slugs are stable strings mapped in one file (`src/lib/welcomeContent.ts`) so adding a new gated section = one entry + one route wrap.
-- No changes to any existing page component, DB table other than the new `app_settings`, or auth flow.
-
-## Out of scope
-
-- Per-role gating (only signed-in vs anonymous).
-- Custom landing content per shop/roaster (only per menu category).
-- SEO decisions about whether landing pages should be indexable instead of the real pages (can be added later via canonical tags).
+- No database or backend changes; the example data is a static snapshot in `welcomeContent.ts`, so signed-out visitors still read zero data from the database.
+- Images use `loading="lazy"` and fixed aspect ratios to avoid layout shift.
+- CTA, sticky footer, bullets, and every other section of the landing page stay exactly as they are.
