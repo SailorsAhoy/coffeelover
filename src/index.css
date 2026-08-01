@@ -8,52 +8,56 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Coffee palette inspired design system */
-    --background: 40 100% 94%;
-    --foreground: 32 80% 20%;
+    /* CoffeePlanets brand palette
+       #3B2717 dark brown | #6B4423 medium | #A66B2E ochre | #D2B48C tan | #F6E9D6 cream */
+    --background: 36 64% 90%;
+    --foreground: 27 44% 16%;
 
     --card: 0 0% 100%;
-    --card-foreground: 32 80% 20%;
+    --card-foreground: 27 44% 16%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 32 80% 20%;
+    --popover-foreground: 27 44% 16%;
 
-    --primary: 40 66% 46%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 31 57% 42%;
+    --primary-foreground: 36 64% 96%;
 
-    --secondary: 40 70% 68%;
-    --secondary-foreground: 32 80% 20%;
+    --secondary: 34 44% 69%;
+    --secondary-foreground: 27 44% 16%;
 
-    --muted: 40 40% 88%;
-    --muted-foreground: 32 40% 40%;
+    --muted: 34 40% 84%;
+    --muted-foreground: 28 30% 34%;
 
-    --accent: 40 70% 68%;
-    --accent-foreground: 32 80% 20%;
+    --accent: 28 51% 28%;
+    --accent-foreground: 36 64% 96%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 72% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 40 30% 85%;
-    --input: 40 30% 85%;
-    --ring: 40 66% 46%;
+    --border: 34 35% 80%;
+    --input: 34 35% 80%;
+    --ring: 31 57% 42%;
 
     --radius: 0.75rem;
 
-    /* Custom coffee-themed colors */
-    --coffee-cream: 40 100% 94%;
-    --coffee-light: 40 70% 68%;
-    --coffee-medium: 40 66% 46%;
-    --coffee-dark: 32 80% 20%;
+    /* Brand tokens */
+    --coffee-cream: 36 64% 90%;
+    --coffee-tan: 34 44% 69%;
+    --coffee-ochre: 31 57% 42%;
+    --coffee-medium: 28 51% 28%;
+    --coffee-dark: 27 44% 16%;
+    --coffee-light: 34 44% 69%;
 
-    --sidebar-background: 40 100% 94%;
-    --sidebar-foreground: 32 80% 20%;
-    --sidebar-primary: 40 66% 46%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 40 70% 68%;
-    --sidebar-accent-foreground: 32 80% 20%;
-    --sidebar-border: 40 30% 85%;
-    --sidebar-ring: 40 66% 46%;
+    --sidebar-background: 27 44% 16%;
+    --sidebar-foreground: 36 64% 90%;
+    --sidebar-primary: 31 57% 42%;
+    --sidebar-primary-foreground: 36 64% 96%;
+    --sidebar-accent: 28 51% 28%;
+    --sidebar-accent-foreground: 36 64% 90%;
+    --sidebar-border: 28 40% 24%;
+    --sidebar-ring: 31 57% 42%;
   }
+
 
   .dark {
     --background: 32 80% 15%;
