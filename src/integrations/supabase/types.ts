@@ -2773,7 +2773,6 @@ export type Database = {
           created_at: string | null
           created_by: string | null
           description: string | null
-          email: string | null
           facebook: string | null
           has_discount_coupons: boolean | null
           id: string | null
@@ -2786,13 +2785,11 @@ export type Database = {
           offers_free_shipping: boolean | null
           opening_hours: Json | null
           owner_user_id: string | null
-          phone: string | null
           slug: string | null
           status: string | null
           twitter: string | null
           updated_at: string | null
           website: string | null
-          whatsapp: string | null
         }
         Insert: {
           address?: string | null
@@ -2808,7 +2805,6 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           description?: string | null
-          email?: string | null
           facebook?: string | null
           has_discount_coupons?: boolean | null
           id?: string | null
@@ -2821,13 +2817,11 @@ export type Database = {
           offers_free_shipping?: boolean | null
           opening_hours?: Json | null
           owner_user_id?: string | null
-          phone?: string | null
           slug?: string | null
           status?: string | null
           twitter?: string | null
           updated_at?: string | null
           website?: string | null
-          whatsapp?: string | null
         }
         Update: {
           address?: string | null
@@ -2843,7 +2837,6 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           description?: string | null
-          email?: string | null
           facebook?: string | null
           has_discount_coupons?: boolean | null
           id?: string | null
@@ -2856,13 +2849,11 @@ export type Database = {
           offers_free_shipping?: boolean | null
           opening_hours?: Json | null
           owner_user_id?: string | null
-          phone?: string | null
           slug?: string | null
           status?: string | null
           twitter?: string | null
           updated_at?: string | null
           website?: string | null
-          whatsapp?: string | null
         }
         Relationships: []
       }
@@ -2922,7 +2913,6 @@ export type Database = {
           created_by: string | null
           created_by_role: string | null
           description: string | null
-          email: string | null
           facebook: string | null
           id: string | null
           instagram: string | null
@@ -2932,7 +2922,6 @@ export type Database = {
           name: string | null
           opening_hours: Json | null
           owner_user_id: string | null
-          phone: string | null
           price_level: number | null
           slug: string | null
           status: string | null
@@ -2940,7 +2929,6 @@ export type Database = {
           type: string | null
           updated_at: string | null
           website: string | null
-          whatsapp: string | null
         }
         Insert: {
           address?: string | null
@@ -2955,7 +2943,6 @@ export type Database = {
           created_by?: string | null
           created_by_role?: string | null
           description?: string | null
-          email?: string | null
           facebook?: string | null
           id?: string | null
           instagram?: string | null
@@ -2965,7 +2952,6 @@ export type Database = {
           name?: string | null
           opening_hours?: Json | null
           owner_user_id?: string | null
-          phone?: string | null
           price_level?: number | null
           slug?: string | null
           status?: string | null
@@ -2973,7 +2959,6 @@ export type Database = {
           type?: string | null
           updated_at?: string | null
           website?: string | null
-          whatsapp?: string | null
         }
         Update: {
           address?: string | null
@@ -2988,7 +2973,6 @@ export type Database = {
           created_by?: string | null
           created_by_role?: string | null
           description?: string | null
-          email?: string | null
           facebook?: string | null
           id?: string | null
           instagram?: string | null
@@ -2998,7 +2982,6 @@ export type Database = {
           name?: string | null
           opening_hours?: Json | null
           owner_user_id?: string | null
-          phone?: string | null
           price_level?: number | null
           slug?: string | null
           status?: string | null
@@ -3006,7 +2989,6 @@ export type Database = {
           type?: string | null
           updated_at?: string | null
           website?: string | null
-          whatsapp?: string | null
         }
         Relationships: []
       }
