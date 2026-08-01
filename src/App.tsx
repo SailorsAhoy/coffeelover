@@ -84,6 +84,12 @@ const App = () => (
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/welcome/:slug" element={<Welcome />} />
+                  <Route path="/news" element={<News />} />
+                  <Route path="/news/new" element={<RequireAuth><NewsEditor /></RequireAuth>} />
+                  <Route path="/news/mine" element={<RequireAuth><MyNewsPosts /></RequireAuth>} />
+                  <Route path="/news/:id/edit" element={<RequireAuth><NewsEditor /></RequireAuth>} />
+                  <Route path="/news/:slug" element={<NewsPost />} />
+
                   <Route path="/shops" element={<GatedRoute slug="shops"><Shops /></GatedRoute>} />
                   <Route path="/roasters" element={<GatedRoute slug="roasters"><Roasters /></GatedRoute>} />
                   <Route path="/coffee" element={<GatedRoute slug="coffee"><Coffee /></GatedRoute>} />
