@@ -54,8 +54,13 @@ import RoasteryDashboard from "./pages/dashboard/RoasteryDashboard";
 import ManufacturerDashboard from "./pages/dashboard/ManufacturerDashboard";
 import SupplierDashboard from "./pages/dashboard/SupplierDashboard";
 import Welcome from "./pages/Welcome";
+import News from "./pages/News";
+import NewsPost from "./pages/NewsPost";
+import NewsEditor from "./pages/NewsEditor";
+import MyNewsPosts from "./pages/MyNewsPosts";
 import { GatedRoute } from "./components/GatedRoute";
 import SiteFooter from "./components/SiteFooter";
+
 
 const queryClient = new QueryClient();
 
