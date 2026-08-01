@@ -36,7 +36,7 @@ const PostBanner = ({
             {eyebrow}
           </span>
         )}
-        <h1 className="font-display text-2xl md:text-4xl font-bold text-cream drop-shadow-sm">{title}</h1>
+        <h1 className="font-display text-xl md:text-3xl font-bold text-cream drop-shadow-sm line-clamp-2">{title}</h1>
         {meta && <div className="mt-2 text-sm text-cream/85">{meta}</div>}
       </div>
     </div>
