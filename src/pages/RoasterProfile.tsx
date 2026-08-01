@@ -98,8 +98,8 @@ const RoasterProfile = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
       <Helmet>
-        <title>{roaster.name} | CoffeeMart</title>
-        <meta property="og:title" content={`${roaster.name} | CoffeeMart`} />
+        <title>{roaster.name} | CoffeePlanets</title>
+        <meta property="og:title" content={`${roaster.name} | CoffeePlanets`} />
         <meta property="og:description" content={roaster.description} />
       </Helmet>
       <RoasterBanner roaster={roaster} />

@@ -13,7 +13,13 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["Montserrat", "system-ui", "sans-serif"],
+        display: ["Playfair Display", "Georgia", "serif"],
+      },
       colors: {
+        cream: "hsl(var(--coffee-cream))",
+
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -59,10 +65,13 @@ export default {
         },
         coffee: {
           cream: "hsl(var(--coffee-cream))",
+          tan: "hsl(var(--coffee-tan))",
+          ochre: "hsl(var(--coffee-ochre))",
           light: "hsl(var(--coffee-light))",
           medium: "hsl(var(--coffee-medium))",
           dark: "hsl(var(--coffee-dark))",
         },
+
       },
       borderRadius: {
         lg: "var(--radius)",

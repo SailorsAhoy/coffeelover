@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
+import logo from "@/assets/coffeeplanets-logo.jpg";
 import {
   Coffee, Home, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap,
-  Briefcase, BookMarked, MessageSquare, Library, Instagram, Facebook, Twitter, Youtube, Linkedin,
+  Briefcase, BookMarked, MessageSquare, Library, Newspaper, Instagram, Facebook, Twitter, Youtube, Linkedin,
 } from "lucide-react";
 
 const menuLinks = [
   { path: "/", icon: Home, label: "Home" },
+  { path: "/news", icon: Newspaper, label: "News" },
   { path: "/shops", icon: Store, label: "Coffee Shops" },
   { path: "/roasters", icon: Package, label: "Roasters" },
   { path: "/coffee", icon: Coffee, label: "Coffee" },
@@ -19,6 +21,7 @@ const menuLinks = [
   { path: "/forum", icon: MessageSquare, label: "Coffee Forum" },
   { path: "/library", icon: Library, label: "Coffee Library" },
 ];
+
 
 const socials = [
   { icon: Instagram, label: "Instagram" },
@@ -38,11 +41,10 @@ const SiteFooter = () => {
         {/* Brand */}
         <div className="space-y-4">
           <Link to="/" className="flex items-center gap-2">
-            <div className="p-2 bg-primary rounded-lg">
-              <Coffee className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="text-lg font-bold text-foreground">CoffeePlanets</span>
+            <img src={logo} alt="CoffeePlanets logo" className="w-10 h-10 rounded-full object-cover" />
+            <span className="font-display text-lg font-bold text-foreground">CoffeePlanets</span>
           </Link>
+
           <p className="text-sm text-muted-foreground">
             The specialty coffee marketplace and community.
           </p>

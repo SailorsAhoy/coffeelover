@@ -252,7 +252,7 @@ const EquipmentDetail = ({ kind }: { kind: "brand" | "machine" | "accessory" }) 
     return (
       <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
         <Helmet>
-          <title>{m.name} | CoffeeMart</title>
+          <title>{m.name} | CoffeePlanets</title>
           <script type="application/ld+json">{JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Product",
@@ -306,7 +306,7 @@ const EquipmentDetail = ({ kind }: { kind: "brand" | "machine" | "accessory" }) 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
       <Helmet>
-        <title>{a.name} | CoffeeMart</title>
+        <title>{a.name} | CoffeePlanets</title>
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Product",

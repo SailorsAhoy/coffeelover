@@ -1,3 +1,4 @@
+import logo from "@/assets/coffeeplanets-logo.jpg";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Coffee, Home, ShoppingBag, Store, BookOpen, Package, User, PenLine, GraduationCap, LogOut, LogIn, Settings, Briefcase, BookMarked, MessageSquare, Library, Users } from "lucide-react";
@@ -75,10 +76,8 @@ const Navigation = () => {
       <nav className="hidden md:flex fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-16">
         <div className="w-full px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="p-2 bg-primary rounded-lg">
-              <Coffee className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold">CoffeeLovers</span>
+            <img src={logo} alt="CoffeePlanets logo" className="w-9 h-9 rounded-full object-cover" />
+            <span className="text-xl font-bold">CoffeePlanets</span>
           </Link>
           
           <div className="flex items-center gap-4">
@@ -140,10 +139,8 @@ const Navigation = () => {
       <nav className="md:hidden fixed top-0 left-0 right-0 z-50 bg-card border-b border-border h-14">
         <div className="w-full px-4 h-full flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="p-1.5 bg-primary rounded-lg">
-              <Coffee className="w-4 h-4 text-primary-foreground" />
-            </div>
-            <span className="text-lg font-bold">CoffeeLovers</span>
+            <img src={logo} alt="CoffeePlanets logo" className="w-8 h-8 rounded-full object-cover" />
+            <span className="text-lg font-bold">CoffeePlanets</span>
           </Link>
           
           {isAuthenticated && (

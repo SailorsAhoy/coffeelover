@@ -97,7 +97,7 @@ const Recipes = () => {
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
       <Helmet>
-        <title>Coffee Recipes | CoffeeMart</title>
+        <title>Coffee Recipes | CoffeePlanets</title>
         <meta
           name="description"
           content="Community coffee recipes: espresso, pour over, cold brew and coffee cocktails, rated and reviewed by fellow coffee lovers."

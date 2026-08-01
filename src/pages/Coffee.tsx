@@ -120,8 +120,8 @@ const Coffee = () => {
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
       <Helmet>
-        <title>Coffee Selection | CoffeeMart</title>
-        <meta property="og:title" content="Coffee Selection | CoffeeMart" />
+        <title>Coffee Selection | CoffeePlanets</title>
+        <meta property="og:title" content="Coffee Selection | CoffeePlanets" />
         <meta property="og:description" content="Browse and filter premium coffee beans from roasters around the world." />
       </Helmet>
       <div className="max-w-7xl mx-auto space-y-6">

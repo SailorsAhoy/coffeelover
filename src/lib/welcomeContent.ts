@@ -553,7 +553,7 @@ export const getWelcomeContent = (slug: string | undefined): WelcomeContent => {
   if (slug && WELCOME_CONTENT[slug]) return WELCOME_CONTENT[slug];
   return {
     slug: "app",
-    title: "CoffeeMart",
+    title: "CoffeePlanets",
     tagline: "The specialty coffee marketplace.",
     description: "Sign in to unlock shops, roasters, beans and brewing tools.",
     bullets: ["Discover shops & roasters", "Shop specialty beans", "Track your brewing journey"],
@@ -578,7 +578,7 @@ export const getWelcomeContent = (slug: string | undefined): WelcomeContent => {
         { label: "Listings", value: "6 coffees" },
       ],
       section: {
-        title: "Inside CoffeeMart",
+        title: "Inside CoffeePlanets",
         items: ["Shops and roasters near you", "Specialty beans with filters", "Guides, recipes and courses"],
       },
       review: {

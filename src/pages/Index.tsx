@@ -88,7 +88,7 @@ const Index = () => {
             <Coffee className="w-12 h-12 text-primary-foreground" />
           </div>
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
-            Welcome to CoffeeMart
+            Welcome to CoffeePlanets
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
             Your complete specialty coffee marketplace - discover shops, roasters, 

@@ -41,7 +41,7 @@ const Guides = () => {
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
       <Helmet>
-        <title>Brewing Guides | CoffeeMart</title>
+        <title>Brewing Guides | CoffeePlanets</title>
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "ItemList",

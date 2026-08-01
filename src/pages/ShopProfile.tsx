@@ -45,7 +45,7 @@ const ShopProfile = () => {
     if (!shop?.reviewableId) return;
     (async () => {
       const { data } = await supabase
-        .from("shops")
+        .from("shops_public" as any)
         .select("id, owner_user_id, linked_roaster_id")
         .eq("id", shop.reviewableId)
         .maybeSingle();
@@ -72,8 +72,8 @@ const ShopProfile = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
       <Helmet>
-        <title>{shop.name} | CoffeeMart</title>
-        <meta property="og:title" content={`${shop.name} | CoffeeMart`} />
+        <title>{shop.name} | CoffeePlanets</title>
+        <meta property="og:title" content={`${shop.name} | CoffeePlanets`} />
         <meta property="og:description" content={shop.description} />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
