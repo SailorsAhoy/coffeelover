@@ -60,42 +60,42 @@ All colors MUST be HSL.
 
 
   .dark {
-    --background: 32 80% 15%;
-    --foreground: 40 100% 94%;
+    --background: 27 44% 12%;
+    --foreground: 36 64% 90%;
 
-    --card: 32 60% 20%;
-    --card-foreground: 40 100% 94%;
+    --card: 28 40% 17%;
+    --card-foreground: 36 64% 90%;
 
-    --popover: 32 60% 20%;
-    --popover-foreground: 40 100% 94%;
+    --popover: 28 40% 17%;
+    --popover-foreground: 36 64% 90%;
 
-    --primary: 40 70% 68%;
-    --primary-foreground: 32 80% 20%;
+    --primary: 34 44% 69%;
+    --primary-foreground: 27 44% 16%;
 
-    --secondary: 40 66% 46%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 28 51% 28%;
+    --secondary-foreground: 36 64% 90%;
 
-    --muted: 32 40% 25%;
-    --muted-foreground: 40 40% 70%;
+    --muted: 28 30% 22%;
+    --muted-foreground: 34 30% 72%;
 
-    --accent: 40 66% 46%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 31 57% 42%;
+    --accent-foreground: 36 64% 96%;
 
     --destructive: 0 62.8% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 32 40% 30%;
-    --input: 32 40% 30%;
-    --ring: 40 70% 68%;
+    --border: 28 30% 26%;
+    --input: 28 30% 26%;
+    --ring: 34 44% 69%;
 
-    --sidebar-background: 32 80% 15%;
-    --sidebar-foreground: 40 100% 94%;
-    --sidebar-primary: 40 70% 68%;
-    --sidebar-primary-foreground: 32 80% 20%;
-    --sidebar-accent: 40 66% 46%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 32 40% 30%;
-    --sidebar-ring: 40 70% 68%;
+    --sidebar-background: 27 44% 10%;
+    --sidebar-foreground: 36 64% 90%;
+    --sidebar-primary: 34 44% 69%;
+    --sidebar-primary-foreground: 27 44% 16%;
+    --sidebar-accent: 31 57% 42%;
+    --sidebar-accent-foreground: 36 64% 96%;
+    --sidebar-border: 28 30% 22%;
+    --sidebar-ring: 34 44% 69%;
   }
 }
 
@@ -105,6 +105,32 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: "Playfair Display", Georgia, serif;
   }
 }
+
+@layer components {
+  .prose-post {
+    @apply leading-relaxed;
+  }
+  .prose-post h1,
+  .prose-post h2,
+  .prose-post h3 {
+    @apply font-display font-bold text-foreground mt-8 mb-3;
+  }
+  .prose-post h2 { @apply text-2xl; }
+  .prose-post h3 { @apply text-xl; }
+  .prose-post p { @apply mb-4; }
+  .prose-post ul { @apply list-disc pl-6 mb-4 space-y-1; }
+  .prose-post ol { @apply list-decimal pl-6 mb-4 space-y-1; }
+  .prose-post a { @apply text-primary underline underline-offset-4; }
+  .prose-post img { @apply rounded-xl my-6 w-full h-auto; }
+  .prose-post blockquote { @apply border-l-4 border-primary/50 pl-4 italic text-muted-foreground my-6; }
+  .prose-post table { @apply w-full text-sm my-6; }
+  .prose-post td, .prose-post th { @apply border border-border px-3 py-2; }
+}
+
