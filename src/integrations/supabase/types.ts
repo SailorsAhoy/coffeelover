@@ -579,10 +579,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "coffee_brands_roaster_id_fkey"
+            columns: ["roaster_id"]
+            isOneToOne: false
+            referencedRelation: "roasters_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "coffee_brands_shop_id_fkey"
             columns: ["shop_id"]
             isOneToOne: false
             referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coffee_brands_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1935,6 +1949,13 @@ export type Database = {
             referencedRelation: "roasters"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "shop_staff_roaster_id_fkey"
+            columns: ["roaster_id"]
+            isOneToOne: false
+            referencedRelation: "roasters_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       shop_types: {
@@ -2737,6 +2758,114 @@ export type Database = {
           },
         ]
       }
+      roasters_public: {
+        Row: {
+          address: string | null
+          affiliate_links: Json | null
+          amenities: Json | null
+          avatar: string | null
+          banner: string | null
+          banner_url: string | null
+          base_rating: number | null
+          base_review_count: number | null
+          bio: string | null
+          country: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          email: string | null
+          facebook: string | null
+          has_discount_coupons: boolean | null
+          id: string | null
+          instagram: string | null
+          lat: number | null
+          linked_shop_id: string | null
+          lng: number | null
+          logo_url: string | null
+          name: string | null
+          offers_free_shipping: boolean | null
+          opening_hours: Json | null
+          owner_user_id: string | null
+          phone: string | null
+          slug: string | null
+          status: string | null
+          twitter: string | null
+          updated_at: string | null
+          website: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          affiliate_links?: Json | null
+          amenities?: Json | null
+          avatar?: string | null
+          banner?: string | null
+          banner_url?: string | null
+          base_rating?: number | null
+          base_review_count?: number | null
+          bio?: string | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          email?: string | null
+          facebook?: string | null
+          has_discount_coupons?: boolean | null
+          id?: string | null
+          instagram?: string | null
+          lat?: number | null
+          linked_shop_id?: string | null
+          lng?: number | null
+          logo_url?: string | null
+          name?: string | null
+          offers_free_shipping?: boolean | null
+          opening_hours?: Json | null
+          owner_user_id?: string | null
+          phone?: string | null
+          slug?: string | null
+          status?: string | null
+          twitter?: string | null
+          updated_at?: string | null
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          affiliate_links?: Json | null
+          amenities?: Json | null
+          avatar?: string | null
+          banner?: string | null
+          banner_url?: string | null
+          base_rating?: number | null
+          base_review_count?: number | null
+          bio?: string | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          email?: string | null
+          facebook?: string | null
+          has_discount_coupons?: boolean | null
+          id?: string | null
+          instagram?: string | null
+          lat?: number | null
+          linked_shop_id?: string | null
+          lng?: number | null
+          logo_url?: string | null
+          name?: string | null
+          offers_free_shipping?: boolean | null
+          opening_hours?: Json | null
+          owner_user_id?: string | null
+          phone?: string | null
+          slug?: string | null
+          status?: string | null
+          twitter?: string | null
+          updated_at?: string | null
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       service_companies_public: {
         Row: {
           business_name: string | null
@@ -2776,6 +2905,108 @@ export type Database = {
           slug?: string | null
           updated_at?: string | null
           website_url?: string | null
+        }
+        Relationships: []
+      }
+      shops_public: {
+        Row: {
+          address: string | null
+          amenities: Json | null
+          avatar: string | null
+          banner: string | null
+          base_rating: number | null
+          base_review_count: number | null
+          bio: string | null
+          country: string | null
+          created_at: string | null
+          created_by: string | null
+          created_by_role: string | null
+          description: string | null
+          email: string | null
+          facebook: string | null
+          id: string | null
+          instagram: string | null
+          lat: number | null
+          linked_roaster_id: string | null
+          lng: number | null
+          name: string | null
+          opening_hours: Json | null
+          owner_user_id: string | null
+          phone: string | null
+          price_level: number | null
+          slug: string | null
+          status: string | null
+          twitter: string | null
+          type: string | null
+          updated_at: string | null
+          website: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          amenities?: Json | null
+          avatar?: string | null
+          banner?: string | null
+          base_rating?: number | null
+          base_review_count?: number | null
+          bio?: string | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          created_by_role?: string | null
+          description?: string | null
+          email?: string | null
+          facebook?: string | null
+          id?: string | null
+          instagram?: string | null
+          lat?: number | null
+          linked_roaster_id?: string | null
+          lng?: number | null
+          name?: string | null
+          opening_hours?: Json | null
+          owner_user_id?: string | null
+          phone?: string | null
+          price_level?: number | null
+          slug?: string | null
+          status?: string | null
+          twitter?: string | null
+          type?: string | null
+          updated_at?: string | null
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          amenities?: Json | null
+          avatar?: string | null
+          banner?: string | null
+          base_rating?: number | null
+          base_review_count?: number | null
+          bio?: string | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          created_by_role?: string | null
+          description?: string | null
+          email?: string | null
+          facebook?: string | null
+          id?: string | null
+          instagram?: string | null
+          lat?: number | null
+          linked_roaster_id?: string | null
+          lng?: number | null
+          name?: string | null
+          opening_hours?: Json | null
+          owner_user_id?: string | null
+          phone?: string | null
+          price_level?: number | null
+          slug?: string | null
+          status?: string | null
+          twitter?: string | null
+          type?: string | null
+          updated_at?: string | null
+          website?: string | null
+          whatsapp?: string | null
         }
         Relationships: []
       }
