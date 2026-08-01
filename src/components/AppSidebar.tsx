@@ -1,5 +1,5 @@
 import { NavLink } from "@/components/NavLink";
-import { Coffee, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap, User, Briefcase, BookMarked, MessageSquare, Library, ChevronLeft, ChevronRight, Users, MessageCircle, Settings, LayoutDashboard } from "lucide-react";
+import { Coffee, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap, User, Briefcase, BookMarked, MessageSquare, Library, ChevronLeft, ChevronRight, Users, MessageCircle, Settings, LayoutDashboard, Newspaper } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -15,6 +15,8 @@ import {
 
 const items = [
   { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { path: "/news", icon: Newspaper, label: "News" },
+
   { path: "/shops", icon: Store, label: "Shops" },
   { path: "/roasters", icon: Package, label: "Roasters" },
   { path: "/coffee", icon: Coffee, label: "Coffee" },
