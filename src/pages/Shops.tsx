@@ -188,8 +188,8 @@ const Shops = () => {
   return (
     <>
       <Helmet>
-        <title>Coffee Shops | CoffeeMart</title>
-        <meta property="og:title" content="Coffee Shops | CoffeeMart" />
+        <title>Coffee Shops | CoffeePlanets</title>
+        <meta property="og:title" content="Coffee Shops | CoffeePlanets" />
         <meta property="og:description" content="Discover specialty coffee shops near you with filters, reviews, and maps." />
       </Helmet>
       <div className="min-h-screen bg-background pb-24">

@@ -72,8 +72,8 @@ const ShopProfile = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
       <Helmet>
-        <title>{shop.name} | CoffeeMart</title>
-        <meta property="og:title" content={`${shop.name} | CoffeeMart`} />
+        <title>{shop.name} | CoffeePlanets</title>
+        <meta property="og:title" content={`${shop.name} | CoffeePlanets`} />
         <meta property="og:description" content={shop.description} />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",

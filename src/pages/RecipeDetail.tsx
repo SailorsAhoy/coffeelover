@@ -61,7 +61,7 @@ const RecipeDetail = () => {
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
       <Helmet>
-        <title>{`${recipe.title} Recipe | CoffeeMart`}</title>
+        <title>{`${recipe.title} Recipe | CoffeePlanets`}</title>
         <meta name="description" content={(recipe.description ?? recipe.title).slice(0, 155)} />
         <script type="application/ld+json">
           {JSON.stringify({
@@ -70,7 +70,7 @@ const RecipeDetail = () => {
             name: recipe.title,
             description: recipe.description ?? undefined,
             image: recipe.image_url ?? undefined,
-            author: { "@type": "Person", name: recipe.author?.name ?? "CoffeeMart member" },
+            author: { "@type": "Person", name: recipe.author?.name ?? "CoffeePlanets member" },
             datePublished: recipe.created_at,
             recipeCategory: "Coffee",
             totalTime: recipe.prep_time_minutes ? `PT${recipe.prep_time_minutes}M` : undefined,

@@ -110,8 +110,8 @@ const CoffeeProduct = () => {
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-24">
       <Helmet>
-        <title>{product.name} by {product.roaster} | CoffeeMart</title>
-        <meta property="og:title" content={`${product.name} by ${product.roaster} | CoffeeMart`} />
+        <title>{product.name} by {product.roaster} | CoffeePlanets</title>
+        <meta property="og:title" content={`${product.name} by ${product.roaster} | CoffeePlanets`} />
         <meta property="og:description" content={product.description} />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",

@@ -78,7 +78,7 @@ const Navigation = () => {
             <div className="p-2 bg-primary rounded-lg">
               <Coffee className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold">CoffeeLovers</span>
+            <span className="text-xl font-bold">CoffeePlanets</span>
           </Link>
           
           <div className="flex items-center gap-4">
@@ -143,7 +143,7 @@ const Navigation = () => {
             <div className="p-1.5 bg-primary rounded-lg">
               <Coffee className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="text-lg font-bold">CoffeeLovers</span>
+            <span className="text-lg font-bold">CoffeePlanets</span>
           </Link>
           
           {isAuthenticated && (
