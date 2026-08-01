@@ -1,0 +1,12 @@
+INSERT INTO public.blog_posts (slug, title, excerpt, content, banner_url, category_id, author_id, status, published_at)
+SELECT v.slug, v.title, v.excerpt, v.content, v.banner, c.id, '34c0113b-7491-4164-884f-0c452b1da46b'::uuid, 'published', now() - (v.days || ' days')::interval
+FROM (VALUES
+  ('specialty-prices-2026','Green coffee prices reshape the 2026 season','Producers and roasters recalibrate as the C-market stays volatile into the new harvest.',
+   '<p>The specialty market entered 2026 with the sharpest green price swings in a decade. Roasters who locked forward contracts early are protected, while spot buyers are seeing double-digit increases on washed Ethiopians.</p><h2>What roasters are doing</h2><ul><li>Longer forward contracts with producer partners</li><li>Blending origins to hold retail prices steady</li><li>Transparent pricing pages on their shops</li></ul><p>Expect more direct-trade storytelling on bags this year.</p>','https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1600&q=80','industry-news',1),
+  ('dialling-in-a-new-bag','Dialling in a new bag in three shots','A repeatable espresso routine that gets you to a great cup without wasting half the bag.',
+   '<p>Start at a 1:2 ratio, 18g in and 36g out, and let taste — not the timer — lead.</p><h2>Shot one</h2><p>Pull it, taste it, note whether it is sour or bitter.</p><h2>Shot two</h2><p>Adjust the grind one step in the direction the taste points. Keep dose and ratio fixed.</p><h2>Shot three</h2><p>Fine tune the ratio, not the grind. Most coffees open up between 1:2 and 1:2.4.</p>','https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1600&q=80','brewing',4),
+  ('yirgacheffe-harvest-notes','Harvest notes from Yirgacheffe','Cherry ripeness, drying beds and the people behind this year''s floral lots.',
+   '<p>We spent two weeks on the drying beds in Yirgacheffe with producers finishing this year''s lots.</p><h2>What changed</h2><p>Slower drying and tighter cherry selection produced cleaner cups with more jasmine and less ferment.</p><blockquote>“We would rather lose volume than lose clarity.”</blockquote><p>The first containers land in Europe in the spring.</p>','https://images.unsplash.com/photo-1512568400610-62da28bc8a13?auto=format&fit=crop&w=1600&q=80','origin',9)
+) AS v(slug, title, excerpt, content, banner, cat_slug, days)
+JOIN public.blog_categories c ON c.slug = v.cat_slug
+ON CONFLICT (slug) DO NOTHING;
