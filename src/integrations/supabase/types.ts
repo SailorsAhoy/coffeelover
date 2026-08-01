@@ -2741,6 +2741,7 @@ export type Database = {
         | "teacher"
         | "manufacturer"
         | "supplier"
+        | "author"
       brew_method:
         | "espresso"
         | "pour_over"
@@ -2898,6 +2899,7 @@ export const Constants = {
         "teacher",
         "manufacturer",
         "supplier",
+        "author",
       ],
       brew_method: [
         "espresso",
