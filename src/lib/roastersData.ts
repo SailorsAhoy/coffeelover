@@ -143,7 +143,7 @@ export const subscribeRoasters = (cb: () => void) => {
 export const loadRoastersFromDb = async () => {
   try {
     const { data, error } = await supabase
-      .from("roasters")
+      .from("roasters_public" as any)
       .select("*")
       .order("created_at", { ascending: false })
       .limit(500);

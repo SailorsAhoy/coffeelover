@@ -45,7 +45,7 @@ const ShopProfile = () => {
     if (!shop?.reviewableId) return;
     (async () => {
       const { data } = await supabase
-        .from("shops")
+        .from("shops_public" as any)
         .select("id, owner_user_id, linked_roaster_id")
         .eq("id", shop.reviewableId)
         .maybeSingle();

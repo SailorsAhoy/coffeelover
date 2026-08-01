@@ -353,7 +353,7 @@ export const addShop = (shop: Omit<Shop, "id" | "reviewableId">): Shop => {
 export const loadShopsFromDb = async () => {
   try {
     const { data, error } = await supabase
-      .from("shops")
+      .from("shops_public" as any)
       .select("*")
       .order("created_at", { ascending: false })
       .limit(500);
