@@ -10,6 +10,7 @@ const ROLE_ROUTE: Array<[AppRole, string]> = [
   ["manufacturer", "/dashboard/manufacturer"],
   ["supplier", "/dashboard/supplier"],
   ["teacher", "/dashboard/teacher"],
+  ["author", "/dashboard/author"],
   ["producer", "/dashboard/roastery"],
   ["company", "/dashboard/shop"],
   ["staff", "/dashboard/shop"],
