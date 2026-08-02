@@ -54,6 +54,7 @@ import ShopOwnerDashboard from "./pages/dashboard/ShopOwnerDashboard";
 import RoasteryDashboard from "./pages/dashboard/RoasteryDashboard";
 import ManufacturerDashboard from "./pages/dashboard/ManufacturerDashboard";
 import SupplierDashboard from "./pages/dashboard/SupplierDashboard";
+import AuthorDashboard from "./pages/dashboard/AuthorDashboard";
 import Welcome from "./pages/Welcome";
 import News from "./pages/News";
 import NewsPost from "./pages/NewsPost";
@@ -137,6 +138,7 @@ const App = () => (
           <Route path="/dashboard/shop" element={<RequireAuth roles={["coffee_shop","company","staff","admin"]}><ShopOwnerDashboard /></RequireAuth>} />
           <Route path="/dashboard/roastery" element={<RequireAuth roles={["roaster","producer","admin"]}><RoasteryDashboard /></RequireAuth>} />
           <Route path="/dashboard/manufacturer" element={<RequireAuth roles={["manufacturer","admin"]}><ManufacturerDashboard /></RequireAuth>} />
+          <Route path="/dashboard/author" element={<RequireAuth roles={["author","admin"]}><AuthorDashboard /></RequireAuth>} />
           <Route path="/dashboard/supplier" element={<RequireAuth roles={["supplier","admin"]}><SupplierDashboard /></RequireAuth>} />
           <Route path="*" element={<NotFound />} />
                 </Routes>
