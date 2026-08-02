@@ -1,0 +1,1 @@
+CREATE POLICY "Admins can remove roles" ON public.user_roles FOR DELETE TO authenticated USING (public.has_role(auth.uid(), 'admin'::app_role) AND role <> 'admin'::app_role);
