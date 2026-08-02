@@ -42,6 +42,7 @@ import ShopManagement from "./pages/settings/ShopManagement";
 import FieldPermissions from "./pages/settings/FieldPermissions";
 import UserManagement from "./pages/settings/UserManagement";
 import ContentManagement from "./pages/settings/ContentManagement";
+import AuthorManagement from "./pages/settings/AuthorManagement";
 import SystemSettings from "./pages/settings/SystemSettings";
 import Imports from "./pages/settings/Imports";
 import ImportCategory from "./pages/settings/ImportCategory";
@@ -121,6 +122,7 @@ const App = () => (
             <Route path="field-permissions" element={<FieldPermissions />} />
             <Route path="user-management" element={<UserManagement />} />
             <Route path="content-management" element={<ContentManagement />} />
+            <Route path="authors" element={<AuthorManagement />} />
             <Route path="system-settings" element={<SystemSettings />} />
             <Route path="imports" element={<Imports />} />
             <Route path="imports/:category" element={<ImportCategory />} />

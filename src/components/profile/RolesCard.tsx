@@ -15,6 +15,7 @@ const LABELS: Record<AppRole, string> = {
   user: "Member",
   manufacturer: "Equipment Manufacturer",
   supplier: "Supplier",
+  author: "Author",
 };
 
 export const RolesCard = () => {
