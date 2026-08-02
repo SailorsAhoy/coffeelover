@@ -141,6 +141,14 @@ export async function deletePost(id: string) {
   if (error) throw error;
 }
 
+export async function publishPostNow(id: string) {
+  const { error } = await supabase
+    .from("blog_posts")
+    .update({ status: "published", published_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw error;
+}
+
 export async function incrementPostViews(id: string) {
   await supabase.rpc("increment_post_views" as any, { _post_id: id });
 }
