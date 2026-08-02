@@ -1,7 +1,7 @@
 import logo from "@/assets/coffeeplanets-logo.jpg";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Coffee, Home, ShoppingBag, Store, BookOpen, Package, User, PenLine, GraduationCap, LogOut, LogIn, Settings, Briefcase, BookMarked, MessageSquare, Library, Users } from "lucide-react";
+import { Coffee, Home, ShoppingBag, Store, BookOpen, Package, User, PenLine, GraduationCap, LogOut, LogIn, Settings, Briefcase, BookMarked, MessageSquare, Library, Users, Newspaper } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -54,6 +54,7 @@ const Navigation = () => {
 
   const mobileNavItems = [
     { path: "/", icon: Home, label: "Home" },
+    { path: "/news", icon: Newspaper, label: "Newsfeed" },
     { path: "/shops", icon: Store, label: "Shops" },
     { path: "/roasters", icon: Package, label: "Roasters" },
     { path: "/coffee", icon: Coffee, label: "Coffee" },

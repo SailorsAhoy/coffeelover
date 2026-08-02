@@ -15,7 +15,7 @@ import {
 
 const items = [
   { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { path: "/news", icon: Newspaper, label: "News" },
+  { path: "/news", icon: Newspaper, label: "Newsfeed" },
 
   { path: "/shops", icon: Store, label: "Shops" },
   { path: "/roasters", icon: Package, label: "Roasters" },

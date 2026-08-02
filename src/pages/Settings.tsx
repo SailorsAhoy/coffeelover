@@ -1,7 +1,7 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Store, Users, FileText, Cog, Tag, ShieldCheck, Upload } from "lucide-react";
+import { Store, Users, FileText, Cog, Tag, ShieldCheck, Upload, Newspaper } from "lucide-react";
 
 const Settings = () => {
   const location = useLocation();
@@ -13,6 +13,7 @@ const Settings = () => {
     { title: "Bulk Imports", icon: Upload, url: "/settings/imports" },
     { title: "User Management", icon: Users, url: "/settings/user-management" },
     { title: "Content Management", icon: FileText, url: "/settings/content-management" },
+    { title: "Authors & Newsfeed", icon: Newspaper, url: "/settings/authors" },
     { title: "System Settings", icon: Cog, url: "/settings/system-settings" },
   ];
 
