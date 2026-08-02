@@ -122,6 +122,7 @@ const App = () => (
             <Route path="field-permissions" element={<FieldPermissions />} />
             <Route path="user-management" element={<UserManagement />} />
             <Route path="content-management" element={<ContentManagement />} />
+            <Route path="authors" element={<AuthorManagement />} />
             <Route path="system-settings" element={<SystemSettings />} />
             <Route path="imports" element={<Imports />} />
             <Route path="imports/:category" element={<ImportCategory />} />
