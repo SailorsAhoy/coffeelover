@@ -715,6 +715,50 @@ export type Database = {
         }
         Relationships: []
       }
+      content_translations: {
+        Row: {
+          column_name: string
+          created_at: string
+          id: string
+          is_machine: boolean
+          locale: string
+          row_id: string
+          table_name: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          column_name: string
+          created_at?: string
+          id?: string
+          is_machine?: boolean
+          locale: string
+          row_id: string
+          table_name: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          column_name?: string
+          created_at?: string
+          id?: string
+          is_machine?: boolean
+          locale?: string
+          row_id?: string
+          table_name?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_translations_locale_fkey"
+            columns: ["locale"]
+            isOneToOne: false
+            referencedRelation: "languages"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       countries: {
         Row: {
           code: string
@@ -1120,6 +1164,42 @@ export type Database = {
           },
         ]
       }
+      languages: {
+        Row: {
+          code: string
+          created_at: string
+          enabled: boolean
+          flag_emoji: string | null
+          is_default: boolean
+          name: string
+          native_name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          enabled?: boolean
+          flag_emoji?: string | null
+          is_default?: boolean
+          name: string
+          native_name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          enabled?: boolean
+          flag_emoji?: string | null
+          is_default?: boolean
+          name?: string
+          native_name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       listing_claims: {
         Row: {
           claimant_user_id: string
@@ -1486,6 +1566,7 @@ export type Database = {
           marketing_opt_out: boolean
           name: string
           phone: string | null
+          preferred_language: string | null
           updated_at: string
         }
         Insert: {
@@ -1496,6 +1577,7 @@ export type Database = {
           marketing_opt_out?: boolean
           name: string
           phone?: string | null
+          preferred_language?: string | null
           updated_at?: string
         }
         Update: {
@@ -1506,6 +1588,7 @@ export type Database = {
           marketing_opt_out?: boolean
           name?: string
           phone?: string | null
+          preferred_language?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -2209,6 +2292,78 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "manufacturer_products"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      ui_strings: {
+        Row: {
+          created_at: string
+          description: string | null
+          en_value: string
+          key: string
+          namespace: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          en_value: string
+          key: string
+          namespace?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          en_value?: string
+          key?: string
+          namespace?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ui_translations: {
+        Row: {
+          created_at: string
+          id: string
+          is_machine: boolean
+          locale: string
+          string_key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_machine?: boolean
+          locale: string
+          string_key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_machine?: boolean
+          locale?: string
+          string_key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ui_translations_locale_fkey"
+            columns: ["locale"]
+            isOneToOne: false
+            referencedRelation: "languages"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "ui_translations_string_key_fkey"
+            columns: ["string_key"]
+            isOneToOne: false
+            referencedRelation: "ui_strings"
+            referencedColumns: ["key"]
           },
         ]
       }

@@ -17,11 +17,14 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import { listMyChats } from "@/lib/messaging";
 import { supabase } from "@/integrations/supabase/client";
+import LanguageSelector from "@/components/LanguageSelector";
+import { useT } from "@/contexts/I18nContext";
 
 const Navigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, profile, hasRole, signOut, user } = useCurrentUser();
+  const t = useT();
   const [msgUnread, setMsgUnread] = useState(0);
 
   useEffect(() => {
@@ -53,22 +56,22 @@ const Navigation = () => {
     .toUpperCase();
 
   const mobileNavItems = [
-    { path: "/", icon: Home, label: "Home" },
-    { path: "/news", icon: Newspaper, label: "Newsfeed" },
-    { path: "/shops", icon: Store, label: "Shops" },
-    { path: "/roasters", icon: Package, label: "Roasters" },
-    { path: "/coffee", icon: Coffee, label: "Coffee" },
-    { path: "/messages", icon: MessageSquare, label: "Messages" },
-    { path: "/guides", icon: BookOpen, label: "Guides" },
-    { path: "/recipes", icon: BookOpen, label: "Recipes" },
-    { path: "/equipment", icon: ShoppingBag, label: "Equipment" },
-    { path: "/journal", icon: PenLine, label: "Journal" },
-    { path: "/academy", icon: GraduationCap, label: "Academy" },
-    { path: "/jobs", icon: Briefcase, label: "Jobs" },
-    { path: "/wiki", icon: BookMarked, label: "Wiki" },
-    { path: "/forum", icon: MessageSquare, label: "Forum" },
-    { path: "/library", icon: Library, label: "Library" },
-    { path: "/profile", icon: User, label: "Profile" },
+    { path: "/", icon: Home, label: t("nav.home") },
+    { path: "/news", icon: Newspaper, label: t("nav.newsfeed") },
+    { path: "/shops", icon: Store, label: t("nav.shops") },
+    { path: "/roasters", icon: Package, label: t("nav.roasters") },
+    { path: "/coffee", icon: Coffee, label: t("nav.coffee") },
+    { path: "/messages", icon: MessageSquare, label: t("nav.messages") },
+    { path: "/guides", icon: BookOpen, label: t("nav.guides") },
+    { path: "/recipes", icon: BookOpen, label: t("nav.recipes") },
+    { path: "/equipment", icon: ShoppingBag, label: t("nav.equipment") },
+    { path: "/journal", icon: PenLine, label: t("nav.journal") },
+    { path: "/academy", icon: GraduationCap, label: t("nav.academy") },
+    { path: "/jobs", icon: Briefcase, label: t("nav.jobs") },
+    { path: "/wiki", icon: BookMarked, label: t("nav.wiki") },
+    { path: "/forum", icon: MessageSquare, label: t("nav.forum") },
+    { path: "/library", icon: Library, label: t("nav.library") },
+    { path: "/profile", icon: User, label: t("nav.profile") },
   ];
 
   return (
@@ -91,6 +94,8 @@ const Navigation = () => {
               )}
             </Link>
 
+            <LanguageSelector />
+
             <NotificationBell />
             
             {isAuthenticated ? (
@@ -108,28 +113,28 @@ const Navigation = () => {
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
                       <User className="w-4 h-4" />
-                      <span>Profile</span>
+                      <span>{t("nav.profile")}</span>
                     </Link>
                   </DropdownMenuItem>
                   {hasRole("admin") && (
                     <DropdownMenuItem asChild>
                       <Link to="/settings/user-management" className="flex items-center gap-2 cursor-pointer">
                         <Settings className="w-4 h-4" />
-                        <span>Admin Settings</span>
+                        <span>{t("nav.admin_settings")}</span>
                       </Link>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onSelect={handleLogout} className="flex items-center gap-2 cursor-pointer text-destructive">
                     <LogOut className="w-4 h-4" />
-                    <span>Log out</span>
+                    <span>{t("nav.sign_out")}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <Link to="/auth" className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-medium">
                 <LogIn className="w-4 h-4" />
-                Sign in
+                {t("nav.sign_in")}
               </Link>
             )}
           </div>
@@ -157,6 +162,8 @@ const Navigation = () => {
               <NotificationBell />
             </div>
           )}
+          <LanguageSelector compact />
+
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="outline-none">
@@ -172,28 +179,28 @@ const Navigation = () => {
                 <DropdownMenuItem asChild>
                   <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
                     <User className="w-4 h-4" />
-                    <span>Profile</span>
+                    <span>{t("nav.profile")}</span>
                   </Link>
                 </DropdownMenuItem>
                 {hasRole("admin") && (
                   <DropdownMenuItem asChild>
                     <Link to="/settings/user-management" className="flex items-center gap-2 cursor-pointer">
                       <Settings className="w-4 h-4" />
-                      <span>Admin Settings</span>
+                      <span>{t("nav.admin_settings")}</span>
                     </Link>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={handleLogout} className="flex items-center gap-2 cursor-pointer text-destructive">
                   <LogOut className="w-4 h-4" />
-                  <span>Log out</span>
+                  <span>{t("nav.sign_out")}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <Link to="/auth" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium">
               <LogIn className="w-4 h-4" />
-              Sign in
+              {t("nav.sign_in")}
             </Link>
           )}
         </div>
