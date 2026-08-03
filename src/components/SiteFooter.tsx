@@ -69,13 +69,13 @@ const SiteFooter = () => {
           <h3 className="text-sm font-semibold text-foreground mb-3">{t("footer.explore")}</h3>
           <ul className="grid grid-cols-2 gap-x-4 gap-y-2">
             {menuLinks.map((m) => (
-              <li key={m.label}>
+              <li key={m.path}>
                 <Link
                   to={m.path}
                   className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   <m.icon className="w-4 h-4 shrink-0" />
-                  <span className="truncate">{m.label}</span>
+                  <span className="truncate">{t(m.key)}</span>
                 </Link>
               </li>
             ))}
@@ -89,17 +89,17 @@ const SiteFooter = () => {
             <ul className="space-y-2">
               {companyLinks.map((l) => (
                 <li key={l}>
-                  <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">{l}</a>
+                  <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t(l)}</a>
                 </li>
               ))}
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-foreground mb-3">Guides</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t("footer.guides")}</h3>
             <ul className="space-y-2">
               {guideLinks.map((l) => (
                 <li key={l}>
-                  <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">{l}</a>
+                  <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t(l)}</a>
                 </li>
               ))}
             </ul>
@@ -109,7 +109,7 @@ const SiteFooter = () => {
 
       <div className="border-t border-border">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 text-xs text-muted-foreground text-center">
-          © {new Date().getFullYear()} CoffeePlanets. All rights reserved.
+          © {new Date().getFullYear()} CoffeePlanets. {t("footer.rights")}
         </div>
       </div>
     </footer>

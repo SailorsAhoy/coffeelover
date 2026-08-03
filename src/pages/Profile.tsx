@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Phone, MapPin } from "lucide-react";
 import { RolesCard } from "@/components/profile/RolesCard";
 import EmailPreferencesCard from "@/components/profile/EmailPreferencesCard";
+import LanguagePreferenceCard from "@/components/profile/LanguagePreferenceCard";
 import { SubscriptionsCard } from "@/components/profile/SubscriptionsCard";
 import MyClaimsPanel from "@/components/listings/MyClaimsPanel";
 import SocialTabs from "@/components/profile/SocialTabs";
@@ -145,6 +146,8 @@ const Profile = () => {
             </form>
           </CardContent>
         </Card>
+
+        <LanguagePreferenceCard />
 
         <EmailPreferencesCard />
         <RolesCard />
