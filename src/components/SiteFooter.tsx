@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useT } from "@/contexts/I18nContext";
 import logo from "@/assets/coffeeplanets-logo.jpg";
 import {
   Coffee, Home, Store, Package, BookOpen, ShoppingBag, PenLine, GraduationCap,
@@ -6,20 +7,20 @@ import {
 } from "lucide-react";
 
 const menuLinks = [
-  { path: "/", icon: Home, label: "Home" },
-  { path: "/news", icon: Newspaper, label: "News" },
-  { path: "/shops", icon: Store, label: "Coffee Shops" },
-  { path: "/roasters", icon: Package, label: "Roasters" },
-  { path: "/coffee", icon: Coffee, label: "Coffee" },
-  { path: "/guides", icon: BookOpen, label: "Brewing Guides" },
-  { path: "/recipes", icon: BookOpen, label: "Recipes" },
-  { path: "/equipment", icon: ShoppingBag, label: "Equipment" },
-  { path: "/journal", icon: PenLine, label: "Brewing Journal" },
-  { path: "/academy", icon: GraduationCap, label: "Barista Academy" },
-  { path: "/jobs", icon: Briefcase, label: "Coffee Jobs" },
-  { path: "/wiki", icon: BookMarked, label: "Coffee Wiki" },
-  { path: "/forum", icon: MessageSquare, label: "Coffee Forum" },
-  { path: "/library", icon: Library, label: "Coffee Library" },
+  { path: "/", icon: Home, key: "nav.home" },
+  { path: "/news", icon: Newspaper, key: "nav.news" },
+  { path: "/shops", icon: Store, key: "nav.coffee_shops" },
+  { path: "/roasters", icon: Package, key: "nav.roasters" },
+  { path: "/coffee", icon: Coffee, key: "nav.coffee" },
+  { path: "/guides", icon: BookOpen, key: "nav.brewing_guides" },
+  { path: "/recipes", icon: BookOpen, key: "nav.recipes" },
+  { path: "/equipment", icon: ShoppingBag, key: "nav.equipment" },
+  { path: "/journal", icon: PenLine, key: "nav.brewing_journal" },
+  { path: "/academy", icon: GraduationCap, key: "nav.barista_academy" },
+  { path: "/jobs", icon: Briefcase, key: "nav.coffee_jobs" },
+  { path: "/wiki", icon: BookMarked, key: "nav.coffee_wiki" },
+  { path: "/forum", icon: MessageSquare, key: "nav.coffee_forum" },
+  { path: "/library", icon: Library, key: "nav.coffee_library" },
 ];
 
 
@@ -31,10 +32,11 @@ const socials = [
   { icon: Linkedin, label: "LinkedIn" },
 ];
 
-const companyLinks = ["About Us", "FAQ", "Contact"];
-const guideLinks = ["Roasters", "Shop Owners", "Affiliates", "Advertising"];
+const companyLinks = ["footer.about", "footer.faq", "footer.contact"];
+const guideLinks = ["footer.for_roasters", "footer.for_shop_owners", "footer.affiliates", "footer.advertising"];
 
 const SiteFooter = () => {
+  const t = useT();
   return (
     <footer className="border-t border-border bg-card mt-12 pb-24 md:pb-0">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-10 grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -46,7 +48,7 @@ const SiteFooter = () => {
           </Link>
 
           <p className="text-sm text-muted-foreground">
-            The specialty coffee marketplace and community.
+            {t("footer.tagline")}
           </p>
           <div className="flex items-center gap-2">
             {socials.map((s) => (
@@ -64,16 +66,16 @@ const SiteFooter = () => {
 
         {/* Menu */}
         <div className="md:col-span-2">
-          <h3 className="text-sm font-semibold text-foreground mb-3">Explore</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-3">{t("footer.explore")}</h3>
           <ul className="grid grid-cols-2 gap-x-4 gap-y-2">
             {menuLinks.map((m) => (
-              <li key={m.label}>
+              <li key={m.path}>
                 <Link
                   to={m.path}
                   className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
                   <m.icon className="w-4 h-4 shrink-0" />
-                  <span className="truncate">{m.label}</span>
+                  <span className="truncate">{t(m.key)}</span>
                 </Link>
               </li>
             ))}
@@ -87,17 +89,17 @@ const SiteFooter = () => {
             <ul className="space-y-2">
               {companyLinks.map((l) => (
                 <li key={l}>
-                  <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">{l}</a>
+                  <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t(l)}</a>
                 </li>
               ))}
             </ul>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-foreground mb-3">Guides</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t("footer.guides")}</h3>
             <ul className="space-y-2">
               {guideLinks.map((l) => (
                 <li key={l}>
-                  <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">{l}</a>
+                  <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t(l)}</a>
                 </li>
               ))}
             </ul>
@@ -107,7 +109,7 @@ const SiteFooter = () => {
 
       <div className="border-t border-border">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 text-xs text-muted-foreground text-center">
-          © {new Date().getFullYear()} CoffeePlanets. All rights reserved.
+          © {new Date().getFullYear()} CoffeePlanets. {t("footer.rights")}
         </div>
       </div>
     </footer>

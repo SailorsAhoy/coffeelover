@@ -62,12 +62,15 @@ import NewsEditor from "./pages/NewsEditor";
 import MyNewsPosts from "./pages/MyNewsPosts";
 import { GatedRoute } from "./components/GatedRoute";
 import SiteFooter from "./components/SiteFooter";
+import LanguageManagement from "./pages/settings/LanguageManagement";
+import { I18nProvider } from "./contexts/I18nContext";
 
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <I18nProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -125,6 +128,7 @@ const App = () => (
             <Route path="content-management" element={<ContentManagement />} />
             <Route path="authors" element={<AuthorManagement />} />
             <Route path="system-settings" element={<SystemSettings />} />
+            <Route path="languages" element={<LanguageManagement />} />
             <Route path="imports" element={<Imports />} />
             <Route path="imports/:category" element={<ImportCategory />} />
           </Route>
@@ -149,6 +153,7 @@ const App = () => (
         </SidebarProvider>
       </BrowserRouter>
     </TooltipProvider>
+    </I18nProvider>
   </QueryClientProvider>
 );
 
