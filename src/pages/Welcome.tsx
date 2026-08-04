@@ -183,7 +183,7 @@ const Welcome = () => {
       >
         <div className="max-w-xl mx-auto px-5 py-3 sm:py-4 space-y-2">
           <Link to="/auth" state={{ from, mode: "signup" }} className="block">
-            <Button size="lg" className="w-full">Sign up free</Button>
+            <Button size="lg" className="w-full">{t("welcome.cta_button", "Sign up free")}</Button>
           </Link>
           <div className="flex items-center justify-between gap-3 text-xs">
             <Link
@@ -191,10 +191,10 @@ const Welcome = () => {
               state={{ from }}
               className="text-muted-foreground hover:text-foreground underline"
             >
-              I already have an account
+              {t("welcome.have_account", "I already have an account")}
             </Link>
             <Link to="/" className="text-muted-foreground hover:text-foreground underline">
-              ← Home
+              ← {t("welcome.home", "Home")}
             </Link>
           </div>
         </div>
