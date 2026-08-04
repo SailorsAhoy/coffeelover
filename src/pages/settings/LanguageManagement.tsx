@@ -32,7 +32,7 @@ interface StringRow {
 }
 
 const CONTENT_SOURCES = [
-  { table: "blog_posts", label: "News posts", columns: ["title", "excerpt"], idCol: "id" },
+  { table: "blog_posts", label: "News posts", columns: ["title", "excerpt", "content"], idCol: "id" },
   { table: "blog_categories", label: "News categories", columns: ["name", "description"], idCol: "id" },
   { table: "recipes", label: "Recipes", columns: ["title", "description"], idCol: "id" },
   { table: "shops", label: "Coffee shops", columns: ["description", "bio"], idCol: "id" },
