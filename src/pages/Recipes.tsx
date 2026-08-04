@@ -19,6 +19,7 @@ import {
 import { useReviewAggregates } from "@/hooks/useReviewAggregates";
 import RecipeCreateDialog from "@/components/recipes/RecipeCreateDialog";
 import {
+import { useI18n } from "@/contexts/I18nContext";
   BEVERAGE_TYPES,
   BREW_METHODS,
   DIFFICULTIES,
@@ -42,6 +43,7 @@ const SORTS: { key: SortKey; label: string }[] = [
 const ANY = "any";
 
 const Recipes = () => {
+  const { tc, loadContent } = useI18n();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SortKey>("newest");
@@ -59,6 +61,10 @@ const Recipes = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    void loadContent("recipes");
+  }, [loadContent]);
 
   useEffect(() => {
     load();
@@ -281,10 +287,10 @@ const Recipes = () => {
                   <CardHeader>
                     <CardTitle className="text-lg">
                       <Link to={`/recipes/${recipe.id}`} className="hover:underline">
-                        {recipe.title}
+                        {tc("recipes", recipe.id, "title", recipe.title)}
                       </Link>
                     </CardTitle>
-                    <CardDescription className="line-clamp-2">{recipe.description}</CardDescription>
+                    <CardDescription className="line-clamp-2">{tc("recipes", recipe.id, "description", recipe.description)}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex flex-wrap gap-2">
