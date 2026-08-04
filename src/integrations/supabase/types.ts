@@ -3149,6 +3149,10 @@ export type Database = {
       }
     }
     Functions: {
+      can_view_forum_thread: {
+        Args: { _thread_id: string; _user_id: string }
+        Returns: boolean
+      }
       get_or_create_dm: { Args: { other_user: string }; Returns: string }
       get_public_app_setting: { Args: { _key: string }; Returns: Json }
       has_active_subscription: {
