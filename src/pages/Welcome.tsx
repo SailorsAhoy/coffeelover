@@ -96,8 +96,9 @@ const Welcome = () => {
               <Separator className="my-4" />
 
               {/* About */}
-              <h3 className="text-sm font-semibold text-foreground mb-1.5">About</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-1.5">{t("welcome.about", "About")}</h3>
               <p className="text-sm text-foreground/80">{ex.about}</p>
+
 
               {/* Details */}
               <Separator className="my-4" />
