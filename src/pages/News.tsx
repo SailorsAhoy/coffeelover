@@ -10,12 +10,14 @@ import PostBanner from "@/components/blog/PostBanner";
 import { listCategories, listPosts, type BlogCategory, type BlogPost } from "@/lib/blogData";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { supabase } from "@/integrations/supabase/client";
+import { useI18n } from "@/contexts/I18nContext";
 
 const formatDate = (d?: string | null) =>
   d ? new Date(d).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) : "";
 
 const News = () => {
   const { user, roles } = useCurrentUser();
+  const { t, tc, loadContent } = useI18n();
   const canWrite = (roles as string[]).includes("author") || (roles as string[]).includes("admin");
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -34,6 +36,11 @@ const News = () => {
       .catch(() => setPosts([]))
       .finally(() => setLoading(false));
   }, [active, search]);
+
+  useEffect(() => {
+    void loadContent("blog_posts");
+    void loadContent("blog_categories");
+  }, [loadContent]);
 
   const [featured, ...rest] = posts;
 
@@ -56,7 +63,7 @@ const News = () => {
       <div className="max-w-6xl mx-auto space-y-6">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">News</h1>
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">{t("nav.news", "News")}</h1>
             <p className="text-muted-foreground mt-1">Stories, brewing craft and industry moves.</p>
           </div>
           <div className="flex items-center gap-2">
@@ -100,7 +107,7 @@ const News = () => {
               size="sm"
               onClick={() => setActive(c.slug)}
             >
-              {c.name}
+              {tc("blog_categories", c.id, "name", c.name)}
             </Button>
           ))}
         </div>
@@ -120,8 +127,8 @@ const News = () => {
                 imageUrl={featured.banner_url || featured.category?.banner_url}
                 overlayColor={featured.category?.overlay_color}
                 overlayOpacity={featured.category?.overlay_opacity}
-                eyebrow={featured.category?.name}
-                title={featured.title}
+                eyebrow={featured.category ? tc("blog_categories", featured.category.id, "name", featured.category.name) : null}
+                title={tc("blog_posts", featured.id, "title", featured.title)}
                 height="h-64 md:h-96"
                 meta={
                   <>
@@ -131,7 +138,7 @@ const News = () => {
               />
               {featured.excerpt && (
                 <p className="mt-3 text-muted-foreground group-hover:text-foreground transition-colors">
-                  {featured.excerpt}
+                  {tc("blog_posts", featured.id, "excerpt", featured.excerpt)}
                 </p>
               )}
             </Link>
@@ -144,12 +151,12 @@ const News = () => {
                       imageUrl={p.banner_url || p.category?.banner_url}
                       overlayColor={p.category?.overlay_color}
                       overlayOpacity={p.category?.overlay_opacity}
-                      title={p.title}
+                      title={tc("blog_posts", p.id, "title", p.title)}
                       height="h-40"
                     />
                     <CardContent className="pt-4 space-y-2">
-                      {p.category && <Badge variant="secondary">{p.category.name}</Badge>}
-                      <p className="text-sm text-muted-foreground line-clamp-3">{p.excerpt}</p>
+                      {p.category && <Badge variant="secondary">{tc("blog_categories", p.category.id, "name", p.category.name)}</Badge>}
+                      <p className="text-sm text-muted-foreground line-clamp-3">{tc("blog_posts", p.id, "excerpt", p.excerpt)}</p>
                       <p className="text-xs text-muted-foreground">
                         {p.author_name ?? "CoffeePlanets"} · {formatDate(p.published_at)}
                       </p>

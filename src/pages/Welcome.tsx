@@ -4,11 +4,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Check, Star, Lock, ArrowRight } from "lucide-react";
-import { getWelcomeContent } from "@/lib/welcomeContent";
+import { translateWelcomeContent } from "@/lib/i18n/welcomeStrings";
+import { useT } from "@/contexts/I18nContext";
 
 const Welcome = () => {
   const { slug } = useParams<{ slug: string }>();
-  const content = getWelcomeContent(slug);
+  const t = useT();
+  const content = translateWelcomeContent(slug, t);
   const Icon = content.icon;
   const from = `/${content.slug}`;
   const ex = content.example;
@@ -94,12 +96,13 @@ const Welcome = () => {
               <Separator className="my-4" />
 
               {/* About */}
-              <h3 className="text-sm font-semibold text-foreground mb-1.5">About</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-1.5">{t("welcome.about", "About")}</h3>
               <p className="text-sm text-foreground/80">{ex.about}</p>
+
 
               {/* Details */}
               <Separator className="my-4" />
-              <h3 className="text-sm font-semibold text-foreground mb-2">Details</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-2">{t("welcome.details", "Details")}</h3>
               <dl className="space-y-1.5">
                 {ex.details.map((d) => (
                   <div key={d.label} className="flex gap-3 text-sm">
@@ -123,7 +126,7 @@ const Welcome = () => {
 
               {/* Review */}
               <Separator className="my-4" />
-              <h3 className="text-sm font-semibold text-foreground mb-2">Reviews</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-2">{t("welcome.reviews", "Reviews")}</h3>
               <div className="rounded-lg bg-muted/60 p-3">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm font-medium text-foreground">{ex.review.author}</span>
@@ -139,7 +142,7 @@ const Welcome = () => {
               {/* Locked teaser */}
               <div className="mt-4 flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2.5 text-xs text-muted-foreground">
                 <Lock className="w-3.5 h-3.5 shrink-0" />
-                <span>Contact details, photos and the full directory unlock when you sign in.</span>
+                <span>{t("welcome.locked_note", "Contact details, photos and the full directory unlock when you sign in.")}</span>
               </div>
             </CardContent>
           </Card>
@@ -149,21 +152,24 @@ const Welcome = () => {
         <div className="mt-6 rounded-2xl bg-gradient-to-br from-primary to-secondary p-[2px] shadow-xl">
           <div className="rounded-[calc(1rem-2px)] bg-card px-5 py-6 text-center">
             <h3 className="text-xl font-bold text-foreground">
-              This is just one of hundreds
+              {t("welcome.one_of_hundreds", "This is just one of hundreds")}
             </h3>
             <p className="text-sm text-muted-foreground mt-1.5 mb-5">
-              Create a free account to browse every {content.title.toLowerCase()} listing, save favorites and message directly.
+              {t(
+                "welcome.create_account_body",
+                "Create a free account to browse every listing, save favorites and message directly.",
+              )}
             </p>
             <Link to="/auth" state={{ from, mode: "signup" }} className="block">
               <Button size="lg" className="w-full text-base font-semibold h-12 shadow-lg hover:shadow-xl transition-shadow">
-                Sign up free
+                {t("welcome.cta_button", "Sign up free")}
                 <ArrowRight className="w-5 h-5 ml-1" />
               </Button>
             </Link>
             <p className="text-xs text-muted-foreground mt-3">
-              Free forever · No credit card ·{" "}
+              {t("welcome.free_forever", "Free forever · No credit card ·")}{" "}
               <Link to="/auth" state={{ from }} className="underline hover:text-foreground">
-                I already have an account
+                {t("welcome.have_account", "I already have an account")}
               </Link>
             </p>
           </div>
@@ -177,7 +183,7 @@ const Welcome = () => {
       >
         <div className="max-w-xl mx-auto px-5 py-3 sm:py-4 space-y-2">
           <Link to="/auth" state={{ from, mode: "signup" }} className="block">
-            <Button size="lg" className="w-full">Sign up free</Button>
+            <Button size="lg" className="w-full">{t("welcome.cta_button", "Sign up free")}</Button>
           </Link>
           <div className="flex items-center justify-between gap-3 text-xs">
             <Link
@@ -185,10 +191,10 @@ const Welcome = () => {
               state={{ from }}
               className="text-muted-foreground hover:text-foreground underline"
             >
-              I already have an account
+              {t("welcome.have_account", "I already have an account")}
             </Link>
             <Link to="/" className="text-muted-foreground hover:text-foreground underline">
-              ← Home
+              ← {t("welcome.home", "Home")}
             </Link>
           </div>
         </div>

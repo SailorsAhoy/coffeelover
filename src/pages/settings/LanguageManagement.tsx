@@ -13,6 +13,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/contexts/I18nContext";
 import { BASE_STRINGS } from "@/lib/i18n/strings";
+import { WELCOME_STRINGS } from "@/lib/i18n/welcomeStrings";
 import { Languages, Plus, RefreshCw, Sparkles, Trash2 } from "lucide-react";
 
 interface LangRow {
@@ -32,7 +33,7 @@ interface StringRow {
 }
 
 const CONTENT_SOURCES = [
-  { table: "blog_posts", label: "News posts", columns: ["title", "excerpt"], idCol: "id" },
+  { table: "blog_posts", label: "News posts", columns: ["title", "excerpt", "content"], idCol: "id" },
   { table: "blog_categories", label: "News categories", columns: ["name", "description"], idCol: "id" },
   { table: "recipes", label: "Recipes", columns: ["title", "description"], idCol: "id" },
   { table: "shops", label: "Coffee shops", columns: ["description", "bio"], idCol: "id" },
@@ -82,7 +83,7 @@ const LanguageManagement = () => {
 
   const syncBaseStrings = async () => {
     setBusy(true);
-    const rowsToUpsert = BASE_STRINGS.map((s) => ({ key: s.key, namespace: s.namespace, en_value: s.en }));
+    const rowsToUpsert = [...BASE_STRINGS, ...WELCOME_STRINGS].map((s) => ({ key: s.key, namespace: s.namespace, en_value: s.en }));
     const existingKeys = new Set(strings.map((s) => s.key));
     const missing = rowsToUpsert.filter((r) => !existingKeys.has(r.key));
     if (missing.length) {

@@ -102,6 +102,15 @@ export const BASE_STRINGS: StringDef[] = [
   { key: "welcome.cta_body", namespace: "welcome", en: "Create a free account to browse every listing, guide and recipe." },
   { key: "welcome.cta_button", namespace: "welcome", en: "Sign up free" },
   { key: "welcome.already_member", namespace: "welcome", en: "Already a member? Sign in" },
+  { key: "welcome.about", namespace: "welcome", en: "About" },
+  { key: "welcome.details", namespace: "welcome", en: "Details" },
+  { key: "welcome.reviews", namespace: "welcome", en: "Reviews" },
+  { key: "welcome.locked_note", namespace: "welcome", en: "Contact details, photos and the full directory unlock when you sign in." },
+  { key: "welcome.one_of_hundreds", namespace: "welcome", en: "This is just one of hundreds" },
+  { key: "welcome.create_account_body", namespace: "welcome", en: "Create a free account to browse every listing, save favorites and message directly." },
+  { key: "welcome.free_forever", namespace: "welcome", en: "Free forever · No credit card ·" },
+  { key: "welcome.have_account", namespace: "welcome", en: "I already have an account" },
+  { key: "welcome.home", namespace: "welcome", en: "Home" },
 
   // Profile
   { key: "profile.title", namespace: "profile", en: "Profile" },
