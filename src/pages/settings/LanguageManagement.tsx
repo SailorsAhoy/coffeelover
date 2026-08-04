@@ -13,6 +13,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/contexts/I18nContext";
 import { BASE_STRINGS } from "@/lib/i18n/strings";
+import { WELCOME_STRINGS } from "@/lib/i18n/welcomeStrings";
 import { Languages, Plus, RefreshCw, Sparkles, Trash2 } from "lucide-react";
 
 interface LangRow {
