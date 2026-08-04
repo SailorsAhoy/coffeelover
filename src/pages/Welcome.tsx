@@ -4,11 +4,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Check, Star, Lock, ArrowRight } from "lucide-react";
-import { getWelcomeContent } from "@/lib/welcomeContent";
+import { translateWelcomeContent } from "@/lib/i18n/welcomeStrings";
+import { useT } from "@/contexts/I18nContext";
 
 const Welcome = () => {
   const { slug } = useParams<{ slug: string }>();
-  const content = getWelcomeContent(slug);
+  const t = useT();
+  const content = translateWelcomeContent(slug, t);
   const Icon = content.icon;
   const from = `/${content.slug}`;
   const ex = content.example;
