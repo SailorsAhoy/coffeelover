@@ -126,7 +126,7 @@ const Welcome = () => {
 
               {/* Review */}
               <Separator className="my-4" />
-              <h3 className="text-sm font-semibold text-foreground mb-2">Reviews</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-2">{t("welcome.reviews", "Reviews")}</h3>
               <div className="rounded-lg bg-muted/60 p-3">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm font-medium text-foreground">{ex.review.author}</span>
