@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import PostBanner from "@/components/blog/PostBanner";
 import { getPostBySlug, incrementPostViews, type BlogPost } from "@/lib/blogData";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useI18n } from "@/contexts/I18nContext";
 
 const formatDate = (d?: string | null) =>
   d ? new Date(d).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) : "";
@@ -14,6 +15,7 @@ const formatDate = (d?: string | null) =>
 const NewsPost = () => {
   const { slug } = useParams();
   const { user, roles } = useCurrentUser();
+  const { tc, loadContent } = useI18n();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -28,6 +30,11 @@ const NewsPost = () => {
       .catch(() => setPost(null))
       .finally(() => setLoading(false));
   }, [slug]);
+
+  useEffect(() => {
+    void loadContent("blog_posts");
+    void loadContent("blog_categories");
+  }, [loadContent]);
 
   const canEdit = post && user && (post.author_id === user.id || (roles as string[]).includes("admin"));
 
@@ -45,21 +52,28 @@ const NewsPost = () => {
     );
   }
 
+  const title = tc("blog_posts", post.id, "title", post.title);
+  const excerpt = tc("blog_posts", post.id, "excerpt", post.excerpt);
+  const body = tc("blog_posts", post.id, "content", post.content);
+  const categoryName = post.category
+    ? tc("blog_categories", post.category.id, "name", post.category.name)
+    : null;
+
   return (
     <div className="min-h-screen pt-20 md:pt-24 pb-28 md:pb-12 px-4 md:px-6">
       <Helmet>
-        <title>{`${post.title} — CoffeePlanets News`}</title>
-        <meta name="description" content={post.excerpt ?? post.title} />
-        <meta property="og:title" content={post.title} />
-        <meta property="og:description" content={post.excerpt ?? post.title} />
+        <title>{`${title} — CoffeePlanets News`}</title>
+        <meta name="description" content={excerpt || title} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={excerpt || title} />
         <meta property="og:type" content="article" />
         {post.banner_url && <meta property="og:image" content={post.banner_url} />}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "BlogPosting",
-            headline: post.title,
-            description: post.excerpt ?? undefined,
+            headline: title,
+            description: excerpt || undefined,
             image: post.banner_url ?? undefined,
             datePublished: post.published_at ?? post.created_at,
             dateModified: post.updated_at,
@@ -89,8 +103,8 @@ const NewsPost = () => {
           imageUrl={post.banner_url || post.category?.banner_url}
           overlayColor={post.category?.overlay_color}
           overlayOpacity={post.category?.overlay_opacity}
-          eyebrow={post.category?.name}
-          title={post.title}
+          eyebrow={categoryName}
+          title={title}
           height="h-64 md:h-96"
         />
 
@@ -107,11 +121,11 @@ const NewsPost = () => {
           </span>
         </div>
 
-        {post.excerpt && <p className="text-lg text-muted-foreground">{post.excerpt}</p>}
+        {excerpt && <p className="text-lg text-muted-foreground">{excerpt}</p>}
 
         <div
           className="prose-post max-w-none text-foreground"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: body }}
         />
       </article>
     </div>
