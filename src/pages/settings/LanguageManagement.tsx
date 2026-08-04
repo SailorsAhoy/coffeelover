@@ -82,7 +82,7 @@ const LanguageManagement = () => {
 
   const syncBaseStrings = async () => {
     setBusy(true);
-    const rowsToUpsert = BASE_STRINGS.map((s) => ({ key: s.key, namespace: s.namespace, en_value: s.en }));
+    const rowsToUpsert = [...BASE_STRINGS, ...WELCOME_STRINGS].map((s) => ({ key: s.key, namespace: s.namespace, en_value: s.en }));
     const existingKeys = new Set(strings.map((s) => s.key));
     const missing = rowsToUpsert.filter((r) => !existingKeys.has(r.key));
     if (missing.length) {
