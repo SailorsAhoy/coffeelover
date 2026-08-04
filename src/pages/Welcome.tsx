@@ -102,7 +102,7 @@ const Welcome = () => {
 
               {/* Details */}
               <Separator className="my-4" />
-              <h3 className="text-sm font-semibold text-foreground mb-2">Details</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-2">{t("welcome.details", "Details")}</h3>
               <dl className="space-y-1.5">
                 {ex.details.map((d) => (
                   <div key={d.label} className="flex gap-3 text-sm">
