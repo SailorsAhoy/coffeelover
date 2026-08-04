@@ -142,7 +142,7 @@ const Welcome = () => {
               {/* Locked teaser */}
               <div className="mt-4 flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2.5 text-xs text-muted-foreground">
                 <Lock className="w-3.5 h-3.5 shrink-0" />
-                <span>Contact details, photos and the full directory unlock when you sign in.</span>
+                <span>{t("welcome.locked_note", "Contact details, photos and the full directory unlock when you sign in.")}</span>
               </div>
             </CardContent>
           </Card>
@@ -152,21 +152,24 @@ const Welcome = () => {
         <div className="mt-6 rounded-2xl bg-gradient-to-br from-primary to-secondary p-[2px] shadow-xl">
           <div className="rounded-[calc(1rem-2px)] bg-card px-5 py-6 text-center">
             <h3 className="text-xl font-bold text-foreground">
-              This is just one of hundreds
+              {t("welcome.one_of_hundreds", "This is just one of hundreds")}
             </h3>
             <p className="text-sm text-muted-foreground mt-1.5 mb-5">
-              Create a free account to browse every {content.title.toLowerCase()} listing, save favorites and message directly.
+              {t(
+                "welcome.create_account_body",
+                "Create a free account to browse every listing, save favorites and message directly.",
+              )}
             </p>
             <Link to="/auth" state={{ from, mode: "signup" }} className="block">
               <Button size="lg" className="w-full text-base font-semibold h-12 shadow-lg hover:shadow-xl transition-shadow">
-                Sign up free
+                {t("welcome.cta_button", "Sign up free")}
                 <ArrowRight className="w-5 h-5 ml-1" />
               </Button>
             </Link>
             <p className="text-xs text-muted-foreground mt-3">
-              Free forever · No credit card ·{" "}
+              {t("welcome.free_forever", "Free forever · No credit card ·")}{" "}
               <Link to="/auth" state={{ from }} className="underline hover:text-foreground">
-                I already have an account
+                {t("welcome.have_account", "I already have an account")}
               </Link>
             </p>
           </div>
