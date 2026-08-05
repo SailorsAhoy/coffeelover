@@ -494,6 +494,42 @@ const LanguageManagement = () => {
               </Button>
             </div>
 
+            <div className="flex flex-wrap gap-2 items-end border border-border rounded-lg p-3 bg-muted/30">
+              <div className="space-y-1">
+                <Label>File scope</Label>
+                <Select value={ioScope} onValueChange={(v) => setIoScope(v as "target" | "all")}>
+                  <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-card z-50">
+                    <SelectItem value="target">Selected language only</SelectItem>
+                    <SelectItem value="all">All languages (one column each)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button variant="outline" onClick={doExportContent} disabled={busy}>
+                <Download className="w-4 h-4 mr-2" /> Export content (CSV)
+              </Button>
+              <input
+                ref={contentFileRef}
+                type="file"
+                accept=".csv,text/csv"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) void doImport(f, "content");
+                  if (contentFileRef.current) contentFileRef.current.value = "";
+                }}
+              />
+              <Button variant="outline" onClick={() => contentFileRef.current?.click()} disabled={busy}>
+                <Upload className="w-4 h-4 mr-2" /> Import translations
+              </Button>
+              <p className="text-xs text-muted-foreground basis-full">
+                Covers every content source. Keep <code>table</code>, <code>row_id</code> and{" "}
+                <code>column</code> intact; fill the language columns.
+              </p>
+            </div>
+
+
+
             <div className="divide-y divide-border border border-border rounded-lg max-h-[60vh] overflow-y-auto">
               {rows.map((r) =>
                 cfg.columns
