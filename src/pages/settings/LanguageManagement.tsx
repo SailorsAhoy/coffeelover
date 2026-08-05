@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/contexts/I18nContext";
 import { BASE_STRINGS } from "@/lib/i18n/strings";
 import { WELCOME_STRINGS } from "@/lib/i18n/welcomeStrings";
-import { Languages, Plus, RefreshCw, Sparkles, Trash2 } from "lucide-react";
+import { Languages, Plus, RefreshCw, Sparkles, Trash2, Download, Upload } from "lucide-react";
+import {
+  exportUiCsv, importUiCsv, exportContentCsv, importContentCsv, downloadCsv,
+} from "@/lib/i18n/translationIO";
 
 interface LangRow {
   code: string;
@@ -211,6 +214,57 @@ const LanguageManagement = () => {
     await loadContent();
   };
 
+  // --- Export / import ---
+  const uiFileRef = useRef<HTMLInputElement>(null);
+  const contentFileRef = useRef<HTMLInputElement>(null);
+  const [ioScope, setIoScope] = useState<"target" | "all">("target");
+
+  const exportLocales = () =>
+    ioScope === "all" ? langs.filter((l) => l.code !== "en").map((l) => l.code) : [target];
+
+  const doExportUi = async () => {
+    setBusy(true);
+    try {
+      const csv = await exportUiCsv(exportLocales());
+      downloadCsv(`coffeeplanets-interface-${ioScope === "all" ? "all" : target}.csv`, csv);
+      toast({ title: "Catalog exported" });
+    } catch (e) {
+      toast({ title: "Export failed", description: (e as Error).message, variant: "destructive" });
+    } finally { setBusy(false); }
+  };
+
+  const doExportContent = async () => {
+    setBusy(true);
+    try {
+      const csv = await exportContentCsv(CONTENT_SOURCES, exportLocales());
+      downloadCsv(`coffeeplanets-content-${ioScope === "all" ? "all" : target}.csv`, csv);
+      toast({ title: "Content exported" });
+    } catch (e) {
+      toast({ title: "Export failed", description: (e as Error).message, variant: "destructive" });
+    } finally { setBusy(false); }
+  };
+
+  const doImport = async (file: File, kind: "ui" | "content") => {
+    setBusy(true);
+    try {
+      const text = await file.text();
+      const res = kind === "ui" ? await importUiCsv(text) : await importContentCsv(text);
+      if (res.errors.length) {
+        toast({ title: "Import finished with errors", description: res.errors[0], variant: "destructive" });
+      } else {
+        toast({
+          title: `Imported ${res.upserted} translation${res.upserted === 1 ? "" : "s"}`,
+          description: `Languages: ${res.locales.join(", ") || "—"}${res.skipped ? ` · ${res.skipped} row(s) skipped` : ""}`,
+        });
+      }
+      if (kind === "ui") { await loadTranslations(target); void reloadStrings(); }
+      else await loadContent();
+    } catch (e) {
+      toast({ title: "Import failed", description: (e as Error).message, variant: "destructive" });
+    } finally { setBusy(false); }
+  };
+
+
   const namespaces = useMemo(
     () => Array.from(new Set(strings.map((s) => s.namespace))).sort(),
     [strings],
@@ -335,6 +389,41 @@ const LanguageManagement = () => {
               </Button>
             </div>
 
+            <div className="flex flex-wrap gap-2 items-end border border-border rounded-lg p-3 bg-muted/30">
+              <div className="space-y-1">
+                <Label>File scope</Label>
+                <Select value={ioScope} onValueChange={(v) => setIoScope(v as "target" | "all")}>
+                  <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-card z-50">
+                    <SelectItem value="target">Selected language only</SelectItem>
+                    <SelectItem value="all">All languages (one column each)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button variant="outline" onClick={doExportUi} disabled={busy}>
+                <Download className="w-4 h-4 mr-2" /> Export catalog (CSV)
+              </Button>
+              <input
+                ref={uiFileRef}
+                type="file"
+                accept=".csv,text/csv"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) void doImport(f, "ui");
+                  if (uiFileRef.current) uiFileRef.current.value = "";
+                }}
+              />
+              <Button variant="outline" onClick={() => uiFileRef.current?.click()} disabled={busy}>
+                <Upload className="w-4 h-4 mr-2" /> Import translations
+              </Button>
+              <p className="text-xs text-muted-foreground basis-full">
+                Keep the <code>key</code> column intact; fill any language column (header = language code).
+                Blank cells are left untouched.
+              </p>
+            </div>
+
+
             <div className="text-sm text-muted-foreground">
               {strings.length - missingCount}/{strings.length} translated into {targetLang?.native_name ?? target}
             </div>
@@ -404,6 +493,42 @@ const LanguageManagement = () => {
                 {busy ? "Translating…" : "Auto-translate missing"}
               </Button>
             </div>
+
+            <div className="flex flex-wrap gap-2 items-end border border-border rounded-lg p-3 bg-muted/30">
+              <div className="space-y-1">
+                <Label>File scope</Label>
+                <Select value={ioScope} onValueChange={(v) => setIoScope(v as "target" | "all")}>
+                  <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-card z-50">
+                    <SelectItem value="target">Selected language only</SelectItem>
+                    <SelectItem value="all">All languages (one column each)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button variant="outline" onClick={doExportContent} disabled={busy}>
+                <Download className="w-4 h-4 mr-2" /> Export content (CSV)
+              </Button>
+              <input
+                ref={contentFileRef}
+                type="file"
+                accept=".csv,text/csv"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) void doImport(f, "content");
+                  if (contentFileRef.current) contentFileRef.current.value = "";
+                }}
+              />
+              <Button variant="outline" onClick={() => contentFileRef.current?.click()} disabled={busy}>
+                <Upload className="w-4 h-4 mr-2" /> Import translations
+              </Button>
+              <p className="text-xs text-muted-foreground basis-full">
+                Covers every content source. Keep <code>table</code>, <code>row_id</code> and{" "}
+                <code>column</code> intact; fill the language columns.
+              </p>
+            </div>
+
+
 
             <div className="divide-y divide-border border border-border rounded-lg max-h-[60vh] overflow-y-auto">
               {rows.map((r) =>
