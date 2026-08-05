@@ -1,0 +1,1 @@
+GRANT SELECT, INSERT, UPDATE ON public.ui_strings, public.ui_translations, public.content_translations TO sandbox_exec;
