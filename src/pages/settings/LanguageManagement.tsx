@@ -214,6 +214,57 @@ const LanguageManagement = () => {
     await loadContent();
   };
 
+  // --- Export / import ---
+  const uiFileRef = useRef<HTMLInputElement>(null);
+  const contentFileRef = useRef<HTMLInputElement>(null);
+  const [ioScope, setIoScope] = useState<"target" | "all">("target");
+
+  const exportLocales = () =>
+    ioScope === "all" ? langs.filter((l) => l.code !== "en").map((l) => l.code) : [target];
+
+  const doExportUi = async () => {
+    setBusy(true);
+    try {
+      const csv = await exportUiCsv(exportLocales());
+      downloadCsv(`coffeeplanets-interface-${ioScope === "all" ? "all" : target}.csv`, csv);
+      toast({ title: "Catalog exported" });
+    } catch (e) {
+      toast({ title: "Export failed", description: (e as Error).message, variant: "destructive" });
+    } finally { setBusy(false); }
+  };
+
+  const doExportContent = async () => {
+    setBusy(true);
+    try {
+      const csv = await exportContentCsv(CONTENT_SOURCES, exportLocales());
+      downloadCsv(`coffeeplanets-content-${ioScope === "all" ? "all" : target}.csv`, csv);
+      toast({ title: "Content exported" });
+    } catch (e) {
+      toast({ title: "Export failed", description: (e as Error).message, variant: "destructive" });
+    } finally { setBusy(false); }
+  };
+
+  const doImport = async (file: File, kind: "ui" | "content") => {
+    setBusy(true);
+    try {
+      const text = await file.text();
+      const res = kind === "ui" ? await importUiCsv(text) : await importContentCsv(text);
+      if (res.errors.length) {
+        toast({ title: "Import finished with errors", description: res.errors[0], variant: "destructive" });
+      } else {
+        toast({
+          title: `Imported ${res.upserted} translation${res.upserted === 1 ? "" : "s"}`,
+          description: `Languages: ${res.locales.join(", ") || "—"}${res.skipped ? ` · ${res.skipped} row(s) skipped` : ""}`,
+        });
+      }
+      if (kind === "ui") { await loadTranslations(target); void reloadStrings(); }
+      else await loadContent();
+    } catch (e) {
+      toast({ title: "Import failed", description: (e as Error).message, variant: "destructive" });
+    } finally { setBusy(false); }
+  };
+
+
   const namespaces = useMemo(
     () => Array.from(new Set(strings.map((s) => s.namespace))).sort(),
     [strings],
