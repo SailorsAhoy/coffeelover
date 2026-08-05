@@ -1,0 +1,1 @@
+REVOKE SELECT, INSERT, UPDATE ON public.ui_strings, public.ui_translations, public.content_translations FROM sandbox_exec;
