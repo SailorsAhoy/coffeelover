@@ -279,6 +279,7 @@ export type Database = {
           published_at: string | null
           slug: string
           status: string
+          tags: string[]
           title: string
           updated_at: string
           views_count: number
@@ -294,6 +295,7 @@ export type Database = {
           published_at?: string | null
           slug: string
           status?: string
+          tags?: string[]
           title: string
           updated_at?: string
           views_count?: number
@@ -309,6 +311,7 @@ export type Database = {
           published_at?: string | null
           slug?: string
           status?: string
+          tags?: string[]
           title?: string
           updated_at?: string
           views_count?: number
