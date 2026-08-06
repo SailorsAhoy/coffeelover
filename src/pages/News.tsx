@@ -1,16 +1,27 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Rss, PenLine, Search } from "lucide-react";
+import { Rss, PenLine, Search, SlidersHorizontal, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import PostBanner from "@/components/blog/PostBanner";
-import { listCategories, listPosts, type BlogCategory, type BlogPost } from "@/lib/blogData";
+import { listCategories, listPosts, listTags, type BlogCategory, type BlogPost } from "@/lib/blogData";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/contexts/I18nContext";
+
 
 const formatDate = (d?: string | null) =>
   d ? new Date(d).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) : "";
@@ -20,27 +31,43 @@ const News = () => {
   const { t, tc, loadContent } = useI18n();
   const canWrite = (roles as string[]).includes("author") || (roles as string[]).includes("admin");
   const [categories, setCategories] = useState<BlogCategory[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [active, setActive] = useState<string | undefined>();
+  const [activeTags, setActiveTags] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState<{ category?: string; tags: string[]; search: string }>({
+    tags: [],
+    search: "",
+  });
 
   useEffect(() => {
     listCategories().then(setCategories).catch(() => setCategories([]));
+    listTags().then(setTags).catch(() => setTags([]));
   }, []);
 
   useEffect(() => {
     setLoading(true);
-    listPosts({ categorySlug: active, search: search.trim() || undefined })
+    listPosts({
+      categorySlug: active,
+      search: search.trim() || undefined,
+      tags: activeTags.length ? activeTags : undefined,
+    })
       .then(setPosts)
       .catch(() => setPosts([]))
       .finally(() => setLoading(false));
-  }, [active, search]);
+  }, [active, search, activeTags]);
+
 
   useEffect(() => {
     void loadContent("blog_posts");
     void loadContent("blog_categories");
   }, [loadContent]);
+
+  const activeCategory = categories.find((c) => c.slug === active) ?? null;
+  const activeFilterCount = (active ? 1 : 0) + activeTags.length + (search.trim() ? 1 : 0);
 
   const [featured, ...rest] = posts;
 
@@ -88,29 +115,155 @@ const News = () => {
         </header>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search posts..."
-              className="pl-9"
-            />
-          </div>
-          <Button variant={active ? "outline" : "default"} size="sm" onClick={() => setActive(undefined)}>
-            All
-          </Button>
-          {categories.map((c) => (
-            <Button
-              key={c.id}
-              variant={active === c.slug ? "default" : "outline"}
-              size="sm"
-              onClick={() => setActive(c.slug)}
-            >
-              {tc("blog_categories", c.id, "name", c.name)}
-            </Button>
+          <Dialog
+            open={open}
+            onOpenChange={(o) => {
+              setOpen(o);
+              if (o) setDraft({ category: active, tags: activeTags, search });
+            }}
+          >
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <SlidersHorizontal className="w-4 h-4" />
+                {t("common.filters", "Filters")}
+                {activeFilterCount > 0 && (
+                  <span className="ml-1 rounded-full bg-primary px-2 text-xs font-medium text-primary-foreground">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[85vh] overflow-y-auto bg-background">
+              <DialogHeader>
+                <DialogTitle className="font-display">{t("news.filter.title", "Filter the newsfeed")}</DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-5 py-2">
+                <div className="space-y-2">
+                  <Label>{t("common.search", "Search")}</Label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      value={draft.search}
+                      onChange={(e) => setDraft((d) => ({ ...d, search: e.target.value }))}
+                      placeholder={t("news.filter.searchPlaceholder", "Title or excerpt…")}
+                      className="pl-9"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>{t("news.filter.categories", "Categories")}</Label>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant={draft.category ? "outline" : "default"}
+                      size="sm"
+                      onClick={() => setDraft((d) => ({ ...d, category: undefined }))}
+                    >
+                      {t("common.all", "All")}
+                    </Button>
+                    {categories.map((c) => (
+                      <Button
+                        key={c.id}
+                        type="button"
+                        variant={draft.category === c.slug ? "default" : "outline"}
+                        size="sm"
+                        onClick={() =>
+                          setDraft((d) => ({ ...d, category: d.category === c.slug ? undefined : c.slug }))
+                        }
+                      >
+                        {tc("blog_categories", c.id, "name", c.name)}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>{t("news.filter.tags", "Tags")}</Label>
+                  {tags.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">{t("news.filter.noTags", "No tags yet.")}</p>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2">
+                      {tags.map((tag) => (
+                        <label key={tag} className="flex items-center gap-2 rounded-lg border p-2 text-sm">
+                          <Checkbox
+                            checked={draft.tags.includes(tag)}
+                            onCheckedChange={(c) =>
+                              setDraft((d) => ({
+                                ...d,
+                                tags: c ? [...d.tags, tag] : d.tags.filter((x) => x !== tag),
+                              }))
+                            }
+                          />
+                          <span className="truncate">{tag}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <DialogFooter className="gap-2 sm:gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setDraft({ category: undefined, tags: [], search: "" })}
+                >
+                  {t("common.reset", "Reset")}
+                </Button>
+                <Button
+                  onClick={() => {
+                    setActive(draft.category);
+                    setActiveTags(draft.tags);
+                    setSearch(draft.search);
+                    setOpen(false);
+                  }}
+                >
+                  {t("common.apply", "Apply filters")}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {activeCategory && (
+            <Badge variant="secondary" className="gap-1">
+              {tc("blog_categories", activeCategory.id, "name", activeCategory.name)}
+              <button onClick={() => setActive(undefined)} aria-label="Clear category">
+                <X className="w-3 h-3" />
+              </button>
+            </Badge>
+          )}
+          {activeTags.map((tag) => (
+            <Badge key={tag} variant="secondary" className="gap-1">
+              {tag}
+              <button onClick={() => setActiveTags((v) => v.filter((x) => x !== tag))} aria-label="Clear tag">
+                <X className="w-3 h-3" />
+              </button>
+            </Badge>
           ))}
+          {search.trim() && (
+            <Badge variant="secondary" className="gap-1">
+              “{search.trim()}”
+              <button onClick={() => setSearch("")} aria-label="Clear search">
+                <X className="w-3 h-3" />
+              </button>
+            </Badge>
+          )}
+          {activeFilterCount > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setActive(undefined);
+                setActiveTags([]);
+                setSearch("");
+              }}
+            >
+              {t("common.clearAll", "Clear all")}
+            </Button>
+          )}
         </div>
+
 
         {loading ? (
           <p className="text-muted-foreground py-12 text-center">Loading posts…</p>
