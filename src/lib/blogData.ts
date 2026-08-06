@@ -20,6 +20,7 @@ export type BlogPost = {
   category_id: string | null;
   author_id: string;
   status: "draft" | "published";
+  tags: string[];
   published_at: string | null;
   views_count: number;
   created_at: string;
@@ -59,13 +60,23 @@ export async function listCategories(): Promise<BlogCategory[]> {
   return (data ?? []) as BlogCategory[];
 }
 
-export async function listPosts(opts: { categorySlug?: string; search?: string } = {}): Promise<BlogPost[]> {
+export async function listTags(): Promise<string[]> {
+  const { data } = await supabase.from("blog_posts").select("tags").eq("status", "published");
+  const set = new Set<string>();
+  (data ?? []).forEach((r: any) => (r.tags ?? []).forEach((t: string) => set.add(t)));
+  return [...set].sort((a, b) => a.localeCompare(b));
+}
+
+export async function listPosts(
+  opts: { categorySlug?: string; search?: string; tags?: string[] } = {},
+): Promise<BlogPost[]> {
   let q = supabase
     .from("blog_posts")
     .select(SELECT)
     .eq("status", "published")
     .order("published_at", { ascending: false });
-  if (opts.search) q = q.ilike("title", `%${opts.search}%`);
+  if (opts.search) q = q.or(`title.ilike.%${opts.search}%,excerpt.ilike.%${opts.search}%`);
+  if (opts.tags?.length) q = q.overlaps("tags", opts.tags);
   const { data, error } = await q;
   if (error) throw error;
   let posts = (data ?? []) as unknown as BlogPost[];
@@ -105,6 +116,7 @@ export type PostInput = {
   banner_url?: string | null;
   category_id?: string | null;
   status: "draft" | "published";
+  tags?: string[];
 };
 
 export async function createPost(input: PostInput, authorId: string) {

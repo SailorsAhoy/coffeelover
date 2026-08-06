@@ -36,6 +36,7 @@ const NewsEditor = () => {
   const [banner, setBanner] = useState("");
   const [categoryId, setCategoryId] = useState<string>("");
   const [status, setStatus] = useState<"draft" | "published">("draft");
+  const [tags, setTags] = useState("");
   const [content, setContent] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -54,6 +55,7 @@ const NewsEditor = () => {
       setBanner(p.banner_url ?? "");
       setCategoryId(p.category_id ?? "");
       setStatus(p.status);
+      setTags((p.tags ?? []).join(", "));
       setContent(p.content);
     });
   }, [id]);
@@ -73,6 +75,7 @@ const NewsEditor = () => {
         banner_url: banner.trim() || null,
         category_id: categoryId || null,
         status,
+        tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
       };
       const saved = existing
         ? await updatePost(existing.id, payload, existing.published_at)
@@ -188,6 +191,16 @@ const NewsEditor = () => {
                 value={banner}
                 onChange={(e) => setBanner(e.target.value)}
                 placeholder="https://…"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="tags">Tags (comma separated)</Label>
+              <Input
+                id="tags"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                placeholder="espresso, origin, sustainability"
               />
             </div>
 
