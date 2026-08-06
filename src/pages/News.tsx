@@ -31,22 +31,35 @@ const News = () => {
   const { t, tc, loadContent } = useI18n();
   const canWrite = (roles as string[]).includes("author") || (roles as string[]).includes("admin");
   const [categories, setCategories] = useState<BlogCategory[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [active, setActive] = useState<string | undefined>();
+  const [activeTags, setActiveTags] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState<{ category?: string; tags: string[]; search: string }>({
+    tags: [],
+    search: "",
+  });
 
   useEffect(() => {
     listCategories().then(setCategories).catch(() => setCategories([]));
+    listTags().then(setTags).catch(() => setTags([]));
   }, []);
 
   useEffect(() => {
     setLoading(true);
-    listPosts({ categorySlug: active, search: search.trim() || undefined })
+    listPosts({
+      categorySlug: active,
+      search: search.trim() || undefined,
+      tags: activeTags.length ? activeTags : undefined,
+    })
       .then(setPosts)
       .catch(() => setPosts([]))
       .finally(() => setLoading(false));
-  }, [active, search]);
+  }, [active, search, activeTags]);
+
 
   useEffect(() => {
     void loadContent("blog_posts");
