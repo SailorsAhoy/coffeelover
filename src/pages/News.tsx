@@ -66,6 +66,9 @@ const News = () => {
     void loadContent("blog_categories");
   }, [loadContent]);
 
+  const activeCategory = categories.find((c) => c.slug === active) ?? null;
+  const activeFilterCount = (active ? 1 : 0) + activeTags.length + (search.trim() ? 1 : 0);
+
   const [featured, ...rest] = posts;
 
   const rssUrl = useMemo(() => {
