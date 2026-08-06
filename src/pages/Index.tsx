@@ -147,7 +147,7 @@ const Index = () => {
                   height={512}
                   className="absolute inset-0 h-full w-full object-cover"
                 />
-                <div className="absolute inset-0 bg-coffee-dark/60" />
+                <div className="absolute inset-0 bg-coffee-dark/40" />
                 <div className="relative">
                   <CardHeader>
                     <div className="p-3 bg-coffee-cream/20 backdrop-blur-sm rounded-lg w-fit mb-2">
